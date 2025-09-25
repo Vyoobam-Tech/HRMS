@@ -1,0 +1,108 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  background-color: #94b4c1;
+}
+
+.sign-up-container {
+  font-family: "Poppins", sans-serif;
+  font-optical-sizing: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.sign-up-form {
+  background-color: #ffffff;
+  width: 300px;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.sign-up-form input {
+  font-family: "Poppins", sans-serif;
+  font-optical-sizing: auto;
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 16px;
+  box-sizing: border-box;
+}
+
+.sign-up-form button {
+  font-family: "Poppins", sans-serif;
+  font-optical-sizing: auto;
+  width: 100%;
+  padding: 10px;
+  background-color: #192a56;
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+}
+
+.sidebar {
+  transition: width 0.3s ease-in-out;
+}
+
+.calendar-wrapper {
+  padding: 5px;
+  border-radius: 25px;
+  display: inline-block;
+}
+
+.react-calendar {
+  border: none;
+  border-radius: 12px;
+  background-color: #94b4c1;
+  font-family: "Poppins", sans-serif;
+  width: 320px;
+  max-width: 100%;
+  box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.1);
+}
+
+.react-calendar * {
+  font-family: "Poppins", sans-serif !important;
+}
+
+.react-calendar__navigation {
+  background: transparent;
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 10px;
+}
+
+.react-calendar__navigation button {
+  background: none;
+  color: #34495e !important;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.react-calendar__navigation__label {
+  font-size: 1.2rem;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.react-calendar__month-view__weekdays__weekday {
+  color: #34495e;
+  font-weight: bold;
+}
+
+.react-calendar__tile {
+  color: #34495e;
+  background: none !important;
+  box-shadow: none !important;
+}
+
+.react-calendar__tile--active {
+  background-color: #34495e !important;
+  color: white !important;
+  border-radius: 50%;
+}

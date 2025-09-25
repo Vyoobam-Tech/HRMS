@@ -1,0 +1,441 @@
+{
+  "department": [
+  {
+    "depid": 1,
+    "name": "Human Resources",
+    "description": "Handles recruitment, payroll, employee management, and compliance.",
+    "hod": "Anita Sharma",
+    "created": "2023-01-15",
+    "total": 12,
+    "status": "Active"
+  },
+  {
+    "depid": 2,
+    "name": "Designing",
+    "description": "Responsible for UI/UX, branding, and creative design projects.",
+    "hod": "Ravi Kumar",
+    "created": "2023-02-10",
+    "total": 8,
+    "status": "Active"
+  },
+  {
+    "depid": 3,
+    "name": "Development",
+    "description": "Focuses on software development, coding, and implementation.",
+    "hod": "Sneha Patel",
+    "created": "2023-03-05",
+    "total": 25,
+    "status": "Active"
+  },
+  {
+    "depid": 4,
+    "name": "Testing",
+    "hod": "Arjun Mehta",
+    "description": "Ensures product quality through manual and automated testing.",
+    "created": "2023-03-20",
+    "total": 10,
+    "status": "Active"
+  },
+  {
+    "depid": 5,
+    "name": "Event Management",
+    "description": "Manages corporate events, workshops, and internal activities.",
+    "hod": "Priya Nair",
+    "created": "2023-04-01",
+    "total": 6,
+    "status": "Active"
+  }
+],
+
+
+  "activities": [
+    {
+      "id": 1,
+      "employee": "Tamilmani",
+      "type": "Project",
+      "date": "2025-03-01",
+      "logIn": "10:00 AM",
+      "logOut": "12:00 PM",
+      "duration": 2,
+      "department": "IT",
+      "status": "Completed"
+    },
+    {
+      "id": 2,
+      "employee": "Dinesh",
+      "type": "Training",
+      "date": "2025-03-05",
+      "logIn": "02:00 PM",
+      "logOut": "03:30 PM",
+      "duration": 1.5,
+      "department": "IT",
+      "status": "In Progress"
+    },
+    {
+      "id": 3,
+      "employee": "Suriya",
+      "type": "Training",
+      "date": "2025-03-04",
+      "logIn": "09:00 AM",
+      "logOut": "05:00 PM",
+      "duration": 8,
+      "department": "IT",
+      "status": "Completed"
+    },
+    {
+      "id": 4,
+      "employee": "Huwaidha Sheerin",
+      "type": "Meeting",
+      "date": "2025-03-03",
+      "logIn": "Full Day",
+      "logOut": "Full Day",
+      "duration": 8,
+      "department": "IT",
+      "status": "In Progress"
+    },
+    {
+      "id": 5,
+      "employee": "Dharshini",
+      "type": "Meeting",
+      "date": "2025-03-03",
+      "logIn": "Full Day",
+      "logOut": "Full Day",
+      "duration": 8,
+      "department": "IT",
+      "status": "In Progress"
+    },
+    {
+      "id": 6,
+      "employee": "Aadhi",
+      "type": "Leave",
+      "date": "2025-03-03",
+      "logIn": "Full Day",
+      "logOut": "Full Day",
+      "duration": 8,
+      "department": "Sales",
+      "status": "Approved"
+    },
+    {
+      "id": 7,
+      "employee": "Priyanka",
+      "type": "Project",
+      "date": "2025-03-03",
+      "logIn": "Full Day",
+      "logOut": "Full Day",
+      "duration": 8,
+      "department": "Finance",
+      "status": "Completed"
+    },
+    {
+      "id": 8,
+      "employee": "Vijay",
+      "type": "Project",
+      "date": "2025-03-03",
+      "logIn": "Full Day",
+      "logOut": "Full Day",
+      "duration": 8,
+      "department": "Sales",
+      "status": "Completed"
+    },
+    {
+      "id": 9,
+      "employee": "Swetha Selvam",
+      "type": "Project",
+      "date": "2025-03-03",
+      "logIn": "Full Day",
+      "logOut": "Full Day",
+      "duration": 8,
+      "department": "HR",
+      "status": "Completed"
+    }
+  ],
+  "holidays": [
+    {
+      "id": 1,
+      "name": "New Year",
+      "date": "01-01-2025",
+      "day": "Wednesday",
+      "type": "CH",
+      "location": "All Locations",
+      "year": "2025",
+      "status": "Completed",
+      "description": "Celebrating the new year"
+    },
+    {
+      "id": 2,
+      "name": "Pongal",
+      "date": "14-01-2025",
+      "day": "Tuesday",
+      "type": "CH",
+      "location": "All Locations",
+      "year": "2025",
+      "status": "Completed",
+      "description": ""
+    },
+    {
+      "id": 3,
+      "name": "Thiruvalluvar Day",
+      "date": "15-01-2025",
+      "day": "Wednesday",
+      "type": "RH",
+      "location": "All Locations",
+      "year": "2025",
+      "status": "Completed",
+      "description": ""
+    },
+    {
+      "id": 4,
+      "name": "Uzhavar Thirunal",
+      "date": "16-01-2025",
+      "day": "Thursday",
+      "type": "RH",
+      "location": "All Locations",
+      "year": "2025",
+      "status": "Completed",
+      "description": ""
+    },
+    {
+      "id": 5,
+      "name": "Republic Day",
+      "date": "26-01-2025",
+      "day": "Sunday",
+      "type": "CH",
+      "location": "India",
+      "year": "2025",
+      "status": "Completed",
+      "description": "National holiday in India"
+    },
+    {
+      "id": 6,
+      "name": "Ramzan",
+      "date": "31-03-2025",
+      "day": "Wednesday",
+      "type": "RH",
+      "location": "All Locations",
+      "year": "2025",
+      "status": "Completed",
+      "description": "Muslims religious holiday"
+    },
+    {
+      "id": 7,
+      "name": "Good Friday",
+      "date": "18-04-2025",
+      "day": "Friday",
+      "type": "RH",
+      "location": "Global",
+      "year": "2025",
+      "status": "Completed",
+      "description": "Christian religious holiday"
+    },
+    {
+      "id": 8,
+      "name": "Workers Day",
+      "date": "01-05-2025",
+      "day": "Thursday",
+      "type": "RH",
+      "location": "All Locations",
+      "year": "2025",
+      "status": "Completed",
+      "description": ""
+    },
+    {
+      "id": 9,
+      "name": "Bakrid",
+      "date": "07-06-2025",
+      "day": "Saturday",
+      "type": "RH",
+      "location": "All Locations",
+      "year": "2025",
+      "status": "Completed",
+      "description": ""
+    },
+    {
+      "id": 10,
+      "name": "Muharram",
+      "date": "06-07-2025",
+      "day": "Sunday",
+      "type": "RH",
+      "location": "All Locations",
+      "year": "2025",
+      "status": "Completed",
+      "description": ""
+    },
+    {
+      "id": 11,
+      "name": "Independence Day",
+      "date": "15-08-2025",
+      "day": "Friday",
+      "type": "CH",
+      "location": "India",
+      "year": "2025",
+      "status": "Completed",
+      "description": "India’s Independence Day"
+    },
+    {
+      "id": 12,
+      "name": "Ayudha Pooja",
+      "date": "01-10-2025",
+      "day": "Wednesday",
+      "type": "RH",
+      "location": "India",
+      "year": "2025",
+      "status": "Active",
+      "description": ""
+    },
+    {
+      "id": 13,
+      "name": "Vijaya Dasami",
+      "date": "02-10-2025",
+      "day": "Thursday",
+      "type": "RH",
+      "location": "India",
+      "year": "2025",
+      "status": "Active",
+      "description": ""
+    },
+    {
+      "id": 14,
+      "name": "Diwali",
+      "date": "20-10-2025",
+      "day": "Monday",
+      "type": "CH",
+      "location": "India",
+      "year": "2025",
+      "status": "Active",
+      "description": "Festival of lights"
+    },
+    {
+      "id": 15,
+      "name": "Christmas",
+      "date": "25-12-2025",
+      "day": "Thursday",
+      "type": "RH",
+      "location": "All Locations",
+      "year": "2025",
+      "status": "Active",
+      "description": "Christmas celebrations"
+    }
+  ],
+
+  "payroll": [
+    {
+      "id": 1,
+      "name": "Tamilmani",
+      "department": "Product Manager",
+      "basicSalary": 50000,
+      "allowances": 10000,
+      "deductions": 5000,
+      "tax": 3000,
+      "netSalary": 52000,
+      "status": "Processed"
+    },
+    {
+      "id": 2,
+      "name": "Gokul",
+      "department": "Designer",
+      "basicSalary": 45000,
+      "allowances": 8000,
+      "deductions": 4000,
+      "tax": 2500,
+      "netSalary": 46500,
+      "status": "Processed"
+    }
+  ],
+
+  "accounts": [
+    {
+      "id": "TXN1001",
+      "date": "2025-03-01",
+      "accType": "Salary Expense",
+      "description": "March Payroll Payment",
+      "amount": "2,00,000",
+      "transType": "Debit",
+      "status": "Completed"
+    },
+    {
+      "id": "TXN1002",
+      "date": "2025-03-02",
+      "accType": "Vendor Payment",
+      "description": "Office Rent",
+      "amount": "50,000",
+      "transType": "Debit",
+      "status": "Completed"
+    },
+    {
+      "id": "TXN1003",
+      "date": "2025-03-03",
+      "accType": "Revenue",
+      "description": "Client Invoice Paid",
+      "amount": "1,00,000",
+      "transType": "Credit",
+      "status": "Completed"
+    }
+  ],
+
+  "reports": {
+    "attendanceReport": [
+      {
+        "id": "101",
+        "name": "Tamilmani",
+        "department": "HR",
+        "workDays": "22",
+        "presDays": "20",
+        "absDays": "1",
+        "leaveDays": "1",
+        "hours": "5"
+      },
+      {
+        "id": "102",
+        "name": "Gokul",
+        "department": "IT",
+        "workDays": "22",
+        "presDays": "18",
+        "absDays": "2",
+        "leaveDays": "2",
+        "hours": "8"
+      },
+      {
+        "id": "103",
+        "name": "Harish",
+        "department": "IT",
+        "workDays": "22",
+        "presDays": "21",
+        "absDays": "1",
+        "leaveDays": "0",
+        "hours": "3"
+      }
+    ],
+    "leaveReport": [
+      {
+        "id": "101",
+        "name": "Tamilmani",
+        "department": "HR",
+        "leaveType": "Sick Leave",
+        "leaveDays": "2",
+        "leaveStatus": "Approved",
+        "date": "2025-03-10",
+        "approve": "HR Manager"
+      },
+      {
+        "id": "102",
+        "name": "Gokul",
+        "department": "IT",
+        "leaveType": "Casual Leave",
+        "leaveDays": "3",
+        "leaveStatus": "Approved",
+        "date": "2025-03-11",
+        "approve": "Team Lead"
+      },
+      {
+        "id": "103",
+        "name": "Harish",
+        "department": "IT",
+        "leaveType": "Casual Leave",
+        "leaveDays": "1",
+        "leaveStatus": "Approved",
+        "date": "2025-03-12",
+        "approve": "Team Lead"
+      }
+    ]
+  }
+}
