@@ -28,7 +28,7 @@ app.use("/api/departments", DepartmentRouter);
 app.use("/api/activities", ActivityRouter);
 
 sequelize
-  .sync()
+  .sync({alter: true})
   .then(() => {
     console.log("DB connected");
     const PORT = process.env.PORT || 3000;

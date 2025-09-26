@@ -1,6 +1,7 @@
-import { Box, Button, MenuItem, Step, StepLabel, Stepper, TextField, Grid, Typography, RadioGroup, FormControlLabel, FormLabel, Radio, Card } from '@mui/material'
-import {  margin, width } from '@mui/system'
+import { Box, Button, MenuItem, Step, StepLabel, Stepper, TextField, Grid, Typography, RadioGroup, FormControlLabel, FormLabel, Radio, Card, Divider, Checkbox } from '@mui/material'
+import axios from 'axios'
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 const steps = ["Personal Details", "Educational Details", "Work Experience (if any)", "Bank Details", "Preview & Submit"]
 
@@ -10,20 +11,20 @@ const EmployeeForm = () => {
     const [formData, setFormData] =useState({
         empId: "",
         name: "",
-        gender: "",
-        dob: "",
-        bloodGroup: "",
-        maritalStatus: "",
-        spouseName: "",
-        spouseNumber: "",
-        contact: "",
         email: "",
+        contact: "",
         fatherName: "",
         motherName: "",
         occupation: "",
         faormoNumber: "",
         permanentAddress: "",
         communicationAddress: "",
+        gender: "",
+        dob: "",
+        bloodGroup: "",
+        maritalStatus: "",
+        spouseName: "",
+        spouseContact: "",
         aadhaar: "",
         pan: "",
 
@@ -36,11 +37,11 @@ const EmployeeForm = () => {
         twelvePercentage: "",
 
         ugUniversity: "",
-        ugYearofPaasing: "",
+        ugYearofPassing: "",
         ugPercentage: "",
 
         pgUniversity: "",
-        pgYearofPaasing: "",
+        pgYearofPassing: "",
         pgPercentage: "",
 
         hasExperience: true,
@@ -55,12 +56,177 @@ const EmployeeForm = () => {
             }
         ],
 
-
         bankName: "",
         accountNumber: "",
         ifscCode: "",
         branch: ""
         })
+
+        const validate = () => {
+            const errors ={}
+
+            if(activeStep === 0) {
+                if(!formData.empId) errors.empId = "Employee ID is required"
+                if(!formData.name) errors.name = "Full Name is required"
+                if(!formData.email) errors.email = "Email is required"
+                else if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) errors.email = "Invalid email"
+                if(!formData.contact) errors.contact = "Contact is required";
+                else if(!/^\d{10}$/.test(formData.contact)) errors.contact = "Must be 10 digits"
+                if(!formData.fatherName) errors.fatherName = "Father Name is required"
+                if(!formData.motherName) errors.motherName = "Mother Name is required"
+                if(!formData.faormoNumber) errors.faormoNumber = "Parent Number is required"
+                else if(!/^\d{10}$/.test(formData.faormoNumber)) errors.faormoNumber = "Must be 10 digits"
+                if(!formData.occupation) errors.occupation = "Occupation is required"
+                if(!formData.permanentAddress) errors.permanentAddress = "Permanent Address is required"
+                if(!formData.communicationAddress) errors.communicationAddress = "Communication Address is required"
+                if(!formData.gender) errors.gender = "Gender is required"
+                if(!formData.dob) errors.dob = "Date of Birth is required"
+                if(!formData.bloodGroup) errors.bloodGroup = "Blood Group is required"
+                if(!formData.maritalStatus) errors.maritalStatus = "Marital Status is required"
+                if(formData.maritalStatus === "Married") {
+                    if(!formData.spouseName) errors.spouseName = "Spouse Name is required"
+                    if(!formData.spouseContact) errors.spouseContact = "Spouse Contact is required"
+                }
+                if(!formData.aadhaar) errors.aadhaar = "Aadhaar Number is required"
+                else if(!/^\d{12}$/.test(formData.aadhaar)) errors.aadhaar = "Invalid Aadhaar Number"
+
+                if(!formData.pan) errors.pan = "PAN Number is required"
+                else if(!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/i.test(formData.pan)) errors.pan = "Invalid PAN Number"
+
+            }
+
+            if(activeStep === 1) {
+                if(!formData.tenthBoard) errors.tenthBoard = "10th Board is required"
+                if(!formData.tenthYearofPassing) errors.tenthYearofPassing = "10th Year is required"
+                else if(!/^\d{4}$/.test(formData.tenthYearofPassing)) errors.tenthYearofPassing = "Invalid"
+                if(!formData.tenthPercentage) errors.tenthPercentage = "10th Percentage is required"
+                else if(!/^\d{1,2}$/.test(formData.tenthPercentage)) errors.tenthPercentage = "Invalid"
+
+                if(!formData.twelveBoard) errors.twelveBoard = "12th Board is required"
+                if(!formData.twelveYearofPassing) errors.twelveYearofPassing = "12th Year is required"
+                else if(!/^\d{4}$/.test(formData.twelveYearofPassing)) errors.twelveYearofPassing = "Invalid"
+                if(!formData.twelvePercentage) errors.twelvePercentage = "12th Percentage is required"
+                else if(!/^\d{1,2}$/.test(formData.twelvePercentage)) errors.twelvePercentage = "Invalid"
+
+                if(!formData.ugUniversity) errors.ugUniversity = "UG University is required"
+                if(!formData.ugYearofPaasing) errors.ugYearofPaasing = "UG Year is required"
+                else if(!/^\d{4}$/.test(formData.ugYearofPaasing)) errors.ugYearofPaasing = "Invalid"
+                if(!formData.ugPercentage) errors.ugPercentage = "UG Percentage is required"
+                else if(!/^\d{1,2}$/.test(formData.ugPercentage)) errors.ugPercentage = "Invalid"
+            }
+
+            if(activeStep === 2) {
+                if(formData.hasExperience) {
+                    formData.experiences.forEach((exp, index) => {
+                        if(!exp.company) {
+                            errors[`experiences.${index}.company`] = "Company Name is required"
+                        }
+                        if(!exp.title) {
+                            errors[`experiences.${index}.title`] = "Job Title is required"
+                        }
+                        if(!exp.startDate) {
+                            errors[`experiences.${index}.startDate`] = "Start Date is required"
+                        }
+                        if(!exp.endDate) {
+                            errors[`experiences.${index}.endDate`] = "End Date is required"
+                        }
+                        if(!exp.description) {
+                            errors[`experiences.${index}.description`] = "Description is required"
+                        }
+                        if(!exp.skills) {
+                            errors[`experiences.${index}.skills`] = "skills is required"
+                        }
+                    })
+                }
+            }
+
+            if(activeStep === 3) {
+                if(!formData.bankName) errors.bankName = "Bank Name is required"
+                if(!formData.accountNumber) {
+                    errors.accountNumber = "Account Number is required"
+                } else if(!/^\d+$/.test(formData.accountNumber)) {
+                    errors.accountNumber = "Account Number must be numbers only"
+                } else if(formData.accountNumber.length < 9 || formData.accountNumber.length > 18) {
+                    errors.accountNumber = "Account Number must be 9 to 18 digits"
+                }
+
+                if(!formData.ifscCode) {
+                    errors.ifscCode = "IFSC Code is required"
+                } else if(!/^[A-Za-z]{4}\d{7}$/.test(formData.ifscCode)) {
+                    errors.ifscCode = "Invalid IFSC Code format"
+                }
+                if(!formData.branch) errors.branch = "Branch is required"
+            }
+
+        setErrors(errors);
+        return Object.keys(errors).length === 0;
+        }
+
+
+        const initialFormData = {
+                empId: "",
+                name: "",
+                gender: "",
+                dob: "",
+                bloodGroup: "",
+                maritalStatus: "",
+                spouseName: "",
+                spouseContact: "",
+                contact: "",
+                email: "",
+                fatherName: "",
+                motherName: "",
+                occupation: "",
+                faormoNumber: "",
+                permanentAddress: "",
+                communicationAddress: "",
+                aadhaar: "",
+                pan: "",
+                tenthBoard: "",
+                tenthYearofPassing: "",
+                tenthPercentage: "",
+                twelveBoard: "",
+                twelveYearofPassing: "",
+                twelvePercentage: "",
+                ugUniversity: "",
+                ugYearofPassing: "",
+                ugPercentage: "",
+                pgUniversity: "",
+                pgYearofPassing: "",
+                pgPercentage: "",
+                hasExperience: false,
+                experiences: [
+                    {
+                        company: "",
+                        title: "",
+                        startDate: "",
+                        endDate: "",
+                        description: "",
+                        skills: "",
+                    },
+                ],
+                bankName: "",
+                accountNumber: "",
+                ifscCode: "",
+                branch: ""
+            };
+
+
+        const [sameAddress, setSameAddress] = useState(false)
+        const navigate = useNavigate()
+        const [errors, setErrors] = useState({})
+        
+    const handleCheckBox = (e) => {
+        const checked = e.target.checked
+        setSameAddress(checked)
+
+        if(checked){
+            setFormData((prev) => ({
+                ...prev,
+                communicationAddress: prev.permanentAddress
+            }))
+        }
+    }
 
     const handleChange = (e) => {
         setFormData({...formData, [e.target.name]: e.target.value})
@@ -73,16 +239,27 @@ const EmployeeForm = () => {
     }
 
     const handleNext = () => {
-        if (activeStep < steps.length - 1){
-            setActiveStep((prev) => prev + 1)
-        } else {
-            console.log("submitted", formData)
-        }
+        if(validate()) setActiveStep((prev) => prev + 1)
     }
 
     const handleBack = () => {
         setActiveStep((prev) => prev - 1)
     }
+
+    const handleSubmit = async () => {
+        if(!validate()) return
+        try{
+            const response = await axios.post("http://localhost:3000/api/employees", formData)
+            console.log(response.data)
+
+            setFormData(initialFormData)
+            setActiveStep(0)
+            navigate("/employee")
+        } catch(error) {
+            console.log(error.response?.data)
+        }
+    }
+
 
     const renderStep = (step) => {
         switch (step) {
@@ -96,6 +273,8 @@ const EmployeeForm = () => {
                                 name="empId"
                                 value={formData.empId || ""}
                                 onChange={handleChange}
+                                error={!!errors.empId} 
+                                helperText={errors.empId}
                             />
                         </Grid>
 
@@ -106,6 +285,8 @@ const EmployeeForm = () => {
                                 name="name"
                                 value={formData.name || ""}
                                 onChange={handleChange}
+                                error={!!errors.name}
+                                helperText={errors.name}
                             />
                         </Grid>
 
@@ -116,6 +297,8 @@ const EmployeeForm = () => {
                                 name="email"
                                 value={formData.email || ""}
                                 onChange={handleChange}
+                                error={!!errors.email} 
+                                helperText={errors.email} 
                             />
                         </Grid>
 
@@ -126,6 +309,8 @@ const EmployeeForm = () => {
                                 name="contact"
                                 value={formData.contact || ""}
                                 onChange={handleChange}
+                                error={!!errors.contact} 
+                                helperText={errors.contact}
                             />
                         </Grid>
 
@@ -136,6 +321,8 @@ const EmployeeForm = () => {
                                 name="fatherName"
                                 value={formData.fatherName || ""}
                                 onChange={handleChange}
+                                error={!!errors.fatherName} 
+                                helperText={errors.fatherName}
                             />
                         </Grid>
 
@@ -146,6 +333,8 @@ const EmployeeForm = () => {
                                 name="motherName"
                                 value={formData.motherName || ""}
                                 onChange={handleChange}
+                                error={!!errors.motherName} 
+                                helperText={errors.motherName}
                             />
                         </Grid>
 
@@ -156,6 +345,8 @@ const EmployeeForm = () => {
                                 name="occupation"
                                 value={formData.occupation || ""}
                                 onChange={handleChange}
+                                error={!!errors.occupation}
+                                helperText={errors.occupation}
                             />
                         </Grid>
 
@@ -166,6 +357,8 @@ const EmployeeForm = () => {
                                 name="faormoNumber"
                                 value={formData.faormoNumber || ""}
                                 onChange={handleChange}
+                                error={!!errors.faormoNumber}
+                                helperText={errors.faormoNumber}
                             />
                         </Grid>
 
@@ -176,7 +369,22 @@ const EmployeeForm = () => {
                                 name="permanentAddress"
                                 value={formData.permanentAddress || ""}
                                 onChange={handleChange}
+                                error={!!errors.permanentAddress} 
+                                helperText={errors.permanentAddress}
                             />
+                        </Grid>
+
+                        <Grid item xs={12}>
+                            <FormControlLabel
+                                control={
+                                    <Checkbox
+                                        checked={sameAddress}
+                                        onChange={handleCheckBox} 
+                                    />
+                                }
+                                label="Same as Permanent Address"
+                            />
+
                         </Grid>
 
                         <Grid item xs={12}>
@@ -186,6 +394,9 @@ const EmployeeForm = () => {
                                 name="communicationAddress"
                                 value={formData.communicationAddress || ""}
                                 onChange={handleChange}
+                                disabled={sameAddress}
+                                error={!!errors.communicationAddress} 
+                                helperText={errors.communicationAddress}
                             />
                         </Grid>
 
@@ -197,6 +408,8 @@ const EmployeeForm = () => {
                                 name="gender"
                                 value={formData.gender || ""}
                                 onChange={handleChange}
+                                error={!!errors.gender}
+                                helperText={errors.gender}
                             >
                             <MenuItem value="Male">Male</MenuItem>
                             <MenuItem value="Female">Female</MenuItem>
@@ -212,6 +425,8 @@ const EmployeeForm = () => {
                                 value={formData.dob || ""}
                                 onChange={handleChange}
                                 InputLabelProps={{ shrink: true }}
+                                error={!!errors.dob}
+                                helperText={errors.dob}
                             />
                         </Grid>
 
@@ -223,6 +438,8 @@ const EmployeeForm = () => {
                                 name="bloodGroup"
                                 value={formData.bloodGroup || ""}
                                 onChange={handleChange}
+                                error={!!errors.bloodGroup}
+                                helperText={errors.bloodGroup}
                             >
                             <MenuItem value="A+">A+</MenuItem>
                             <MenuItem value="A-">A-</MenuItem>
@@ -243,6 +460,8 @@ const EmployeeForm = () => {
                                 name="maritalStatus"
                                 value={formData.maritalStatus || ""}
                                 onChange={handleChange}
+                                error={!!errors.maritalStatus}
+                                helperText={errors.maritalStatus}
                             >
                             <MenuItem value="Single">Single</MenuItem>
                             <MenuItem value="Married">Married</MenuItem>
@@ -279,6 +498,8 @@ const EmployeeForm = () => {
                             name="aadhaar"
                             value={formData.aadhaar || ""}
                             onChange={handleChange}
+                            error={!!errors.aadhaar}
+                            helperText={errors.aadhaar}
                             />
                         </Grid>
 
@@ -289,6 +510,8 @@ const EmployeeForm = () => {
                             name="pan"
                             value={formData.pan || ""}
                             onChange={handleChange}
+                            error={!!errors.pan}
+                            helperText={errors.pan}
                             />
                         </Grid>
                     </Grid>
@@ -305,7 +528,10 @@ const EmployeeForm = () => {
                                 fullWidth label="Board / University" 
                                 name="tenthBoard" 
                                 value={formData.tenthBoard} 
-                                onChange={handleChange} />
+                                onChange={handleChange}
+                                error={!!errors.tenthBoard}
+                                helperText={errors.tenthBoard}
+                                />
                             </Grid>
                             <Grid item xs={12} sm={6}>
                                 <Typography>Year Of Passing</Typography>
@@ -313,7 +539,10 @@ const EmployeeForm = () => {
                                 fullWidth 
                                 name="tenthYearofPassing" 
                                 value={formData.tenthYearofPassing} 
-                                onChange={handleChange} />
+                                onChange={handleChange}
+                                error={!!errors.tenthYearofPassing}
+                                helperText={errors.tenthYearofPassing} 
+                                />
                             </Grid>
                             <Grid item xs={12} sm={6}>
                                 <Typography>Percentage / CGPA</Typography>
@@ -321,7 +550,10 @@ const EmployeeForm = () => {
                                 fullWidth 
                                 name="tenthPercentage" 
                                 value={formData.tenthPercentage} 
-                                onChange={handleChange} />
+                                onChange={handleChange}
+                                error={!!errors.tenthPercentage}
+                                helperText={errors.tenthPercentage} 
+                                />
                             </Grid>
 
                             <Grid item xs={12} >
@@ -330,7 +562,10 @@ const EmployeeForm = () => {
                                 fullWidth label="Board / University" 
                                 name="twelveBoard" 
                                 value={formData.twelveBoard} 
-                                onChange={handleChange} />
+                                onChange={handleChange}
+                                error={!!errors.twelveBoard}
+                                helperText={errors.twelveBoard} 
+                                />
                             </Grid>
                             <Grid item xs={12} sm={6}>
                                 <Typography>Year Of Passing</Typography>
@@ -338,14 +573,20 @@ const EmployeeForm = () => {
                                 fullWidth 
                                 name="twelveYearofPassing" 
                                 value={formData.twelveYearofPassing} 
-                                onChange={handleChange} />
+                                onChange={handleChange}
+                                error={!!errors.twelveYearofPassing}
+                                helperText={errors.twelveYearofPassing} 
+                                />
                             </Grid>
                             <Grid item xs={12} sm={6}>
                                 <Typography>Percentage / CGPA</Typography>
                                 <TextField 
                                 fullWidth name="twelvePercentage" 
                                 value={formData.twelvePercentage} 
-                                onChange={handleChange} />
+                                onChange={handleChange}
+                                error={!!errors.twelvePercentage}
+                                helperText={errors.twelvePercentage} 
+                                />
                             </Grid>
 
                             <Grid item xs={12} >
@@ -354,7 +595,10 @@ const EmployeeForm = () => {
                                 fullWidth label="Board / University" 
                                 name="ugUniversity" 
                                 value={formData.ugUniversity} 
-                                onChange={handleChange} />
+                                onChange={handleChange}
+                                error={!!errors.ugUniversity}
+                                helperText={errors.ugUniversity}
+                                />
                             </Grid>
                             <Grid item xs={12} sm={6}>
                                 <Typography>Year Of Passing</Typography>
@@ -362,7 +606,10 @@ const EmployeeForm = () => {
                                 fullWidth 
                                 name="ugYearofPaasing" 
                                 value={formData.ugYearofPaasing} 
-                                onChange={handleChange} />
+                                onChange={handleChange}
+                                error={!!errors.ugYearofPassing}
+                                helperText={errors.ugYearofPaasing} 
+                                />
                             </Grid>
                             <Grid item xs={12} sm={6}>
                                 <Typography>Percentage / CGPA</Typography>
@@ -370,7 +617,10 @@ const EmployeeForm = () => {
                                 fullWidth 
                                 name="ugPercentage" 
                                 value={formData.ugPercentage} 
-                                onChange={handleChange} />
+                                onChange={handleChange}
+                                error={!!errors.ugPercentage}
+                                helperText={errors.ugPercentage} 
+                                />
                             </Grid>
 
                             <Grid item xs={12} >
@@ -379,15 +629,17 @@ const EmployeeForm = () => {
                                 fullWidth label="Board / University" 
                                 name="pgUniversity" 
                                 value={formData.pgUniversity} 
-                                onChange={handleChange} />
+                                onChange={handleChange}
+                                />
                             </Grid>
                             <Grid item xs={12} sm={6}>
                                 <Typography>Year Of Passing</Typography>
                                 <TextField 
                                 fullWidth 
                                 name="pgYearofPaasing" 
-                                value={formData.pgYearofPaasing} 
-                                onChange={handleChange} />
+                                value={formData.pgYearofPassing} 
+                                onChange={handleChange}
+                                />
                             </Grid>
                             <Grid item xs={12} sm={6}>
                                 <Typography>Percentage / CGPA</Typography>
@@ -395,7 +647,8 @@ const EmployeeForm = () => {
                                 fullWidth 
                                 name="pgPercentage" 
                                 value={formData.pgPercentage} 
-                                onChange={handleChange} />
+                                onChange={handleChange}
+                                />
                             </Grid>
                         </Grid>
                     )
@@ -433,6 +686,8 @@ const EmployeeForm = () => {
                                             value={exp.company}
                                             onChange={(e) => 
                                                 handleExperienceChange(index, "company", e.target.value)}
+                                            error={!!errors[`experiences.${index}.company`]}
+                                            helperText={errors[`experiences.${index}.company`]}
                                             />
                                         </Grid>
                                         <Grid item xs={12} sm={6}>
@@ -442,6 +697,8 @@ const EmployeeForm = () => {
                                             value={exp.title}
                                             onChange={(e) => 
                                                 handleExperienceChange(index, "title", e.target.value)}
+                                            error={!!errors[`experiences.${index}.title`]}
+                                            helperText={errors[`experiences.${index}.title`]}
                                             />
                                         </Grid>
                                         <Grid item xs={12} sm={6}>
@@ -453,6 +710,8 @@ const EmployeeForm = () => {
                                             value={exp.startDate}
                                             onChange={(e) => 
                                                 handleExperienceChange(index, "startDate", e.target.value)}
+                                            error={!!errors[`experiences.${index}.startDate`]}
+                                            helperText={errors[`experiences.${index}.startDate`]}
                                             />
                                         </Grid>
                                         <Grid item xs={12} sm={6}>
@@ -464,6 +723,8 @@ const EmployeeForm = () => {
                                             value={exp.endDate}
                                             onChange={(e) => 
                                                 handleExperienceChange(index, "endDate", e.target.value)}
+                                            error={!!errors[`experiences.${index}.endDate`]}
+                                            helperText={errors[`experiences.${index}.endDate`]}
                                             />
                                         </Grid>
                                         <Grid item xs={12}>
@@ -475,6 +736,8 @@ const EmployeeForm = () => {
                                             value={exp.description}
                                             onChange={(e) => 
                                                 handleExperienceChange(index, "description", e.target.value)}
+                                            error={!!errors[`experiences.${index}.description`]}
+                                            helperText={errors[`experiences.${index}.description`]}
                                             />
                                         </Grid>
                                         <Grid item xs={12}>
@@ -484,6 +747,8 @@ const EmployeeForm = () => {
                                             value={exp.skills}
                                             onChange={(e) => 
                                                 handleExperienceChange(index, "skills", e.target.value)}
+                                            error={!!errors[`experiences.${index}.skills`]}
+                                            helperText={errors[`experiences.${index}.skills`]}
                                             />
                                         </Grid>
                                     </Grid>
@@ -528,6 +793,8 @@ const EmployeeForm = () => {
                                 name='bankName'
                                 value={formData.bankName}
                                 onChange={handleChange}
+                                error={!!errors.bankName}
+                                helperText={errors.bankName}
                                 />
                             </Grid>
                             <Grid item xs={12}>
@@ -537,6 +804,8 @@ const EmployeeForm = () => {
                                 name='accountNumber'
                                 value={formData.accountNumber}
                                 onChange={handleChange}
+                                error={!!errors.accountNumber}
+                                helperText={errors.accountNumber}
                                 />
                             </Grid>
                             <Grid item xs={12}>
@@ -546,6 +815,8 @@ const EmployeeForm = () => {
                                 name='ifscCode'
                                 value={formData.ifscCode}
                                 onChange={handleChange}
+                                error={!!errors.ifscCode}
+                                helperText={errors.ifscCode}
                                 />
                             </Grid>
                             <Grid item xs={12}>
@@ -555,8 +826,130 @@ const EmployeeForm = () => {
                                 name='branch'
                                 value={formData.branch}
                                 onChange={handleChange}
+                                error={!!errors.branch}
+                                helperText={errors.branch}
                                 />
                             </Grid>
+                        </Grid>
+                    )
+                
+                case 4:
+                    return (
+                        <Grid container spacing={2}>
+                            <Grid item xs={12}>
+                                <Card variant='outlined' sx={{ p: 3, borderRadius: 2, boxShadow: 1 }}>
+                                    <Typography variant='h6'>
+                                        Personal Details
+                                    </Typography>
+                                    <Divider sx={{ mb: 2 }}/>
+                                    {[
+                                        ["Employee ID", formData.empId],
+                                        ["Full Name", formData.name],
+                                        ["Email", formData.email],
+                                        ["Contact Number", formData.contact],
+                                        ["Father Name", formData.fatherName],
+                                        ["Mother Name", formData.motherName],
+                                        ["Occupation", formData.occupation],
+                                        ["Parent Contact", formData.faormoNumber],
+                                        ["Permanent Address", formData.permanentAddress],
+                                        ["Communication Address", formData.communicationAddress],
+                                        ["Gender", formData.gender],
+                                        ["Date of Birth", formData.dob],
+                                        ["Blood Group", formData.bloodGroup],
+                                        ["Marital Status", formData.maritalStatus],
+                                        ...formData.maritalStatus === "Married" ? [["Spouse Name", formData.spouseName],["Spouse Number", formData.spouseContact]] : [],
+                                        ["Aadhaar", formData.aadhaar],
+                                        ["PAN", formData.pan],
+                                    ].map(([label, value], i) => (
+                                        <Grid container key={i} sx={{ mb: 1}}>
+                                            <Grid item xs={5}>
+                                                <Typography color='textSecondary'>{label}</Typography>
+                                            </Grid>
+                                            <Grid item xs={6}>
+                                                <Typography>{value || "-"}</Typography>
+                                            </Grid>
+                                        </Grid>
+                                    ))}
+                                </Card>
+                            </Grid>
+
+                            <Grid item xs={12}>
+                                <Card variant='outlined' sx={{ p:3, borderRadius: 2, boxShadow: 1 }}>
+                                    <Typography variant='h6'>Educational Details</Typography>
+                                    <Divider sx={{mb: 2}}/>
+                                    {[
+                                        ["10th", `${formData.tenthBoard} | Year : ${formData.tenthYearofPassing} | Per/CGPA : ${formData.tenthPercentage}`],
+                                        ["12th", `${formData.twelveBoard} | Year : ${formData.twelveYearofPassing} | Per/CGPA : ${formData.twelvePercentage}`],
+                                        ["UG", `${formData.ugUniversity} | Year : ${formData.ugYearofPaasing} | Per/CGPA : ${formData.ugPercentage}`],
+                                        ["PG", `${formData.pgUniversity} | Year : ${formData.pgYearofPaasing} | Per/CGPA : ${formData.pgPercentage}`],
+                                    ].map(([label, value], i) => (
+                                        <Grid container key={i} sx={{ mb: 1 }}>
+                                            <Grid item xs={4}>
+                                                <Typography color='textSecondary'>{label}</Typography>
+                                            </Grid>
+                                            <Grid item xs={8}>
+                                                <Typography>{value || "-"}</Typography>
+                                            </Grid>
+                                        </Grid>
+                                    ))}
+                                </Card>
+                            </Grid>
+
+                            <Grid item xs={12}>
+                                <Card variant='outlined' sx={{ p: 3, borderRadius: 2, boxShadow: 1 }}>
+                                    <Typography variant='h6'>Work Experience</Typography>
+                                <Divider sx={{ mb: 2 }}/>
+                                {formData.hasExperience ?  (
+                                    formData.experiences.map((exp, idx) => (
+                                        <Card key={idx} sx={{ p: 3, borderRadius: 2, mb: 2}}>
+                                            {[
+                                                ["Company", exp.company],
+                                                ["Title", exp.title],
+                                                ["Start Date", exp.startDate],
+                                                ["End Date", exp.endDate],
+                                                ["Description", exp.description],
+                                                ["Skills", exp.skills],
+                                                ].map(([label, value], i) => (
+                                                <Grid container key={i} sx={{ mb: 1 }}>
+                                                    <Grid item xs={4}>
+                                                    <Typography color="textSecondary">{label}</Typography>
+                                                    </Grid>
+                                                    <Grid item xs={8}>
+                                                    <Typography>{value || "-"}</Typography>
+                                                    </Grid>
+                                                </Grid>
+                                                ))}
+                                        </Card>
+                                    ))
+                                ) : (
+                                    <Typography>No Work Experience</Typography>
+                                )}
+                                </Card>
+                            </Grid>
+
+                            <Grid item xs={12}>
+                                <Card variant='outlined' sx={{ p:3, borderRadius: 2, boxShadow: 1 }}>
+                                    <Typography variant='h6'>Bank Details</Typography>
+                                    <Divider sx={{ mb: 2 }}/>
+                                    {[
+                                        ["Bank Name", formData.bankName],
+                                        ["Account Number", formData.accountNumber],
+                                        ["IFSC Code", formData.ifscCode],
+                                        ["Branch", formData.branch],
+                                    ].map(([label, value], i) => (
+                                        <Grid container key={i} sx={{ mb: 1 }}>
+                                            <Grid item xs={5}>
+                                                <Typography color='textSecondary'>{label}</Typography>
+                                            </Grid>
+                                            <Grid item xs={6}>
+                                                <Typography>{value || "-"}</Typography>
+                                            </Grid>
+                                        </Grid>
+                                    ))
+                                    }
+                                </Card>
+                            </Grid>
+
                         </Grid>
                     )
 
@@ -566,30 +959,30 @@ const EmployeeForm = () => {
         }
     }
 
-  return (
-    <Box sx={{ width: "80%", margin: "auto", mt:5 }}>
-        <Stepper activeStep={activeStep} alternativeLabel>
-            {steps.map((label) => (
-                <Step key={label}>
-                    <StepLabel>{label}</StepLabel>
-                </Step>
-            ))}
-        </Stepper>
+        return (
+            <Box sx={{ width: "80%", margin: "auto", mt:5 }}>
+                <Stepper activeStep={activeStep} alternativeLabel>
+                    {steps.map((label) => (
+                        <Step key={label}>
+                            <StepLabel>{label}</StepLabel>
+                        </Step>
+                    ))}
+                </Stepper>
 
-        <Box sx={{ mt: 4 }}>
-            {renderStep(activeStep)}
-        </Box>
+                <Box sx={{ mt: 4 }}>
+                    {renderStep(activeStep)}
+                </Box>
 
-        <Box sx={{ display: "flex", justifyContent: "end", mt: 4 }}>
-            <Button disabled={activeStep === 0} onClick={handleBack}>
-                Back
-            </Button>
-            <Button variant='contained' onClick={handleNext}>
-                {activeStep === steps.length -1 ? "Submit" : "Next"}
-            </Button>
-        </Box>
-    </Box>
-  )
-}
+                <Box sx={{ display: "flex", justifyContent: "end", mt: 4 }}>
+                    <Button disabled={activeStep === 0} onClick={handleBack}>
+                        Back
+                    </Button>
+                    <Button variant='contained' onClick={activeStep === steps.length - 1 ? handleSubmit : handleNext}>
+                        {activeStep === steps.length -1 ? "Submit" : "Next"}
+                    </Button>
+                </Box>
+            </Box>
+        )
+        }
 
 export default EmployeeForm
