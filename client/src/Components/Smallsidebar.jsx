@@ -14,23 +14,34 @@ import MenuIcon from "@mui/icons-material/Menu";
 import PowerSettingsNewRoundedIcon from "@mui/icons-material/PowerSettingsNewRounded";
 import AccessibilityRoundedIcon from '@mui/icons-material/AccessibilityRounded';
 import CalendarMonthRoundedIcon from '@mui/icons-material/CalendarMonthRounded';
+import DateRangeIcon from '@mui/icons-material/DateRange';
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import axios from "axios";
 
-const Smallsidebar = ({ onToggle }) => {
+const Smallsidebar = ({ onToggle, setIsAuthenticated }) => {
 
-   const [reportsOpen, setReportsOpen] = useState(false);
-  
+  const [reportsOpen, setReportsOpen] = useState(false);
+
     const toggleReportsDropdown = () => {
       setReportsOpen(!reportsOpen);
     };
-  
+
   const navigate = useNavigate()
 
-  const handleLogout = () => {
-    navigate('/login')
-  }
+  const handleLogout = async () => {
+      try{
+        await axios.get("http://localhost:3000/auth/logout", {withCredentials: true})
+
+        localStorage.removeItem("isLoggedIn")
+        setIsAuthenticated(false)
+        navigate("/login")
+      } catch(err) {
+        console.log(err)
+      }
+    }
+
   return (
     <Box
       sx={{
@@ -69,10 +80,18 @@ const Smallsidebar = ({ onToggle }) => {
           </ListItemButton>
         </ListItem>
 
-         <ListItem>
+        <ListItem>
           <ListItemButton component={Link} to="/employee">
             <ListItemIcon>
               <BadgeRoundedIcon sx={{ color: "#fff" }} />
+            </ListItemIcon>
+          </ListItemButton>
+        </ListItem>
+
+        <ListItem>
+          <ListItemButton component={Link} to="/attandence">
+            <ListItemIcon>
+              <DateRangeIcon sx={{ color: "#fff" }} />
             </ListItemIcon>
           </ListItemButton>
         </ListItem>

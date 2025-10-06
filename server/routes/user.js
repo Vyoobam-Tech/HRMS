@@ -132,7 +132,7 @@ const verifyUser = (req, res, next) => {
 };
 
 // Token verification route
-router.get("/verify", verifyUser, (req, res) => {
+router.get("/checkSession", verifyUser, (req, res) => {
   return res.json({ status: true, message: "Authorized" });
 });
 

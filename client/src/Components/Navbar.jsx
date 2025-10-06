@@ -4,6 +4,9 @@ import OAImage from "../image/vyoobam tech.jpeg";
 import { useState } from "react";
 import { useEffect } from "react";
 import axios from 'axios'
+import Timer from "./Timer";
+import CalendarMonthRoundedIcon from '@mui/icons-material/CalendarMonthRounded';
+import QueryBuilderRoundedIcon from '@mui/icons-material/QueryBuilderRounded';
 
 const Navbar = ({ isSidebarOpen }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -16,15 +19,17 @@ const Navbar = ({ isSidebarOpen }) => {
         const res = await axios.get("http://localhost:3000/auth/profile", {
           withCredentials: true
         })
-        if(res.data.status){
-          setUser(res.data.user)
-        }
+          if(res.data.status){
+            setUser(res.data.user)
+          }
       } catch (err){
         console.log(err)
       }
     }
     fetchProfile()
   }, [])
+
+  const dt = new Date().toLocaleDateString()
 
   return (
     <Box >
@@ -44,6 +49,15 @@ const Navbar = ({ isSidebarOpen }) => {
             src={OAImage}
             style={{ width: 130, height: 110 }}
           />
+          <Box display="flex" alignItems="center" gap={3}>
+            <Box sx={{ display: "flex", gap: 0.5}}>
+              <CalendarMonthRoundedIcon sx={{ color: "black" }}/>
+              <Typography sx={{ color: "#34495e" }}>{dt}</Typography>
+            </Box>
+            <Box sx={{ display: "flex", gap: 0.5 }}>
+              <QueryBuilderRoundedIcon sx={{ color: "black" }}/>
+              {user && <Timer />}
+            </Box>
           <Typography
             variant="h5"
             noWrap
@@ -52,6 +66,7 @@ const Navbar = ({ isSidebarOpen }) => {
           >
             {user ? `welcome! ${user.username}` : 'Welcome'}
           </Typography>
+          </Box>
         </Toolbar>
       </AppBar>
     </Box>

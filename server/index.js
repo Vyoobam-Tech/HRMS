@@ -7,6 +7,7 @@ import { UserRouter } from "./routes/user.js";
 import { EmployeeRouter } from "./routes/employee.js";
 import { DepartmentRouter } from "./routes/department.js";
 import { ActivityRouter } from "./routes/activity.js";
+import { AttendanceRouter } from "./routes/attendance.js";
 
 dotenv.config();
 const app = express();
@@ -26,6 +27,7 @@ app.use("/auth", UserRouter);
 app.use("/api/employees", EmployeeRouter);
 app.use("/api/departments", DepartmentRouter);
 app.use("/api/activities", ActivityRouter);
+app.use("/api/attendance", AttendanceRouter)
 
 sequelize
   .sync({alter: true})

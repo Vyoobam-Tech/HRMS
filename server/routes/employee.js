@@ -106,4 +106,23 @@ router.delete("/delete/:empid", async (req, res) => {
   }
 });
 
+// getting single employee name and id from two table using email
+router.get("/by-user/:email", async (req, res) => {
+  try{
+    const employee = await Employee.findOne({
+      where: ({ email: req.params.email})
+    })
+
+    if(!employee){
+      return res.status(404).json({status: false, message: "Employee not found"})
+    }
+
+    return res.json({status: true, data: employee})
+  } catch(err) {
+    console.log(err)
+    return res.status(500).json({status: false, message: err.message})
+  }
+})
+
+
 export { router as EmployeeRouter };

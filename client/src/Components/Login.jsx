@@ -31,6 +31,14 @@ const Login = ({ setIsAuthenticated }) => {
       .post("/auth/login", { email, password }, {withCredentials: true})
       .then((response) => {
         if (response.data.status) {
+          const existingLogin = localStorage.getItem("loginTime")
+
+          if(!existingLogin){
+            const loginTime = new Date()
+            const loginTimeStr = `${loginTime.getHours().toString().padStart(2,'0')}:${loginTime.getMinutes().toString().padStart(2,'0')}`;
+            localStorage.setItem("loginTime", loginTimeStr)
+          }
+
           setIsAuthenticated(true);
           localStorage.setItem("isLoggedIn", "true");
           navigate("/dashpage");
@@ -60,6 +68,10 @@ const Login = ({ setIsAuthenticated }) => {
       });
 
       if (backendRes.data.status) {
+        const loginTime = new Date();
+        const loginTimeStr = `${loginTime.getHours().toString().padStart(2,'0')}:${loginTime.getMinutes().toString().padStart(2,'0')}`;
+        localStorage.setItem("loginTime", loginTimeStr)
+
         setIsAuthenticated(true);
         localStorage.setItem("isLoggedIn", "true");
         navigate("/dashpage");

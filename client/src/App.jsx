@@ -26,6 +26,7 @@ import Reports from "./scenes/reports/index";
 import Navbar from "./Components/Navbar";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "./theme";
+import EachEmployeeTimeTracker from "./scenes/reports/EachEmployeeTimeTracker";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -38,7 +39,7 @@ function App() {
       setIsAuthenticated(true);
     } else {
       axios
-        .get("http://localhost:3000/auth/checkSession")
+        .get("http://localhost:3000/auth/checkSession", {withCredentials: true})
         .then((response) => {
           if (response.data.loggedIn) {
             setIsAuthenticated(true);
@@ -87,9 +88,13 @@ function App() {
               element={
                 <Box display="flex">
                   {isSidebarOpen ? (
-                    <Sidebar onToggle={handleToggleSidebar} />
+                    <Sidebar onToggle={handleToggleSidebar}
+                      setIsAuthenticated={setIsAuthenticated}
+                    />
                   ) : (
-                    <SmallSidebar onToggle={handleToggleSidebar} />
+                    <SmallSidebar onToggle={handleToggleSidebar}
+                      setIsAuthenticated={setIsAuthenticated}
+                  />
                   )}
                   <Box flex={1} display="flex" flexDirection="column">
                     <Navbar isSidebarOpen={isSidebarOpen} />
@@ -106,6 +111,7 @@ function App() {
                         <Route path="/create-user" element={<Users />} />
                         <Route path="/department" element={<Department />} />
                         <Route path="/employee" element={<Employee />} />
+                        <Route path="/attandence" element={<EachEmployeeTimeTracker />} />
                         <Route path="/activities" element={<Activities />} />
                         <Route path="/holidays" element={<Holidays />} />
                         <Route path="/events" element={<Events />} />

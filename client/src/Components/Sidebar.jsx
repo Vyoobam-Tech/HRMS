@@ -26,11 +26,13 @@ import AccountBalanceRoundedIcon from "@mui/icons-material/AccountBalanceRounded
 import AssessmentRoundedIcon from "@mui/icons-material/AssessmentRounded";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
+import DateRangeIcon from '@mui/icons-material/DateRange';
 import PowerSettingsNewRoundedIcon from "@mui/icons-material/PowerSettingsNewRounded";
 import { Link, Router, Routes, Route } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
-const Sidebar = ({ onToggle }) => {
+const Sidebar = ({ onToggle, setIsAuthenticated }) => {
   const [reportsOpen, setReportsOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -38,9 +40,17 @@ const Sidebar = ({ onToggle }) => {
     setReportsOpen(!reportsOpen);
   };
 
-  const handleLogout = () => {
-    navigate("/login");
-  };
+  const handleLogout = async () => {
+    try{
+      await axios.get("http://localhost:3000/auth/logout", {withCredentials: true})
+
+      localStorage.removeItem("isLoggedIn")
+      setIsAuthenticated(false)
+      navigate("/login")
+    } catch(err) {
+      console.log(err)
+    }
+  }
 
   return (
     <Box
@@ -108,6 +118,14 @@ const Sidebar = ({ onToggle }) => {
               <BadgeRoundedIcon sx={{ color: "#fff" }} />
             </ListItemIcon>
             <ListItemText primary="Employee" />
+          </ListItemButton>
+        </ListItem>
+        <ListItem disablePadding>
+          <ListItemButton component={Link} to="/attandence">
+            <ListItemIcon>
+              <DateRangeIcon sx={{ color: "#fff" }} />
+            </ListItemIcon>
+            <ListItemText primary="Attendance" />
           </ListItemButton>
         </ListItem>
         <ListItem disablePadding>
