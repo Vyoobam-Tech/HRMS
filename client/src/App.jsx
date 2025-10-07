@@ -16,7 +16,7 @@ import Sidebar from "./Components/Sidebar";
 import SmallSidebar from "./Components/Smallsidebar";
 import Users from "./scenes/form/index";
 import Department from "./scenes/department/index";
-import Employee from "./scenes/employees/index";
+import Employee from "./scenes/employees/Employees";
 import Activities from "./scenes/activities/index";
 import Holidays from "./scenes/holidays/index";
 import Events from "./scenes/events/index";
@@ -27,6 +27,7 @@ import Navbar from "./Components/Navbar";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "./theme";
 import EachEmployeeTimeTracker from "./scenes/reports/EachEmployeeTimeTracker";
+import EmpDetails from "./scenes/employees/EmpDetails";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -110,6 +111,7 @@ function App() {
                         <Route path="/dashpage" element={<Dashpage />} />
                         <Route path="/create-user" element={<Users />} />
                         <Route path="/department" element={<Department />} />
+                        <Route path="/employee-details" element={<EmpDetails />} />
                         <Route path="/employee" element={<Employee />} />
                         <Route path="/attandence" element={<EachEmployeeTimeTracker />} />
                         <Route path="/activities" element={<Activities />} />

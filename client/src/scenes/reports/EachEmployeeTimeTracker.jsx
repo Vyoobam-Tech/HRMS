@@ -161,7 +161,7 @@ const EachEmployeeTimeTracker = () => {
 //     (new Date(`${attendancedate}T${logoutTime}`) - new Date(`${attendancedate}T${loginTime}`)) / 60000
 //   );
 
-//   const breakMinutes = calculateMinutes(breakIn, breakOut);
+//   const breakMinutes = `$calculateMinutes(breakIn, breakOut)`;
 //   const lunchMinutes = calculateMinutes(lunchIn, lunchOut);
 
 //   const totalMinutes = Math.max(0, workedMinutes - (breakMinutes + lunchMinutes));
