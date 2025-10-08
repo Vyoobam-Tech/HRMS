@@ -11,6 +11,11 @@ export const User = sequelize.define("User", {
     type: DataTypes.STRING,
     allowNull: false
   },
+  empid: {
+    type: DataTypes.STRING,
+    unique: true,
+    // allowNull: false
+  },
   email: {
     type: DataTypes.STRING,
     unique: true,

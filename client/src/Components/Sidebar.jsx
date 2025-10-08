@@ -117,7 +117,7 @@ const Sidebar = ({ onToggle, setIsAuthenticated }) => {
             <ListItemIcon>
               <PolylineRoundedIcon sx={{ color: "#fff" }} />
             </ListItemIcon>
-            <ListItemText primary="Details" />
+            <ListItemText primary="My Details" />
           </ListItemButton>
         </ListItem>
         <ListItem disablePadding>

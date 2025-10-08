@@ -8,7 +8,7 @@ const router = express.Router();
 
 // Signup Route
 router.post("/signup", async (req, res) => {
-  const { username, email, password } = req.body;
+  const { username, empid, email, password } = req.body;
   try {
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
@@ -16,7 +16,7 @@ router.post("/signup", async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    await User.create({ username, email, password: hashedPassword });
+    await User.create({ username, empid, email, password: hashedPassword });
 
     return res.json({ status: true, message: "User registered successfully" });
   } catch (err) {
@@ -145,7 +145,7 @@ router.get("/logout", (req, res) => {
 router.get("/profile", verifyUser, async (req,res) => {
   try{
     const user = await User.findByPk(req.user.id, {
-      attributes : ['id', "username", "email"]
+      attributes : ['id', "username", "empid", "email"]
     })
     if (!user) return res.status(404).json({ status: false, message: "user not found"})
 

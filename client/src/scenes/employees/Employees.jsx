@@ -247,14 +247,14 @@ const Employees = () => {
       }}
     >
       <Header title="EMPLOYEES" subtitle="Organisation Employee Details" />
-      <Button
+      {/* <Button
         variant="contained"
         color="primary"
         onClick={() => setOpen(true)}
         sx={{ mb: 2 }}
       >
         Add Employees
-      </Button>
+      </Button> */}
 
       <AgGridReact
         rowData={rowData}
@@ -434,7 +434,7 @@ const Employees = () => {
             justifyContent: "space-between",
             alignItems: "center",
             padding: "16px"
-           }}
+          }}
         >
           <DialogTitle>Add Employee</DialogTitle>
 

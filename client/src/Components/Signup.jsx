@@ -15,6 +15,7 @@ import EmailIcon from "@mui/icons-material/Email";
 import LockIcon from "@mui/icons-material/Lock";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import BadgeIcon from '@mui/icons-material/Badge';
 import { useGoogleLogin } from "@react-oauth/google";
 import "../App.css";
 import GoogleLogo from "../asset/google-icon.webp";
@@ -22,6 +23,7 @@ import FormBg from "../asset/navy-bg.jpg";
 
 const Signup = () => {
   const [username, setUsername] = useState("");
+  const [empid, setEmpId] = useState("")
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -30,7 +32,7 @@ const Signup = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     api
-      .post("/auth/signup", { username, email, password })
+      .post("/auth/signup", { username, empid, email, password })
 
       .then((response) => {
         if (response.data.status) {
@@ -124,6 +126,27 @@ const Signup = () => {
             startAdornment: (
               <InputAdornment position="start">
                 <PersonIcon
+                  style={{
+                    fontSize: "20px",
+                    color: "#666",
+                    marginBottom: "15px",
+                  }}
+                />
+              </InputAdornment>
+            ),
+            sx: { paddingTop: "15px", height: "45px", borderRadius: "50px" },
+          }}
+        />
+
+        <TextField
+          type="text"
+          placeholder="Emp ID"
+          required
+          onChange={(e) => setEmpId(e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <BadgeIcon
                   style={{
                     fontSize: "20px",
                     color: "#666",

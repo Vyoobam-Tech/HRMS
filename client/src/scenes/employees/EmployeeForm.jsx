@@ -1,12 +1,13 @@
 import { Box, Button, MenuItem, Step, StepLabel, Stepper, TextField, Grid, Typography, RadioGroup, FormControlLabel, FormLabel, Radio, Card, Divider, Checkbox } from '@mui/material'
 import axios from 'axios'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 const steps = ["Personal Details", "Educational Details", "Work Experience (if any)", "Bank Details", "Preview & Submit"]
 
 const EmployeeForm = () => {
 
+    const [user, setuser] = useState(null)
     const [activeStep, setActiveStep] = useState(0)
     const [formData, setFormData] =useState({
         empId: "",
@@ -62,14 +63,27 @@ const EmployeeForm = () => {
         branch: ""
         })
 
+        useEffect(() => {
+            const fetchProfile = async () => {
+                try{
+                    const response = await axios.get("http://localhost:3000/auth/profile", {withCredentials: true})
+
+                    if(response.data.status){
+                        setuser(response.data.user)
+                    }
+                } catch(err){
+                    console.log(err)
+                }
+            }
+            fetchProfile()
+        }, [])
+
         const validate = () => {
             const errors ={}
 
             if(activeStep === 0) {
                 if(!formData.empId) errors.empId = "Employee ID is required"
                 if(!formData.name) errors.name = "Full Name is required"
-                if(!formData.email) errors.email = "Email is required"
-                else if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) errors.email = "Invalid email"
                 if(!formData.contact) errors.contact = "Contact is required";
                 else if(!/^\d{10}$/.test(formData.contact)) errors.contact = "Must be 10 digits"
                 if(!formData.fatherName) errors.fatherName = "Father Name is required"
@@ -109,8 +123,8 @@ const EmployeeForm = () => {
                 else if(!/^\d{1,2}$/.test(formData.twelvePercentage)) errors.twelvePercentage = "Invalid"
 
                 if(!formData.ugUniversity) errors.ugUniversity = "UG University is required"
-                if(!formData.ugYearofPaasing) errors.ugYearofPaasing = "UG Year is required"
-                else if(!/^\d{4}$/.test(formData.ugYearofPaasing)) errors.ugYearofPaasing = "Invalid"
+                if(!formData.ugYearofPassing) errors.ugYearofPassing = "UG Year is required"
+                else if(!/^\d{4}$/.test(formData.ugYearofPassing)) errors.ugYearofPassing = "Invalid"
                 if(!formData.ugPercentage) errors.ugPercentage = "UG Percentage is required"
                 else if(!/^\d{1,2}$/.test(formData.ugPercentage)) errors.ugPercentage = "Invalid"
             }
@@ -271,10 +285,7 @@ const EmployeeForm = () => {
                                 fullWidth
                                 label="Employee ID"
                                 name="empId"
-                                value={formData.empId || ""}
-                                onChange={handleChange}
-                                error={!!errors.empId} 
-                                helperText={errors.empId}
+                                value={user?.empid || ""}
                             />
                         </Grid>
 
@@ -295,10 +306,7 @@ const EmployeeForm = () => {
                                 fullWidth
                                 label="Email"
                                 name="email"
-                                value={formData.email || ""}
-                                onChange={handleChange}
-                                error={!!errors.email} 
-                                helperText={errors.email} 
+                                value={user?.email || ""}
                             />
                         </Grid>
 
@@ -604,11 +612,11 @@ const EmployeeForm = () => {
                                 <Typography>Year Of Passing</Typography>
                                 <TextField 
                                 fullWidth 
-                                name="ugYearofPaasing" 
-                                value={formData.ugYearofPaasing} 
+                                name="ugYearofPassing" 
+                                value={formData.ugYearofPassing} 
                                 onChange={handleChange}
                                 error={!!errors.ugYearofPassing}
-                                helperText={errors.ugYearofPaasing} 
+                                helperText={errors.ugYearofPassing} 
                                 />
                             </Grid>
                             <Grid item xs={12} sm={6}>
