@@ -7,6 +7,10 @@ export const User = sequelize.define("User", {
     autoIncrement: true,
     primaryKey: true
   },
+  role: {
+    type: DataTypes.STRING,
+    allowNull:false,
+  },
   username: {
     type: DataTypes.STRING,
     allowNull: false
@@ -14,7 +18,7 @@ export const User = sequelize.define("User", {
   empid: {
     type: DataTypes.STRING,
     unique: true,
-    // allowNull: false
+    allowNull: false
   },
   email: {
     type: DataTypes.STRING,

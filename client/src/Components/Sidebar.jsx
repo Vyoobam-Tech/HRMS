@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   List,
@@ -34,6 +34,7 @@ import axios from "axios";
 
 const Sidebar = ({ onToggle, setIsAuthenticated }) => {
   const [reportsOpen, setReportsOpen] = useState(false);
+  const [user, setUser] = useState(null)
   const navigate = useNavigate();
 
   const toggleReportsDropdown = () => {
@@ -51,6 +52,22 @@ const Sidebar = ({ onToggle, setIsAuthenticated }) => {
       console.log(err)
     }
   }
+
+  useEffect(() => {
+      const fetchUser = async () => {
+        try{
+          const response = await axios.get("http://localhost:3000/auth/profile", {withCredentials: true})
+          if(response.data.status){
+            setUser(response.data.user)
+          }
+        } catch(err) {
+          console.log(err)
+        }
+      }
+      fetchUser()
+    }, [])
+
+    const role = user?.role
 
   return (
     <Box
@@ -87,6 +104,68 @@ const Sidebar = ({ onToggle, setIsAuthenticated }) => {
       >
         Tamilmani
       </Typography> */}
+      {role === "employee" && (
+        <List>
+          <ListItem disablePadding>
+          <ListItemButton component={Link} to="/dashpage">
+            <ListItemIcon>
+              <DashboardRoundedIcon sx={{ color: "#fff" }} />
+            </ListItemIcon>
+            <ListItemText primary="Dashpage" />
+          </ListItemButton>
+        </ListItem>
+        <ListItem disablePadding>
+          <ListItemButton component={Link} to="/department">
+            <ListItemIcon>
+              <PolylineRoundedIcon sx={{ color: "#fff" }} />
+            </ListItemIcon>
+            <ListItemText primary="Department" />
+          </ListItemButton>
+        </ListItem>
+        <ListItem disablePadding>
+          <ListItemButton component={Link} to="/employee-details">
+            <ListItemIcon>
+              <PolylineRoundedIcon sx={{ color: "#fff" }} />
+            </ListItemIcon>
+            <ListItemText primary="My Details" />
+          </ListItemButton>
+        </ListItem>
+        <ListItem disablePadding>
+          <ListItemButton component={Link} to="/attandence">
+            <ListItemIcon>
+              <DateRangeIcon sx={{ color: "#fff" }} />
+            </ListItemIcon>
+            <ListItemText primary="Attendance" />
+          </ListItemButton>
+        </ListItem>
+        <ListItem disablePadding>
+          <ListItemButton component={Link} to="/activities">
+            <ListItemIcon>
+              <HandymanRoundedIcon sx={{ color: "#fff" }} />
+            </ListItemIcon>
+            <ListItemText primary="Activities" />
+          </ListItemButton>
+        </ListItem>
+        <ListItem disablePadding>
+          <ListItemButton component={Link} to="/holidays">
+            <ListItemIcon>
+              <CelebrationRoundedIcon sx={{ color: "#fff" }} />
+            </ListItemIcon>
+            <ListItemText primary="Holidays" />
+          </ListItemButton>
+        </ListItem>
+        <ListItem disablePadding>
+          <ListItemButton component={Link} to="/events">
+            <ListItemIcon>
+              <EmojiEventsRoundedIcon sx={{ color: "#fff" }} />
+            </ListItemIcon>
+            <ListItemText primary="Events" />
+          </ListItemButton>
+        </ListItem>
+        </List>
+      )}
+
+    {(role === "admin" || role === "superadmin")  && (
       <List>
         <ListItem disablePadding>
           <ListItemButton component={Link} to="/dashpage">
@@ -96,14 +175,6 @@ const Sidebar = ({ onToggle, setIsAuthenticated }) => {
             <ListItemText primary="Dashpage" />
           </ListItemButton>
         </ListItem>
-        {/* <ListItem disablePadding>
-              <ListItemButton component={Link} to="/create-user">
-                <ListItemIcon>
-                  <PersonAddRoundedIcon />
-                </ListItemIcon>
-                <ListItemText primary="Users" />
-              </ListItemButton>
-            </ListItem> */}
         <ListItem disablePadding>
           <ListItemButton component={Link} to="/department">
             <ListItemIcon>
@@ -187,6 +258,7 @@ const Sidebar = ({ onToggle, setIsAuthenticated }) => {
             {reportsOpen ? <ExpandLess /> : <ExpandMore />}
           </ListItemButton>
         </ListItem>
+        
 
         {/* Dropdown Items */}
         <Collapse in={reportsOpen} timeout="auto" unmountOnExit>
@@ -203,7 +275,6 @@ const Sidebar = ({ onToggle, setIsAuthenticated }) => {
             </ListItem>
           </List>
         </Collapse>
-
         {/* <br />
             <Divider width="200px" />
             <br />
@@ -234,6 +305,7 @@ const Sidebar = ({ onToggle, setIsAuthenticated }) => {
               </ListItemButton>
             </ListItem> */}
       </List>
+     )}
 
       <IconButton
         size="large"

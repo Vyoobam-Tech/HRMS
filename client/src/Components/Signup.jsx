@@ -9,6 +9,10 @@ import {
   Typography,
   IconButton,
   Divider,
+  FormGroup,
+  FormControl,
+  FormControlLabel,
+  Radio,
 } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
 import EmailIcon from "@mui/icons-material/Email";
@@ -28,11 +32,12 @@ const Signup = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const [role, setRole] = useState("employee")
 
   const handleSubmit = (e) => {
     e.preventDefault();
     api
-      .post("/auth/signup", { username, empid, email, password })
+      .post("/auth/signup", {role, username, empid, email, password })
 
       .then((response) => {
         if (response.data.status) {
@@ -78,6 +83,10 @@ const Signup = () => {
     flow: "implicit",
   });
 
+  const handleRoleChange = (e) => {
+    setRole(e.target.value)
+  }
+
   return (
     <Box
       sx={{
@@ -92,6 +101,7 @@ const Signup = () => {
       }}
       className="sign-up-container"
     >
+
       <form
         className="sign-up-form"
         onSubmit={handleSubmit}
@@ -116,6 +126,47 @@ const Signup = () => {
         >
           Register
         </Typography>
+
+        <Box sx={{ display: "flex" }}>
+          <FormGroup>
+            <FormControlLabel
+              control={
+                <Radio
+                  checked={role === "employee"}
+                  value="employee"
+                  onChange={handleRoleChange}
+                />
+              }
+              label="Employee"
+            />
+          </FormGroup>
+
+          <FormGroup>
+            <FormControlLabel
+              control={
+                <Radio
+                  checked={role === "admin"}
+                  value="admin"
+                  onChange={handleRoleChange}
+                />
+              }
+              label="Admin"
+            />
+          </FormGroup>
+
+          <FormGroup>
+            <FormControlLabel
+              control={
+                <Radio
+                  checked={role === "superadmin"}
+                  value="superadmin"
+                  onChange={handleRoleChange}
+                />
+              }
+              label="Super Admin"
+            />
+          </FormGroup>
+        </Box>
 
         <TextField
           type="text"

@@ -82,7 +82,6 @@ const EmployeeForm = () => {
             const errors ={}
 
             if(activeStep === 0) {
-                if(!formData.empId) errors.empId = "Employee ID is required"
                 if(!formData.name) errors.name = "Full Name is required"
                 if(!formData.contact) errors.contact = "Contact is required";
                 else if(!/^\d{10}$/.test(formData.contact)) errors.contact = "Must be 10 digits"
@@ -229,7 +228,6 @@ const EmployeeForm = () => {
         const [sameAddress, setSameAddress] = useState(false)
         const navigate = useNavigate()
         const [errors, setErrors] = useState({})
-        
     const handleCheckBox = (e) => {
         const checked = e.target.checked
         setSameAddress(checked)
@@ -263,7 +261,12 @@ const EmployeeForm = () => {
     const handleSubmit = async () => {
         if(!validate()) return
         try{
-            const response = await axios.post("http://localhost:3000/api/employees", formData)
+            const dataSend = {
+                ...formData,
+                empId : user?.empid,
+                email : user?.email
+            }
+            const response = await axios.post("http://localhost:3000/api/employees", dataSend)
             console.log(response.data)
 
             setFormData(initialFormData)
@@ -285,7 +288,7 @@ const EmployeeForm = () => {
                                 fullWidth
                                 label="Employee ID"
                                 name="empId"
-                                value={user?.empid || ""}
+                                value={user?.empid}
                             />
                         </Grid>
 
@@ -306,7 +309,7 @@ const EmployeeForm = () => {
                                 fullWidth
                                 label="Email"
                                 name="email"
-                                value={user?.email || ""}
+                                value={user?.email}
                             />
                         </Grid>
 
@@ -851,9 +854,9 @@ const EmployeeForm = () => {
                                     </Typography>
                                     <Divider sx={{ mb: 2 }}/>
                                     {[
-                                        ["Employee ID", formData.empId],
+                                        ["Employee ID", user?.empid],
                                         ["Full Name", formData.name],
-                                        ["Email", formData.email],
+                                        ["Email", user?.email],
                                         ["Contact Number", formData.contact],
                                         ["Father Name", formData.fatherName],
                                         ["Mother Name", formData.motherName],

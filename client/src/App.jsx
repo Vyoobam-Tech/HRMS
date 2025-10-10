@@ -32,7 +32,8 @@ import EmpDetails from "./scenes/employees/EmpDetails";
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  
+  const [user, setUser] = useState(null)
+
   useEffect(() => {
     const loggedIn = localStorage.getItem("isLoggedIn");
 
@@ -61,6 +62,23 @@ function App() {
     setIsSidebarOpen((prev) => !prev);
   };
 
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try{
+        const response = await axios.get("http://localhost:3000/auth/profile", {withCredentials: true})
+        if(response.data.status){
+          setUser(response.data.user)
+        }
+      } catch(err) {
+        console.log(err)
+      }
+    }
+    fetchUser()
+  }, [])
+
+  const role = user?.role
+
   return (
     <ThemeProvider theme={theme}>
       <Router>
@@ -83,7 +101,47 @@ function App() {
           <Route path="/forgotPassword" element={<ForgotPassword />} />
           <Route path="/resetPassword/:token" element={<ResetPassword />} />
 
-          {isAuthenticated && (
+          {isAuthenticated && role === "employee" && (
+            <Route
+              path="/*"
+              element={
+                <Box display="flex">
+                  {isSidebarOpen ? (
+                    <Sidebar onToggle={handleToggleSidebar}
+                      setIsAuthenticated={setIsAuthenticated}
+                    />
+                  ) : (
+                    <SmallSidebar onToggle={handleToggleSidebar}
+                      setIsAuthenticated={setIsAuthenticated}
+                  />
+                  )}
+                  <Box flex={1} display="flex" flexDirection="column">
+                    <Navbar isSidebarOpen={isSidebarOpen} />
+                    <Box
+                      flex={1}
+                      p={5}
+                      sx={{
+                        marginLeft: isSidebarOpen ? "220px" : "60px",
+                        transition: "margin-left 0.2s ease-in-out",
+                      }}
+                    >
+                      <Routes>
+                        <Route path="/dashpage" element={<Dashpage />} />
+                        <Route path="/department" element={<Department />} />
+                        <Route path="/employee-details" element={<EmpDetails />} />
+                        <Route path="/attandence" element={<EachEmployeeTimeTracker />} />
+                        <Route path="/activities" element={<Activities />} />
+                        <Route path="/holidays" element={<Holidays />} />
+                        <Route path="/events" element={<Events />} />
+                      </Routes>
+                    </Box>
+                  </Box>
+                </Box>
+              }
+            />
+          )}
+
+          {isAuthenticated && (role === "admin" || role === "superadmin") &&(
             <Route
               path="/*"
               element={
