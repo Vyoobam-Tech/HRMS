@@ -59,10 +59,10 @@ router.get("/:empid", async (req, res) => {
   }
 });
 
-router.put("/update/:empid", async (req, res) => {
+router.put("/update/:empId", async (req, res) => {
   try {
     const [updated] = await Employee.update(req.body, {
-      where: { empid: req.params.empid },
+      where: { empId: req.params.empId },
     });
 
     if (!updated) {
@@ -72,7 +72,7 @@ router.put("/update/:empid", async (req, res) => {
     }
 
     const updatedEmployee = await Employee.findOne({
-      where: { empid: req.params.empid },
+      where: { empId: req.params.empId },
     });
 
     return res.json({
@@ -88,10 +88,10 @@ router.put("/update/:empid", async (req, res) => {
   }
 });
 
-router.delete("/delete/:empid", async (req, res) => {
+router.delete("/delete/:empId", async (req, res) => {
   try {
     const deleted = await Employee.destroy({
-      where: { empid: req.params.empid },
+      where: { empId: req.params.empId },
     });
     if (!deleted)
       return res

@@ -4,27 +4,35 @@ import { sequelize } from "../config/db.js";
 export const Activity = sequelize.define(
   "Activity",
   {
-    actid: {
-      type: DataTypes.STRING,
-      primaryKey: true,
-    },
-    employeeName: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    type: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
     date: {
-      type: DataTypes.DATE,
+      type: DataTypes.DATEONLY,
+      allowNull: false,
+    },
+    empid: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    employeename: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    taskname: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    startingtime: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    endingtime: {
+      type: DataTypes.STRING,
       allowNull: false,
     },
     duration: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    department: {
+    complete: {
       type: DataTypes.STRING,
       allowNull: false,
     },
@@ -32,9 +40,17 @@ export const Activity = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    remarks: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    githublink: {
+      type: DataTypes.STRING,
+      allowNull: true
+    }
   },
   {
     tableName: "activities",
-    timestamps: false,
+    timestamps: true,
   }
 );

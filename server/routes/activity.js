@@ -99,4 +99,17 @@ router.delete("/delete/:actid", async (req, res) => {
   }
 });
 
+router.get("/by-user/:empid", async (req, res) => {
+  try{
+    const activity = await Activity.findAll({
+      where: {empid: req.params.empid}
+    })
+
+    return res.json({status: true, data: activity})
+  } catch(err){
+    console.log(err)
+    return res.status(500).json({status: false, message: err.message})
+  }
+})
+
 export { router as ActivityRouter };

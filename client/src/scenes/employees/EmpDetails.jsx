@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { Box } from '@mui/system'
-import { Card, CardContent, Divider, Typography, Grid, Button, Dialog, DialogContent, DialogTitle} from '@mui/material'
+import { Card, CardContent, Divider, Typography, Grid, Button, Dialog, DialogContent, DialogTitle, IconButton, DialogActions, TextField} from '@mui/material'
 import EmployeeForm from './EmployeeForm'
 
 const EmpDetails = () => {
@@ -9,6 +9,8 @@ const EmpDetails = () => {
   const [user, setUser] = useState(null)
   const [employee, setEmployee] = useState(null)
   const [open, setOpen] = useState(false)
+  const [selectedRow, setSelectedRow] = useState(null)
+  const [showEditModal, setShowEditModal] = useState(false)
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -41,6 +43,32 @@ const EmpDetails = () => {
     fetchEmployee()
   }, [user])
 
+  const handleEdit = () => {
+    if (!employee) return
+    setSelectedRow(employee)
+    setShowEditModal(true)
+  }
+
+  const handleSave = async () => {
+    if(!selectedRow) return
+
+    try{
+      const response = await axios.put(`http://localhost:3000/api/employees/update/${selectedRow.empId}`,selectedRow,
+        {withCredentials: true}
+      )
+
+      if(response.data.status){
+        setEmployee(response.data.data)
+        setShowEditModal(false)
+        alert("updated successfully")
+      } else{
+        alert("falied to update")
+      }
+    } catch(err) {
+      console.log(err)
+    }
+  }
+
   return (
     <div
       style={{
@@ -51,9 +79,21 @@ const EmpDetails = () => {
         marginLeft: "20px",
       }}
     >
-      <Button variant='contained' color='primary' sx={{ mb: 2 }} onClick={() => setOpen(true)}>
-        Add Details
-      </Button>
+      <Box>
+        <Button variant='contained' color='primary' sx={{ mb: 2 }} onClick={() => setOpen(true)}>
+          Add Details
+        </Button>
+
+        <Button
+          variant='contained'
+          color='secondary'
+          sx={{ mb:2, ml: 2}}
+          onClick={handleEdit}
+        >
+          Edit Details
+        </Button>
+
+      </Box>
 
       <Dialog open={open} onClose={() => setOpen(false)}>
         <DialogTitle sx={{ color: 'white', bgcolor: '#1976D2' }}>Add Details</DialogTitle>
@@ -152,6 +192,301 @@ const EmpDetails = () => {
             </Grid>
           </CardContent>
         </Card>
+
+        {/* Edit Activity*/}
+      <Dialog
+        open={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        fullWidth
+        maxWidth="sm"
+      >
+        <div
+          className="modal-header"
+          style={{
+            background: "#1976D2",
+            color: "white",
+            fontWeight: "bold",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            padding: "16px",
+            borderBottom: "1px solid #ddd",
+          }}
+        >
+          <DialogTitle>Edit Employee</DialogTitle>
+          <IconButton onClick={() => setShowEditModal(false)} color="dark">
+            {/* <CloseIcon sx={{ color: "white" }} /> */}
+          </IconButton>
+        </div>
+
+          {selectedRow && (
+            <div className="modal-body" style={{ padding: "16px" }}>
+              <DialogContent>
+                <TextField
+                  label="Employee ID"
+                  fullWidth
+                  margin="dense"
+                  value={selectedRow.empId || ""}
+                  disabled
+                />
+
+                <TextField
+                  label="Employee Name"
+                  fullWidth
+                  margin="dense"
+                  value={selectedRow.name || ""}
+                  onChange={(e) =>
+                    setSelectedRow({ ...selectedRow, name: e.target.value })
+                  }
+                />
+                <TextField
+                  label="Email"
+                  fullWidth
+                  margin="dense"
+                  value={selectedRow.email || ""}
+                  disabled
+                />
+                <TextField
+                  label="Contact"
+                  fullWidth
+                  margin="dense"
+                  value={selectedRow.contact || ""}
+                  onChange={(e) =>
+                    setSelectedRow({ ...selectedRow, contact: e.target.value })
+                  }
+                />
+                <TextField
+                  label="Father Name"
+                  fullWidth
+                  margin="dense"
+                  value={selectedRow.fatherName || ""}
+                  onChange={(e) => setSelectedRow({ ...selectedRow, fatherName: e.target.value })}
+                />
+                <TextField
+                  label="Mother Name"
+                  fullWidth
+                  margin="dense"
+                  value={selectedRow.motherName || ""}
+                  onChange={(e) => setSelectedRow({ ...selectedRow, motherName: e.target.value })}
+                />
+                <TextField
+                  label="Occupation"
+                  fullWidth
+                  margin="dense"
+                  value={selectedRow.occupation || ""}
+                  onChange={(e) => setSelectedRow({ ...selectedRow, occupation: e.target.value })}
+                />
+                <TextField
+                  label="Permanent Address"
+                  fullWidth
+                  margin="dense"
+                  value={selectedRow.permanentAddress || ""}
+                  onChange={(e) => setSelectedRow({ ...selectedRow, permanentAddress: e.target.value })}
+                />
+                <TextField
+                  label="Communication Address"
+                  fullWidth
+                  margin="dense"
+                  value={selectedRow.communicationAddress || ""}
+                  onChange={(e) => setSelectedRow({ ...selectedRow, communicationAddress: e.target.value })}
+                />
+                <TextField
+                  label="DOB"
+                  type="date"
+                  fullWidth
+                  margin="dense"
+                  value={selectedRow.dob || ""}
+                  onChange={(e) => setSelectedRow({ ...selectedRow, dob: e.target.value })}
+                  InputLabelProps={{ shrink: true }}
+                />
+                <TextField
+                  label="Gender"
+                  fullWidth
+                  margin="dense"
+                  value={selectedRow.gender || ""}
+                  onChange={(e) => setSelectedRow({ ...selectedRow, gender: e.target.value })}
+                />
+                <TextField
+                  label="Blood Group"
+                  fullWidth
+                  margin="dense"
+                  value={selectedRow.bloodGroup || ""}
+                  onChange={(e) => setSelectedRow({ ...selectedRow, bloodGroup: e.target.value })}
+                />
+                <TextField
+                  label="Marital Status"
+                  fullWidth
+                  margin="dense"
+                  value={selectedRow.maritalStatus || ""}
+                  onChange={(e) => setSelectedRow({ ...selectedRow, maritalStatus: e.target.value })}
+                />
+                <TextField
+                  label="Spouse Name"
+                  fullWidth
+                  margin="dense"
+                  value={selectedRow.spouseName || ""}
+                  onChange={(e) => setSelectedRow({ ...selectedRow, spouseName: e.target.value })}
+                />
+                <TextField
+                  label="Aadhaar"
+                  fullWidth
+                  margin="dense"
+                  value={selectedRow.aadhaar || ""}
+                  onChange={(e) => setSelectedRow({ ...selectedRow, aadhaar: e.target.value })}
+                />
+                <TextField
+                  label="PAN"
+                  fullWidth
+                  margin="dense"
+                  value={selectedRow.pan || ""}
+                  onChange={(e) => setSelectedRow({ ...selectedRow, pan: e.target.value })}
+                />
+
+                <TextField
+                  label="10th Board"
+                  fullWidth
+                  margin="dense"
+                  value={selectedRow.tenthBoard || ""}
+                  onChange={(e) => setSelectedRow({ ...selectedRow, tenthBoard: e.target.value })}
+                />
+                <TextField
+                  label="10th Year of Passing"
+                  fullWidth
+                  margin="dense"
+                  value={selectedRow.tenthYearofPassing || ""}
+                  onChange={(e) => setSelectedRow({ ...selectedRow, tenthYearofPassing: e.target.value })}
+                />
+                <TextField
+                  label="10th Percentage"
+                  fullWidth
+                  margin="dense"
+                  value={selectedRow.tenthPercentage || ""}
+                  onChange={(e) => setSelectedRow({ ...selectedRow, tenthPercentage: e.target.value })}
+                />
+
+                <TextField
+                  label="12th Board"
+                  fullWidth
+                  margin="dense"
+                  value={selectedRow.twelveBoard || ""}
+                  onChange={(e) => setSelectedRow({ ...selectedRow, twelveBoard: e.target.value })}
+                />
+                <TextField
+                  label="12th Year of Passing"
+                  fullWidth
+                  margin="dense"
+                  value={selectedRow.twelveYearofPassing || ""}
+                  onChange={(e) => setSelectedRow({ ...selectedRow, twelveYearofPassing: e.target.value })}
+                />
+                <TextField
+                  label="12th Percentage"
+                  fullWidth
+                  margin="dense"
+                  value={selectedRow.twelvePercentage || ""}
+                  onChange={(e) => setSelectedRow({ ...selectedRow, twelvePercentage: e.target.value })}
+                />
+
+                <TextField
+                  label="UG University"
+                  fullWidth
+                  margin="dense"
+                  value={selectedRow.ugUniversity || ""}
+                  onChange={(e) => setSelectedRow({ ...selectedRow, ugUniversity: e.target.value })}
+                />
+                <TextField
+                  label="UG Year of Passing"
+                  fullWidth
+                  margin="dense"
+                  value={selectedRow.ugYearofPassing || ""}
+                  onChange={(e) => setSelectedRow({ ...selectedRow, ugYearofPassing: e.target.value })}
+                />
+                <TextField
+                  label="UG Percentage"
+                  fullWidth
+                  margin="dense"
+                  value={selectedRow.ugPercentage || ""}
+                  onChange={(e) => setSelectedRow({ ...selectedRow, ugPercentage: e.target.value })}
+                />
+
+                <TextField
+                  label="PG University"
+                  fullWidth
+                  margin="dense"
+                  value={selectedRow.pgUniversity || ""}
+                  onChange={(e) => setSelectedRow({ ...selectedRow, pgUniversity: e.target.value })}
+                />
+                <TextField
+                  label="PG Year of Passing"
+                  fullWidth
+                  margin="dense"
+                  value={selectedRow.pgYearofPassing || ""}
+                  onChange={(e) => setSelectedRow({ ...selectedRow, pgYearofPassing: e.target.value })}
+                />
+                <TextField
+                  label="PG Percentage"
+                  fullWidth
+                  margin="dense"
+                  value={selectedRow.pgPercentage || ""}
+                  onChange={(e) => setSelectedRow({ ...selectedRow, pgPercentage: e.target.value })}
+                />
+                {/* Repeat similarly for 12th, UG, PG */}
+
+                {/* Bank Details */}
+                <TextField
+                  label="Bank Name"
+                  fullWidth
+                  margin="dense"
+                  value={selectedRow.bankName || ""}
+                  onChange={(e) => setSelectedRow({ ...selectedRow, bankName: e.target.value })}
+                />
+                <TextField
+                  label="Account Number"
+                  fullWidth
+                  margin="dense"
+                  value={selectedRow.accountNumber || ""}
+                  onChange={(e) => setSelectedRow({ ...selectedRow, accountNumber: e.target.value })}
+                />
+                <TextField
+                  label="IFSC Code"
+                  fullWidth
+                  margin="dense"
+                  value={selectedRow.ifscCode || ""}
+                  onChange={(e) => setSelectedRow({ ...selectedRow, ifscCode: e.target.value })}
+                />
+                <TextField
+                  label="Branch"
+                  fullWidth
+                  margin="dense"
+                  value={selectedRow.branch || ""}
+                  onChange={(e) => setSelectedRow({ ...selectedRow, branch: e.target.value })}
+                />
+              </DialogContent>
+            </div>
+          )}
+
+        <div
+          className="modal-footer"
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            padding: "16px",
+            borderTop: "1px solid #ddd",
+          }}
+        >
+          <DialogActions>
+            <Button
+              color="error"
+              variant="outlined"
+              onClick={() => setShowEditModal(false)}
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleSave} color="primary" variant="outlined">
+              Save
+            </Button>
+          </DialogActions>
+        </div>
+      </Dialog>
     </Box>
     </div>
   )

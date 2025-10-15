@@ -271,7 +271,7 @@ const EmployeeForm = () => {
 
             setFormData(initialFormData)
             setActiveStep(0)
-            navigate("/employee")
+            navigate("/employee-details")
         } catch(error) {
             console.log(error.response?.data)
         }

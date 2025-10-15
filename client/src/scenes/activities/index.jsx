@@ -9,6 +9,7 @@ import {
   DialogActions,
   TextField,
   IconButton,
+  MenuItem,
 } from "@mui/material";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
@@ -27,26 +28,63 @@ const Activities = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [user, setUser] = useState(null)
+  const [employee,setEmployee] = useState(null)
+  const [taskName, setTaskName] = useState("")
+  const [startingtime, setStartingTime] = useState("")
+  const [endingtime, setEndingTime] = useState("")
+  const [durations, setDurations] = useState("")
+ 
+  const dt = new Date().toISOString().split("T")[0]
 
-  const fetchActivities = async () => {
-    try {
-      const response = await axios.get(
-        "http://localhost:3000/api/activities/all"
-      );
-      setRowData(response.data.data);
-    } catch (error) {
-      console.error("Error fetching activities:", error);
-    }
-  };
 
   useEffect(() => {
-    fetchActivities();
-  }, []);
+    const fetchUser = async () => {
+      try{
+        const response = await axios.get("http://localhost:3000/auth/profile", {withCredentials: true})
+        if(response.data.user){
+          setUser(response.data.user)
+        }
+      } catch(err){
+        console.log(err)
+      }
+    }
+    fetchUser()
+  }, [])
+
+  useEffect(() => {
+    const fetchEmployee = async () => {
+      try{
+        const response = await axios.get(`http://localhost:3000/api/employees/by-user/${user.email}`, {withCredentials: true})
+        if(response.data.status){
+          setEmployee(response.data.data)
+        }
+      } catch(err){
+        console.log(err)
+      }
+    }
+    fetchEmployee()
+  }, [user])
+
+  useEffect(() => {
+    if (!user?.empid) return
+    const fetchEachActivity = async () => {
+      try{
+      const response = await axios.get(`http://localhost:3000/api/activities/by-user/${user.empid}`, {withCredentials: true})
+      console.log(response.data.data)
+      setRowData(response.data.data)
+      } catch(err){
+        console.log(err)
+      }
+    }
+    fetchEachActivity()
+  }, [employee])
+
 
   const handleDelete = async (actid) => {
     try {
       await axios.delete(`http://localhost:3000/api/activities/${actid}`);
-      fetchActivities();
+      // fetchActivities();
     } catch (error) {
       console.error("Error deleting activity:", error);
     }
@@ -65,7 +103,7 @@ const Activities = () => {
         `http://localhost:3000/api/activities/update/${selectedRow.actid}`,
         selectedRow
       );
-      fetchActivities();
+      // fetchActivities();
       setShowEditModal(false);
     } catch (error) {
       console.error("Error updating activity:", error);
@@ -76,69 +114,78 @@ const Activities = () => {
     try {
       const payload = {
         ...values,
-        actid: values.actid,
+        empid: values.empid,
+        employeename: values.employeename,
+        startingtime: values.startingtime,
+        durations: values.durations
       };
 
-      console.log("Payload:", payload);
-      await axios.post("http://localhost:3000/api/activities", payload);
-      setOpen(false);
-      fetchActivities();
+      console.log("Payload:", payload)
+      await axios.post("http://localhost:3000/api/activities", payload)
+      setOpen(false)
+      setRowData((prev) => [...prev, payload])
     } catch (error) {
-      console.error("Error adding activity:", error);
+      console.error("Error adding activity:", error)
     }
   };
 
   const [columnDefs] = useState([
-    { headerName: "Act ID", field: "actid" },
-    { headerName: "Employee Name", field: "employeeName" },
-    { headerName: "Type", field: "type" },
+
     {
       headerName: "Date",
-      field: "date",
-      valueFormatter: (params) => {
-        if (!params.value) return "";
-        return new Date(params.value).toLocaleDateString();
-      },
+      field: "date"
     },
-    { headerName: "Duration", field: "duration" },
-    { headerName: "Department", field: "department" },
+    { headerName: "Emp ID", field: "empid" },
+    { headerName: "Employee Name", field: "employeename" },
+    { headerName: "Task Name", field: "taskname" },
+    { headerName: "Starting Time", field: "startingtime" },
+    { headerName: "Ending Time", field: "endingtime" },
+    { headerName: "Durations", field: "duration"},
+    { headerName: "% Complete", field: "complete" },
     { headerName: "Status", field: "status" },
-    {
-      headerName: "Actions",
-      field: "actions",
-      cellRenderer: (params) => (
-        <div style={{ display: "flex", gap: "8px" }}>
-          <IconButton
-            onClick={() => handleEdit(params.data)}
-            color="primary"
-            size="small"
-          >
-            <EditIcon />
-          </IconButton>
-          <IconButton
-            onClick={() => {
-              setDeleteId(params.data._id);
-              setConfirmOpen(true);
-            }}
-            color="primary"
-            size="small"
-          >
-            <DeleteIcon />
-          </IconButton>
-        </div>
-      ),
-      width: 120,
-    },
+    { headerName: "Remarks", field: "remarks" },
+    { headerName: "Github Link", field: "githublink"}
+    // {
+    //   headerName: "Actions",
+    //   field: "actions",
+    //   cellRenderer: (params) => (
+    //     <div style={{ display: "flex", gap: "8px" }}>
+    //       <IconButton
+    //         onClick={() => handleEdit(params.data)}
+    //         color="primary"
+    //         size="small"
+    //       >
+    //         <EditIcon />
+    //       </IconButton>
+    //       <IconButton
+    //         onClick={() => {
+    //           setDeleteId(params.data._id);
+    //           setConfirmOpen(true);
+    //         }}
+    //         color="primary"
+    //         size="small"
+    //       >
+    //         <DeleteIcon />
+    //       </IconButton>
+    //     </div>
+    //   ),
+    //   width: 120,
+    // },
   ]);
 
+  // localStorage.removeItem("activitystart")
+
   const ActivitySchema = Yup.object().shape({
-    actid: Yup.string().required("ID is required"),
-    employeeName: Yup.string().required("Employee Name is required"),
-    type: Yup.string().required("Type is required"),
-    date: Yup.date().required("Date is required"),
+    // actid: Yup.string().required("ID is required"),
+    // employeeName: Yup.string().required("Employee Name is required"),
+    // type: Yup.string().required("Type is required"),
+    // date: Yup.date().required("Date is required"),
+    taskname: Yup.string().required("Task Name is required"),
     duration: Yup.string().required("Duration is required"),
-    department: Yup.string().required("Department is required"),
+    // department: Yup.string().required("Department is required"),
     status: Yup.string().required("Status is required"),
+    complete: Yup.string().required("Complete is required")
+  
   });
 
   const defaultColDef = useMemo(
@@ -159,15 +206,26 @@ const Activities = () => {
         marginLeft: "30px",
       }}
     >
-      <Header title="ACTIVITIES" subtitle="Employee Activity Tracking" />
+      <Header title="MY ACTIVITIES" />
       <Button
         variant="contained"
         color="primary"
-        onClick={() => setOpen(true)}
+        onClick={() => {
+          if (!startingtime) {
+            const now = new Date();
+            const hh = now.getHours().toString().padStart(2, "0");
+            const mm = now.getMinutes().toString().padStart(2, "0");
+            const formatted = `${hh}:${mm}`; // "HH:MM" 24-hour format
+            setStartingTime(formatted);
+            localStorage.setItem("activitystart", formatted);
+          }
+          setOpen(true);
+        }}
         sx={{ mb: 2 }}
       >
         Add Activities
       </Button>
+
 
       <AgGridReact
         rowData={rowData}
@@ -205,14 +263,19 @@ const Activities = () => {
           </IconButton>
         </div>
         <Formik
+        enableReinitialize
           initialValues={{
-            actid: "",
-            employeeName: "",
-            type: "",
-            date: "",
-            duration: "",
-            department: "",
+            empid: user?.empid || "",
+            employeename: employee?.name || "",
+            taskname: "",
+            date: dt,
+            startingtime: startingtime,
+            endingtime: endingtime,
+            duration: durations,
+            complete: "",
             status: "",
+            remarks: "",
+            githublink: ""
           }}
           validationSchema={ActivitySchema}
           onSubmit={(values, { resetForm }) => {
@@ -221,19 +284,131 @@ const Activities = () => {
             resetForm();
           }}
         >
-          {({ errors, touched }) => (
+          {({ errors, touched, setFieldValue }) => (
             <Form>
               <div className="modal-body" style={{ padding: "16px" }}>
                 <DialogContent>
                   {[
-                    "actid",
-                    "employeeName",
-                    "type",
                     "date",
+                    "empid",
+                    "employeename",
+                    "startingTime",
+                    "taskname",
+                    "endingtime",
                     "duration",
-                    "department",
+                    "complete",
                     "status",
-                  ].map((field) => (
+                    "remarks",
+                    "githublink"
+                  ].map((field) => {
+
+                    if (field === "date") {
+                      return (
+                        <Field
+                          key={field}
+                          as={TextField}
+                          name={field}
+                          label="Date"
+                          type="date"
+                          fullWidth
+                          margin="dense"
+                          InputLabelProps={{ shrink: true }}
+                          inputProps={{ readOnly: true }}
+                          value={dt}
+                        />
+                      );
+                    }
+
+                    if (field === "empid") {
+                      return (
+                        <Field
+                          key={field}
+                          as={TextField}
+                          name={field}
+                          label="Employee ID"
+                          fullWidth
+                          margin="dense"
+                          InputLabelProps={{ shrink: true }}
+                          inputProps={{ readOnly: true }}
+                        />
+                      );
+                    }
+
+                    if (field === "employeename") {
+                      return (
+                        <Field
+                          key={field}
+                          as={TextField}
+                          name={field}
+                          label="Emplpoyee Name"
+                          fullWidth
+                          margin="dense"
+                          InputLabelProps={{ shrink: true }}
+                          inputProps={{ readOnly: true }}
+                        />
+                      );
+                    }
+
+                    if (field === "startingTime") {
+                      return (
+                        <Field
+                          as={TextField}
+                          name="startingTime"
+                          label="Starting Time"
+                          fullWidth
+                          margin="dense"
+                          InputProps={{ readOnly: true }}
+                          value={startingtime}
+                        />
+                      )
+                    }
+
+
+                    if (field === "complete") {
+                      return (
+                      <Field
+                        key={field}
+                        as={TextField}
+                        name={field}
+                        label="Complete"
+                        select
+                        fullWidth
+                        margin="dense"
+                        helperText={touched[field] && errors[field]}
+                        error={touched[field] && !!errors[field]}
+                      >
+                        {["25%","50%","75%","100%"].map((option) => (
+                          <MenuItem key={option} value={option}>
+                            {option}
+                          </MenuItem>
+                        ))}
+
+                      </Field>
+                  )}
+
+                  if (field === "status") {
+                      return (
+                      <Field
+                        key={field}
+                        as={TextField}
+                        name={field}
+                        label="Status"
+                        select
+                        fullWidth
+                        margin="dense"
+                        helperText={touched[field] && errors[field]}
+                        error={touched[field] && !!errors[field]}
+                      >
+                        {["on Hold","In Progess","Completed"].map((option) => (
+                          <MenuItem key={option} value={option}>
+                            {option}
+                          </MenuItem>
+                        ))}
+
+                      </Field>
+                  )}
+
+                  return (
                     <Field
                       key={field}
                       as={TextField}
@@ -246,7 +421,8 @@ const Activities = () => {
                       type={field === "date" ? "date" : "text"}
                       InputLabelProps={field === "date" ? { shrink: true } : {}}
                     />
-                  ))}
+                  )
+                  })}
                 </DialogContent>
               </div>
               <div
@@ -266,6 +442,38 @@ const Activities = () => {
                     },
                   }}
                 >
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={() => {
+                      const now = new Date();
+                      const hh = now.getHours().toString().padStart(2, "0");
+                      const mm = now.getMinutes().toString().padStart(2, "0");
+                      const formatted = `${hh}:${mm}`; // HH:MM 24-hour
+                      setEndingTime(formatted);
+
+                      if (startingtime) {
+                        const [startH, startM] = startingtime.split(":").map(Number);
+                        const [endH, endM] = formatted.split(":").map(Number);
+
+                        let totalMinutes = (endH * 60 + endM) - (startH * 60 + startM);
+                        // if (totalMinutes < 0) totalMinutes += 24 * 60;
+
+                        const hours = Math.floor(totalMinutes / 60);
+                        const minutes = totalMinutes % 60;
+                        const dur = `${hours}h ${minutes}m`;
+
+                        setDurations(dur);
+
+                        // Update Formik fields
+                        setFieldValue("endingtime", formatted);
+                        setFieldValue("durations", dur);
+                      }
+                    }}
+                  >
+                    End Activity
+                  </Button>
+
                   <Button type="submit" variant="outlined" color="primary">
                     Add Activity
                   </Button>

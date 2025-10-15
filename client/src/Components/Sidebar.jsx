@@ -125,7 +125,7 @@ const Sidebar = ({ onToggle, setIsAuthenticated }) => {
         <ListItem disablePadding>
           <ListItemButton component={Link} to="/employee-details">
             <ListItemIcon>
-              <PolylineRoundedIcon sx={{ color: "#fff" }} />
+              <BadgeRoundedIcon sx={{ color: "#fff" }} />
             </ListItemIcon>
             <ListItemText primary="My Details" />
           </ListItemButton>
@@ -143,7 +143,7 @@ const Sidebar = ({ onToggle, setIsAuthenticated }) => {
             <ListItemIcon>
               <HandymanRoundedIcon sx={{ color: "#fff" }} />
             </ListItemIcon>
-            <ListItemText primary="Activities" />
+            <ListItemText primary="My Activities" />
           </ListItemButton>
         </ListItem>
         <ListItem disablePadding>
@@ -183,14 +183,14 @@ const Sidebar = ({ onToggle, setIsAuthenticated }) => {
             <ListItemText primary="Department" />
           </ListItemButton>
         </ListItem>
-        <ListItem disablePadding>
+        {/* <ListItem disablePadding>
           <ListItemButton component={Link} to="/employee-details">
             <ListItemIcon>
               <PolylineRoundedIcon sx={{ color: "#fff" }} />
             </ListItemIcon>
             <ListItemText primary="My Details" />
           </ListItemButton>
-        </ListItem>
+        </ListItem> */}
         <ListItem disablePadding>
           <ListItemButton component={Link} to="/employee">
             <ListItemIcon>
@@ -207,12 +207,20 @@ const Sidebar = ({ onToggle, setIsAuthenticated }) => {
             <ListItemText primary="Attendance" />
           </ListItemButton>
         </ListItem>
-        <ListItem disablePadding>
+        {/* <ListItem disablePadding>
           <ListItemButton component={Link} to="/activities">
             <ListItemIcon>
               <HandymanRoundedIcon sx={{ color: "#fff" }} />
             </ListItemIcon>
-            <ListItemText primary="Activities" />
+            <ListItemText primary="My Activities" />
+          </ListItemButton>
+        </ListItem> */}
+        <ListItem disablePadding>
+          <ListItemButton component={Link} to="/allactivities">
+            <ListItemIcon>
+              <HandymanRoundedIcon sx={{ color: "#fff" }} />
+            </ListItemIcon>
+            <ListItemText primary="All Activities" />
           </ListItemButton>
         </ListItem>
         <ListItem disablePadding>

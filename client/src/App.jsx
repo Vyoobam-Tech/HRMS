@@ -28,6 +28,7 @@ import { ThemeProvider } from "@mui/material/styles";
 import theme from "./theme";
 import EachEmployeeTimeTracker from "./scenes/reports/EachEmployeeTimeTracker";
 import EmpDetails from "./scenes/employees/EmpDetails";
+import AllActivities from "./scenes/activities/AllActivity";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -173,6 +174,7 @@ function App() {
                         <Route path="/employee" element={<Employee />} />
                         <Route path="/attandence" element={<EachEmployeeTimeTracker />} />
                         <Route path="/activities" element={<Activities />} />
+                        <Route path="/allactivities" element={<AllActivities />} />
                         <Route path="/holidays" element={<Holidays />} />
                         <Route path="/events" element={<Events />} />
                         <Route path="/payroll" element={<Payroll />} />
