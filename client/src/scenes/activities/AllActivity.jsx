@@ -7,6 +7,7 @@ import { Button } from "@mui/material";
 import * as XLSX from "xlsx"
 import {saveAs} from "file-saver"
 import DownloadIcon from "@mui/icons-material/Download";
+import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import { Box } from "@mui/system";
 
 const AllActivities = () => {
@@ -32,7 +33,7 @@ const AllActivities = () => {
   const fetchActivities = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/activities/all"
+        "http://localhost:3000/api/activities/all", {withCredentials: true}
       );
       setRowData(response.data.data);
     } catch (error) {
@@ -41,8 +42,9 @@ const AllActivities = () => {
   };
 
   useEffect(() => {
+    if(!user) return
     fetchActivities();
-  }, []);
+  }, [user]);
 
 
   const handleExportExcel = () => {
@@ -72,8 +74,17 @@ const AllActivities = () => {
 
 
     const [columnDefs] = useState([
-      {headerName: "Date",field: "date"},
-      { headerName: "Emp ID", field: "empid" },
+      {headerName: "Date",field: "date",
+        valueFormatter: (params) => {
+        if (!params.value) return "";
+        const date = new Date(params.value);
+        const day = String(date.getDate()).padStart(2, "0");
+        const month = String(date.getMonth() + 1).padStart(2, "0"); // Month is 0-indexed
+        const year = date.getFullYear();
+        return `${day}-${month}-${year}`;
+      },
+      },
+      { headerName: "Employee ID", field: "empid" },
       { headerName: "Employee Name", field: "employeename" },
       { headerName: "Task Name", field: "taskname" },
       { headerName: "Starting Time", field: "startingtime" },
@@ -84,6 +95,47 @@ const AllActivities = () => {
       { headerName: "Remarks", field: "remarks" },
       { headerName: "Github Link", field: "githublink"}
     ])
+
+  const handleImportExcel = (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+
+  reader.onload = (e) => {
+    const data = new Uint8Array(e.target.result);
+    const workbook = XLSX.read(data, { type: "array" });
+    const sheetName = workbook.SheetNames[0];
+    const worksheet = workbook.Sheets[sheetName];
+
+    // raw: false → get Excel formatted text exactly as shown
+    const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: "", raw: false }).map((row) => {
+      // Convert string dates 10/10/2025 → 10-10-2025
+      let rawDate = row["Date"] || row["date"] || row["DATE"] || "";
+      let formattedDate = rawDate ? rawDate.toString().replace(/\//g, "-") : "";
+
+      return {
+        date: formattedDate,
+        empid: row["Employee ID"] || "",
+        employeename: row["Employee Name"] || "",
+        taskname: row["Task Name"] || "",
+        startingtime: row["Starting Time"] || "",
+        endingtime: row["Ending Time"] || "",
+        duration: row["Durations"] || "",
+        complete: row["% Complete"] || "",
+        status: row["Status"] || "",
+        remarks: row["Remarks"] || "",
+        githublink: row["Github Link"] || "",
+      };
+    });
+
+    setRowData((prev) => [...prev, ...jsonData]);
+  };
+
+  reader.readAsArrayBuffer(file);
+  event.target.value = "";
+};
+
 
 
   const defaultColDef = useMemo(() => ({
@@ -115,6 +167,25 @@ const AllActivities = () => {
       >
         Export Excel
       </Button>
+
+      <input
+        type="file"
+        accept=".xlsx, .xls"
+        style={{ display: "none" }}
+        id="excel-upload"
+        onChange={handleImportExcel}
+      />
+
+      <Button
+        startIcon={<InsertDriveFileIcon />}
+        variant="contained"
+        color="primary"
+        onClick={() => document.getElementById("excel-upload").click()}
+        sx={{ textTransform: "none" }}
+      >
+        Import Excel
+      </Button>
+
     </Box>
 
     <AgGridReact
@@ -125,7 +196,7 @@ const AllActivities = () => {
         domLayout="autoHeight"
         pagination={true}
         paginationPageSize={10}
-        paginationPageSizeSelector={[10, 25, 50]}
+        paginationPageSizeSelector={[10, 25, 50, 100, 1000]}
     />
 
     </div>

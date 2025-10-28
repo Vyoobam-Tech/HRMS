@@ -53,6 +53,7 @@ const Activities = () => {
   }, [])
 
   useEffect(() => {
+    if (!user?.email) return
     const fetchEmployee = async () => {
       try{
         const response = await axios.get(`http://localhost:3000/api/employees/by-user/${user.email}`, {withCredentials: true})
@@ -71,7 +72,6 @@ const Activities = () => {
     const fetchEachActivity = async () => {
       try{
       const response = await axios.get(`http://localhost:3000/api/activities/by-user/${user.empid}`, {withCredentials: true})
-      console.log(response.data.data)
       setRowData(response.data.data)
       } catch(err){
         console.log(err)
@@ -133,7 +133,15 @@ const Activities = () => {
 
     {
       headerName: "Date",
-      field: "date"
+      field: "date",
+      valueFormatter: (paramas) => {
+        if(!paramas.value) return ""
+        const date = new Date(paramas.value)
+        const day = String(date.getDay()).padStart(2, 0)
+        const month = String(date.getMonth() + 1).padStart(2, 0)
+        const year = date.getFullYear()
+        return `${day}-${month}-${year}`
+      }
     },
     { headerName: "Emp ID", field: "empid" },
     { headerName: "Employee Name", field: "employeename" },
@@ -293,9 +301,9 @@ const Activities = () => {
                     "empid",
                     "employeename",
                     "startingTime",
-                    "taskname",
                     "endingtime",
                     "duration",
+                    "taskname",
                     "complete",
                     "status",
                     "remarks",

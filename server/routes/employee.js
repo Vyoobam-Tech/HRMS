@@ -110,7 +110,7 @@ router.delete("/delete/:empId", async (req, res) => {
 router.get("/by-user/:email", async (req, res) => {
   try{
     const employee = await Employee.findOne({
-      where: ({ email: req.params.email})
+      where: { email: req.params.email}
     })
 
     if(!employee){

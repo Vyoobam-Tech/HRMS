@@ -17,20 +17,28 @@ export const Attendance = sequelize.define(
         },
         login: {
             type: DataTypes.TIME,
-            allowNull: false
+            allowNull: true
         },
         breakminutes: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.STRING,
         },
         lunchminutes: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.STRING,
         },
         logout: {
             type: DataTypes.TIME,
         },
+        totalminutes: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 0
+        },
         totalhours: {
             type: DataTypes.STRING,
         },
+        status: {
+            type: DataTypes.STRING
+        }
     }, {
         tableName: 'attendance',
         timestamps: true

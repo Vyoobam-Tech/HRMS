@@ -8,6 +8,8 @@ import { EmployeeRouter } from "./routes/employee.js";
 import { DepartmentRouter } from "./routes/department.js";
 import { ActivityRouter } from "./routes/activity.js";
 import { AttendanceRouter } from "./routes/attendance.js";
+import { startAutoAbsent } from "./jobs/autoAbsent.js";
+import { HolidayRouter } from "./routes/holiday.js";
 
 dotenv.config();
 const app = express();
@@ -28,11 +30,14 @@ app.use("/api/employees", EmployeeRouter);
 app.use("/api/departments", DepartmentRouter);
 app.use("/api/activities", ActivityRouter);
 app.use("/api/attendance", AttendanceRouter)
+app.use("/api/holiday", HolidayRouter)
+
 
 sequelize
   .sync({alter: true})
   .then(() => {
     console.log("DB connected");
+    startAutoAbsent()
     const PORT = process.env.PORT || 3000;
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);

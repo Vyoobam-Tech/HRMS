@@ -19,9 +19,6 @@ import HandymanRoundedIcon from "@mui/icons-material/HandymanRounded";
 import CelebrationRoundedIcon from "@mui/icons-material/CelebrationRounded";
 import EmojiEventsRoundedIcon from "@mui/icons-material/EmojiEventsRounded";
 import PaymentOutlinedIcon from "@mui/icons-material/PaymentOutlined";
-import AssignmentRoundedIcon from "@mui/icons-material/AssignmentRounded";
-import BusinessCenterRoundedIcon from "@mui/icons-material/BusinessCenterRounded";
-import LockPersonRoundedIcon from "@mui/icons-material/LockPersonRounded";
 import AccountBalanceRoundedIcon from "@mui/icons-material/AccountBalanceRounded";
 import AssessmentRoundedIcon from "@mui/icons-material/AssessmentRounded";
 import ExpandLess from "@mui/icons-material/ExpandLess";
@@ -35,6 +32,7 @@ import axios from "axios";
 const Sidebar = ({ onToggle, setIsAuthenticated }) => {
   const [reportsOpen, setReportsOpen] = useState(false);
   const [user, setUser] = useState(null)
+  const [loading, setLoading] = useState(true)
   const navigate = useNavigate();
 
   const toggleReportsDropdown = () => {
@@ -62,12 +60,16 @@ const Sidebar = ({ onToggle, setIsAuthenticated }) => {
           }
         } catch(err) {
           console.log(err)
+        } finally {
+          setLoading(false)
         }
       }
       fetchUser()
     }, [])
 
     const role = user?.role
+
+    if(loading) return null
 
   return (
     <Box
@@ -131,11 +133,11 @@ const Sidebar = ({ onToggle, setIsAuthenticated }) => {
           </ListItemButton>
         </ListItem>
         <ListItem disablePadding>
-          <ListItemButton component={Link} to="/attandence">
+          <ListItemButton component={Link} to="/attendance">
             <ListItemIcon>
               <DateRangeIcon sx={{ color: "#fff" }} />
             </ListItemIcon>
-            <ListItemText primary="Attendance" />
+            <ListItemText primary="My Attendance" />
           </ListItemButton>
         </ListItem>
         <ListItem disablePadding>
@@ -183,14 +185,6 @@ const Sidebar = ({ onToggle, setIsAuthenticated }) => {
             <ListItemText primary="Department" />
           </ListItemButton>
         </ListItem>
-        {/* <ListItem disablePadding>
-          <ListItemButton component={Link} to="/employee-details">
-            <ListItemIcon>
-              <PolylineRoundedIcon sx={{ color: "#fff" }} />
-            </ListItemIcon>
-            <ListItemText primary="My Details" />
-          </ListItemButton>
-        </ListItem> */}
         <ListItem disablePadding>
           <ListItemButton component={Link} to="/employee">
             <ListItemIcon>
@@ -199,22 +193,6 @@ const Sidebar = ({ onToggle, setIsAuthenticated }) => {
             <ListItemText primary="Employees" />
           </ListItemButton>
         </ListItem>
-        <ListItem disablePadding>
-          <ListItemButton component={Link} to="/attandence">
-            <ListItemIcon>
-              <DateRangeIcon sx={{ color: "#fff" }} />
-            </ListItemIcon>
-            <ListItemText primary="Attendance" />
-          </ListItemButton>
-        </ListItem>
-        {/* <ListItem disablePadding>
-          <ListItemButton component={Link} to="/activities">
-            <ListItemIcon>
-              <HandymanRoundedIcon sx={{ color: "#fff" }} />
-            </ListItemIcon>
-            <ListItemText primary="My Activities" />
-          </ListItemButton>
-        </ListItem> */}
         <ListItem disablePadding>
           <ListItemButton component={Link} to="/allactivities">
             <ListItemIcon>
@@ -313,7 +291,7 @@ const Sidebar = ({ onToggle, setIsAuthenticated }) => {
               </ListItemButton>
             </ListItem> */}
       </List>
-     )}
+    )}
 
       <IconButton
         size="large"

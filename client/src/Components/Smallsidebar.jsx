@@ -1,46 +1,72 @@
-import { Box, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Collapse} from "@mui/material";
-import DashboardRoundedIcon from "@mui/icons-material/DashboardRounded";
-import PolylineRoundedIcon from "@mui/icons-material/PolylineRounded";
-import BadgeRoundedIcon from "@mui/icons-material/BadgeRounded";
-import HandymanRoundedIcon from "@mui/icons-material/HandymanRounded";
-import CelebrationRoundedIcon from "@mui/icons-material/CelebrationRounded";
-import EmojiEventsRoundedIcon from "@mui/icons-material/EmojiEventsRounded";
-import PaymentOutlinedIcon from "@mui/icons-material/PaymentOutlined";
-import AccountBalanceRoundedIcon from "@mui/icons-material/AccountBalanceRounded";
-import AssessmentRoundedIcon from "@mui/icons-material/AssessmentRounded";
-import ExpandLess from "@mui/icons-material/ExpandLess";
-import ExpandMore from "@mui/icons-material/ExpandMore";
-import MenuIcon from "@mui/icons-material/Menu";
-import PowerSettingsNewRoundedIcon from "@mui/icons-material/PowerSettingsNewRounded";
-import AccessibilityRoundedIcon from '@mui/icons-material/AccessibilityRounded';
-import CalendarMonthRoundedIcon from '@mui/icons-material/CalendarMonthRounded';
-import DateRangeIcon from '@mui/icons-material/DateRange';
-import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import {
+  Box,
+  IconButton,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  Collapse,
+} from "@mui/material";
+import {
+  DashboardRounded as DashboardRoundedIcon,
+  PolylineRounded as PolylineRoundedIcon,
+  BadgeRounded as BadgeRoundedIcon,
+  HandymanRounded as HandymanRoundedIcon,
+  CelebrationRounded as CelebrationRoundedIcon,
+  EmojiEventsRounded as EmojiEventsRoundedIcon,
+  PaymentOutlined as PaymentOutlinedIcon,
+  AccountBalanceRounded as AccountBalanceRoundedIcon,
+  AssessmentRounded as AssessmentRoundedIcon,
+  ExpandLess,
+  ExpandMore,
+  Menu as MenuIcon,
+  PowerSettingsNewRounded as PowerSettingsNewRoundedIcon,
+} from "@mui/icons-material";
+import AccessibilityRoundedIcon from "@mui/icons-material/AccessibilityRounded";
+import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
+import DateRangeIcon from "@mui/icons-material/DateRange";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const Smallsidebar = ({ onToggle, setIsAuthenticated }) => {
-
-  const [reportsOpen, setReportsOpen] = useState(false);
-
-    const toggleReportsDropdown = () => {
-      setReportsOpen(!reportsOpen);
-    };
-
+  const [reportsOpen, setReportsOpen] = useState(false)
+  const [user, setUser] = useState(null)
+  const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
 
-  const handleLogout = async () => {
-      try{
-        await axios.get("http://localhost:3000/auth/logout", {withCredentials: true})
+  const toggleReportsDropdown = () => setReportsOpen(!reportsOpen);
 
-        localStorage.removeItem("isLoggedIn")
-        setIsAuthenticated(false)
-        navigate("/login")
-      } catch(err) {
-        console.log(err)
-      }
+  const handleLogout = async () => {
+    try {
+      await axios.get("http://localhost:3000/auth/logout", { withCredentials: true });
+      localStorage.removeItem("isLoggedIn");
+      setIsAuthenticated(false);
+      navigate("/login");
+    } catch (err) {
+      console.log(err);
     }
+  };
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await axios.get("http://localhost:3000/auth/profile", {
+          withCredentials: true,
+        })
+        if (response.data.status) setUser(response.data.user)
+      } catch (err) {
+        console.log(err)
+      } finally {
+        setLoading(false)
+      }
+    };
+    fetchUser()
+  }, [])
+
+  const role = user?.role
+
+  if (loading) return null
 
   return (
     <Box
@@ -58,124 +84,176 @@ const Smallsidebar = ({ onToggle, setIsAuthenticated }) => {
         boxShadow: "2px 0 5px rgba(0,0,0,0.1)",
       }}
     >
-      <List sx={{ margin: '-12px'}}>
+      <List sx={{ margin: "-12px" }}>
         <IconButton onClick={onToggle}>
-          <MenuIcon sx={{ color: "#fff", marginLeft: "22px", marginBottom: '50px' }}/>
+          <MenuIcon sx={{ color: "#fff", marginLeft: "22px", marginBottom: "50px" }} />
         </IconButton>
 
-      
-        <ListItem>
-          <ListItemButton component={Link} to="/dashpage">
-            <ListItemIcon>
-              <DashboardRoundedIcon sx={{ color: "#fff" }} />
-            </ListItemIcon>
-          </ListItemButton>
-        </ListItem>
 
-        <ListItem>
-          <ListItemButton component={Link} to="/department">
-            <ListItemIcon>
-              <PolylineRoundedIcon sx={{ color: "#fff" }} />
-            </ListItemIcon>
-          </ListItemButton>
-        </ListItem>
-
-        <ListItem>
-          <ListItemButton component={Link} to="/employee">
-            <ListItemIcon>
-              <BadgeRoundedIcon sx={{ color: "#fff" }} />
-            </ListItemIcon>
-          </ListItemButton>
-        </ListItem>
-
-        <ListItem>
-          <ListItemButton component={Link} to="/attandence">
-            <ListItemIcon>
-              <DateRangeIcon sx={{ color: "#fff" }} />
-            </ListItemIcon>
-          </ListItemButton>
-        </ListItem>
-
-        <ListItem>
-          <ListItemButton component={Link} to="/activities">
-            <ListItemIcon>
-              <HandymanRoundedIcon sx={{ color: "#fff" }} />
-            </ListItemIcon>
-          </ListItemButton>
-        </ListItem>
-
-        <ListItem>
-          <ListItemButton component={Link} to="/holidays">
-            <ListItemIcon>
-              <CelebrationRoundedIcon sx={{ color: "#fff" }} />
-            </ListItemIcon>
-          </ListItemButton>
-        </ListItem>
-
-        <ListItem>
-          <ListItemButton component={Link} to="/events">
-            <ListItemIcon>
-              <EmojiEventsRoundedIcon sx={{ color: "#fff" }} />
-            </ListItemIcon>
-          </ListItemButton>
-        </ListItem>
-
-        <ListItem>
-          <ListItemButton component={Link} to="/payroll">
-            <ListItemIcon>
-              <PaymentOutlinedIcon sx={{ color: "#fff" }} />
-            </ListItemIcon>
-          </ListItemButton>
-        </ListItem>
-
-        <ListItem>
-          <ListItemButton component={Link} to="/accounts">
-            <ListItemIcon>
-              <AccountBalanceRoundedIcon sx={{ color: "#fff" }} />
-            </ListItemIcon>
-          </ListItemButton>
-        </ListItem>
-
-         {/* Reports Dropdown */}
-        <ListItem>
-          <ListItemButton onClick={toggleReportsDropdown}>
-            <ListItemIcon>
-              <AssessmentRoundedIcon sx={{ color: "#fff" }} />
-            </ListItemIcon>
-            <ListItemText/>
-          </ListItemButton>
-        </ListItem>
-
-        {/* Dropdown Items */}
-        <Collapse in={reportsOpen} timeout="auto" unmountOnExit>
-          <List component="div" sx={{ paddingLeft: 2 }}>
-            <ListItem disablePadding>
-              <ListItemButton component={Link} to="/reports?type=attendance">
-                <AccessibilityRoundedIcon sx={{ color:'#fff' }}/>
+        {role === "employee" && (
+          <>
+            <ListItem>
+              <ListItemButton component={Link} to="/dashpage">
+                <ListItemIcon>
+                  <DashboardRoundedIcon sx={{ color: "#fff" }} />
+                </ListItemIcon>
               </ListItemButton>
             </ListItem>
-            <ListItem disablePadding>
-              <ListItemButton component={Link} to="/reports?type=leave">
-                <CalendarMonthRoundedIcon sx={{ color: "#fff" }}/>
+
+            <ListItem>
+              <ListItemButton component={Link} to="/department">
+                <ListItemIcon>
+                  <PolylineRoundedIcon sx={{ color: "#fff" }} />
+                </ListItemIcon>
               </ListItemButton>
             </ListItem>
-          </List>
-        </Collapse>
+
+            <ListItem>
+              <ListItemButton component={Link} to="/employee-details">
+                <ListItemIcon>
+                  <BadgeRoundedIcon sx={{ color: "#fff" }} />
+                </ListItemIcon>
+              </ListItemButton>
+            </ListItem>
+
+            <ListItem>
+              <ListItemButton component={Link} to="/attandence">
+                <ListItemIcon>
+                  <DateRangeIcon sx={{ color: "#fff" }} />
+                </ListItemIcon>
+              </ListItemButton>
+            </ListItem>
+
+            <ListItem>
+              <ListItemButton component={Link} to="/activities">
+                <ListItemIcon>
+                  <HandymanRoundedIcon sx={{ color: "#fff" }} />
+                </ListItemIcon>
+              </ListItemButton>
+            </ListItem>
+
+            <ListItem>
+              <ListItemButton component={Link} to="/holidays">
+                <ListItemIcon>
+                  <CelebrationRoundedIcon sx={{ color: "#fff" }} />
+                </ListItemIcon>
+              </ListItemButton>
+            </ListItem>
+
+            <ListItem>
+              <ListItemButton component={Link} to="/events">
+                <ListItemIcon>
+                  <EmojiEventsRoundedIcon sx={{ color: "#fff" }} />
+                </ListItemIcon>
+              </ListItemButton>
+            </ListItem>
+          </>
+        )}
+
+
+        {(role === "admin" || role === "superadmin") && (
+          <>
+            <ListItem>
+              <ListItemButton component={Link} to="/dashpage">
+                <ListItemIcon>
+                  <DashboardRoundedIcon sx={{ color: "#fff" }} />
+                </ListItemIcon>
+              </ListItemButton>
+            </ListItem>
+
+            <ListItem>
+              <ListItemButton component={Link} to="/department">
+                <ListItemIcon>
+                  <PolylineRoundedIcon sx={{ color: "#fff" }} />
+                </ListItemIcon>
+              </ListItemButton>
+            </ListItem>
+
+            <ListItem>
+              <ListItemButton component={Link} to="/employee">
+                <ListItemIcon>
+                  <BadgeRoundedIcon sx={{ color: "#fff" }} />
+                </ListItemIcon>
+              </ListItemButton>
+            </ListItem>
+
+            <ListItem>
+              <ListItemButton component={Link} to="/allactivities">
+                <ListItemIcon>
+                  <HandymanRoundedIcon sx={{ color: "#fff" }} />
+                </ListItemIcon>
+              </ListItemButton>
+            </ListItem>
+
+            <ListItem>
+              <ListItemButton component={Link} to="/holidays">
+                <ListItemIcon>
+                  <CelebrationRoundedIcon sx={{ color: "#fff" }} />
+                </ListItemIcon>
+              </ListItemButton>
+            </ListItem>
+
+            <ListItem>
+              <ListItemButton component={Link} to="/events">
+                <ListItemIcon>
+                  <EmojiEventsRoundedIcon sx={{ color: "#fff" }} />
+                </ListItemIcon>
+              </ListItemButton>
+            </ListItem>
+
+            <ListItem>
+              <ListItemButton component={Link} to="/payroll">
+                <ListItemIcon>
+                  <PaymentOutlinedIcon sx={{ color: "#fff" }} />
+                </ListItemIcon>
+              </ListItemButton>
+            </ListItem>
+
+            <ListItem>
+              <ListItemButton component={Link} to="/accounts">
+                <ListItemIcon>
+                  <AccountBalanceRoundedIcon sx={{ color: "#fff" }} />
+                </ListItemIcon>
+              </ListItemButton>
+            </ListItem>
+
+            {/* Reports Dropdown */}
+            <ListItem>
+              <ListItemButton onClick={toggleReportsDropdown}>
+                <ListItemIcon>
+                  <AssessmentRoundedIcon sx={{ color: "#fff" }} />
+                </ListItemIcon>
+                {reportsOpen ? <ExpandLess sx={{ color: "#fff" }} /> : <ExpandMore sx={{ color: "#fff" }} />}
+              </ListItemButton>
+            </ListItem>
+
+            <Collapse in={reportsOpen} timeout="auto" unmountOnExit>
+              <List component="div" sx={{ paddingLeft: 2 }}>
+                <ListItem disablePadding>
+                  <ListItemButton component={Link} to="/reports?type=attendance">
+                    <AccessibilityRoundedIcon sx={{ color: "#fff" }} />
+                  </ListItemButton>
+                </ListItem>
+                <ListItem disablePadding>
+                  <ListItemButton component={Link} to="/reports?type=leave">
+                    <CalendarMonthRoundedIcon sx={{ color: "#fff" }} />
+                  </ListItemButton>
+                </ListItem>
+              </List>
+            </Collapse>
+          </>
+        )}
 
         <IconButton
           size="large"
           edge="end"
-          aria-haspopup="true"
           color="inherit"
           onClick={handleLogout}
           sx={{
-            "&:hover": {
-              backgroundColor: "transparent",
-              boxShadow: "none",
-            },
+            "&:hover": { backgroundColor: "transparent", boxShadow: "none" },
             paddingTop: "60px",
             marginLeft: "22px",
-            color: "#fff"
+            color: "#fff",
           }}
         >
           <PowerSettingsNewRoundedIcon />

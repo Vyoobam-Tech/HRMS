@@ -11,6 +11,22 @@ const AllEmployeeTimeTraker = () => {
     const [rowData, setRowData] = useState([])
     const [showEditModal, setShowEditModal] = useState(false)
     const [selectedRow, setSelectedRow] = useState(null)
+    const [user, setUser] = useState(null)
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            try{
+                const res = await axios.get("http://localhost:3000/auth/profile", {withCredentials: true})
+                if(res.data.user){
+                    setUser(res.data.user)
+                }
+            }catch (err){
+                console.log(err)
+            }
+        }
+        fetchUser()
+    }, [])
+
 
     useEffect(() => {
         const fetchEmployeeAttendance = async () => {
@@ -23,7 +39,7 @@ const AllEmployeeTimeTraker = () => {
         }
 
         fetchEmployeeAttendance()
-    }, [])
+    }, [user])
 
     const handleEdit = (row) => {
         setSelectedRow(row)
@@ -38,7 +54,9 @@ const AllEmployeeTimeTraker = () => {
                         breakminutes: selectedRow.breakminutes,
                         lunchminutes: selectedRow.lunchminutes,
                         logout: selectedRow.logout,
-                        totalhours: selectedRow.totalhours
+                        totalminutes: selectedRow.totalminutes,
+                        totalhours: selectedRow.totalhours,
+                        status: selectedRow.status
                     }
                 )
 
@@ -61,7 +79,19 @@ const AllEmployeeTimeTraker = () => {
         {headerName: "Lunch", field: "lunchminutes"},
         {headerName: "Logout", field: "logout"},
         {headerName: "Total Hours", field: "totalhours"},
-        {headerName: "Status", field: "status", maxWidth: 130},
+        {headerName: "Status", field: "status", maxWidth: 150, 
+            cellStyle: (params) => {
+                if(params.value === "Present"){
+                    return { color: "#4caf50", fontWeight: "bold"}
+                }
+                if(params.value === "Half-day"){
+                    return { color: "#ff9800", fontWeight: "bold"}
+                }
+                if(params.value === "Absent"){
+                    return { color: "#f44336", fontWeight: "bold"}
+                }
+            }
+        },
         {headerName: "Actions", field: "actions",
             cellRenderer: (params) => (
                 <div
@@ -106,7 +136,13 @@ const AllEmployeeTimeTraker = () => {
         const minutes = totalWorkedMins % 60
         const totalHours = `${hours}h ${minutes}m`
 
-        setSelectedRow(prev => ({...prev, totalhours: totalHours}))
+        let status = ""
+        if (hours >= 6)
+            status = "Present"
+        else if (hours > 1 && hours < 6)
+            status = "Half-day"
+
+        setSelectedRow(prev => ({...prev, totalminutes: totalWorkedMins, totalhours: totalHours, status: status}))
 
     }, [selectedRow?.login, selectedRow?.breakminutes, selectedRow?.lunchminutes, selectedRow?.logout])
 
@@ -120,7 +156,7 @@ const AllEmployeeTimeTraker = () => {
             marginLeft: "30px",
             }}
         >
-            <Header title="Attendance Tracker"/>
+            <Header title="ATTENDANCE TRACKER"/>
             <AgGridReact
                 key={gridKey}
                 rowData={rowData}

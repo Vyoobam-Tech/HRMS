@@ -28,8 +28,8 @@ const EmpDetails = () => {
   }, [])
 
   useEffect(() => {
+    if(!user?.email) return
     const fetchEmployee = async () => {
-      if(!user?.email) return
       try{
         const response = await axios.get(`http://localhost:3000/api/employees/by-user/${user.email}`, 
           {withCredentials: true})

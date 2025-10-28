@@ -5,7 +5,7 @@ const router = express.Router()
 
 router.post("/", async (req, res) => {
     try{
-        const {empid, name, attendancedate, login, breakminutes, lunchminutes, logout, totalhours} = req.body
+        const {empid, name, attendancedate, login, breakminutes, lunchminutes, logout, totalminutes, totalhours, status} = req.body
 
         const attendance = await Attendance.create({
             empid,
@@ -15,12 +15,14 @@ router.post("/", async (req, res) => {
             breakminutes,
             lunchminutes,
             logout,
-            totalhours
+            totalminutes,
+            totalhours,
+            status
         })
         res.status(201).json({
             success: true,
             message: "Attendance Created",
-            date: attendance
+            data: attendance
         })
     } catch(err){
         res.status(500).json({ success: false, message: "Error creating attendance",err})
@@ -40,7 +42,7 @@ router.get("/all", async (req, res) => {
 router.put("/:id", async (req, res) => {
     try{
         const {id} = req.params
-        const {login, breakminutes, lunchminutes, logout, totalhours} = req.body
+        const {login, breakminutes, lunchminutes, logout, totalminutes, totalhours, status} = req.body
 
         const attendance = await Attendance.findByPk(id)
         if (!attendance) {
@@ -51,13 +53,27 @@ router.put("/:id", async (req, res) => {
         attendance.breakminutes = breakminutes
         attendance.lunchminutes = lunchminutes
         attendance.logout = logout
+        attendance.totalminutes = totalminutes
         attendance.totalhours = totalhours
+        attendance.status = status
 
         await attendance.save()
 
         res.status(200).json({success: true, message: "attendance updated successfully", data: attendance})
     } catch (err) {
         res.status(500).json({ success: false, message:"error updating attendance", err})
+    }
+})
+
+router.get("/by-user/:empid", async (req, res) => {
+    try{
+        const attendance = await Attendance.findAll({
+            where:{empid: req.params.empid}
+        })
+
+        return res.json({status: true, data: attendance})
+    }catch(err){
+        return res.status(500).json({status: false, message: err.message})
     }
 })
 

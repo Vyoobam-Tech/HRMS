@@ -70,7 +70,7 @@ const Employees = () => {
   const fetchEmployees = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/employees/all"
+        "http://localhost:3000/api/employees/all", {withCredentials: true}
       );
       setRowData(response.data.data);
     } catch (error) {

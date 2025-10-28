@@ -58,6 +58,33 @@ function App() {
         });
     }
   }, []);
+  
+  // useEffect(() => {
+  //   const checkAuth = async () => {
+  //     try{
+  //       const response = await axios.get("http://localhost:3000/auth/checkSession", {withCredentials: true})
+  //       if(response.data.loggedIn){
+  //         setIsAuthenticated(true)
+  //         localStorage.setItem("isLoggedIn", "true")
+
+  //         const fetchUser = await axios.get("http://localhost:3000/auth/profile", {withCredentials: true})
+  //         if(fetchUser.data.status){
+  //           setUser(fetchUser.data.user)
+  //         }
+  //       } else{
+  //         setIsAuthenticated(false)
+  //         localStorage.removeItem("isLoggedIn")
+  //       }
+  //     }catch(err){
+  //       setIsAuthenticated(false)
+  //       localStorage.removeItem("isLoggedIn")
+  //     }finally{
+  //       setLoading(false)
+  //     }
+  //   }
+
+  //   checkAuth()
+  // }, [])
 
   const handleToggleSidebar = () => {
     setIsSidebarOpen((prev) => !prev);
@@ -77,6 +104,7 @@ function App() {
     }
     fetchUser()
   }, [])
+
 
   const role = user?.role
 
@@ -130,7 +158,7 @@ function App() {
                         <Route path="/dashpage" element={<Dashpage />} />
                         <Route path="/department" element={<Department />} />
                         <Route path="/employee-details" element={<EmpDetails />} />
-                        <Route path="/attandence" element={<EachEmployeeTimeTracker />} />
+                        <Route path="/attendance" element={<EachEmployeeTimeTracker />} />
                         <Route path="/activities" element={<Activities />} />
                         <Route path="/holidays" element={<Holidays />} />
                         <Route path="/events" element={<Events />} />
@@ -172,7 +200,6 @@ function App() {
                         <Route path="/department" element={<Department />} />
                         <Route path="/employee-details" element={<EmpDetails />} />
                         <Route path="/employee" element={<Employee />} />
-                        <Route path="/attandence" element={<EachEmployeeTimeTracker />} />
                         <Route path="/activities" element={<Activities />} />
                         <Route path="/allactivities" element={<AllActivities />} />
                         <Route path="/holidays" element={<Holidays />} />

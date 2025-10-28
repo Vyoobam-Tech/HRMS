@@ -11,17 +11,73 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AgCharts } from "ag-charts-community";
 import { border } from "@mui/system";
+import axios from "axios";
+import Post from "./Post";
 
 const Dashpage = () => {
   const [value, setValue] = useState(new Date());
   const navigate = useNavigate();
   const chartRef = useRef(null);
+  const [user, setUser] = useState(null)
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try{
+        const response = await axios.get("http://localhost:3000/auth/profile", {withCredentials: true})
+        if(response.data.user){
+          setUser(response.data.user)
+        }
+      } catch (err) {
+        console.log(err)
+      }
+    }
+    fetchUser()
+  }, [])
+
+
+  const [stats, setstats] = useState({
+    departments: 0,
+    // accounts: 0,
+    // payroll: 0,
+    myactivity: 0,
+    allactivitities: 0,
+    employees: 0
+  })
+
+  useEffect(() => {
+    if(!user) return 
+    const fetchStats = async () => {
+    try{
+      const [dep, myact, allact,emp] = await Promise.all([
+        axios.get("http://localhost:3000/api/departments/all"),
+        // axios.get("http://localhost:3000/api/accounts/all"),
+        // axios.get("http://localhost:3000/api/payroll/all"),
+        axios.get(`http://localhost:3000/api/activities/by-user/${user.empid}`),
+        // axios.get("http://localhost:3000/api/activities/all"),
+        axios.get("http://localhost:3000/api/activities/all"),
+        axios.get("http://localhost:3000/api/employees/all")
+      ])
+
+      setstats({
+        departments: dep.data.data.length,
+        // accounts: acc.length,
+        // payroll: prl.length,
+        myactivity: myact.data.data.length,
+        allactivitities: allact.data.data.length,
+        employees: emp.data.data.length 
+      })
+    } catch(err){
+      console.log(err)
+    }
+  }
+  fetchStats()
+  },[user])
 
   const cards = [
     {
       title: "Department",
       icon: <BusinessRoundedIcon fontSize="large" />,
-      value: "20",
+      value: stats.departments,
       subtitle: "Totally",
       path: "/department",
     },
@@ -39,14 +95,24 @@ const Dashpage = () => {
       subtitle: "This Month",
       path: "/accounts",
     },
+    ...(user?.role === "employee" ? [
+      {
+      title: "My Report",
+      icon: <DataUsageOutlinedIcon fontSize="large" />,
+      value: stats.myactivity,
+      subtitle: "Activities Logged",
+      path: "/activities",
+    },
+  ] : [
     {
       title: "Report",
       icon: <DataUsageOutlinedIcon fontSize="large" />,
-      value: "52",
+      value: stats.allactivitities,
       subtitle: "Activities Logged",
-      path: "/reports",
-    },
-  ];
+      path: "/allactivities",
+    }
+  ])
+  ]
 
   function getData() {
     return [
@@ -98,6 +164,7 @@ const Dashpage = () => {
 
   return (
     <Box display="flex" flexDirection="column" gap={1} px={4} paddingTop={20}>
+      <Post user={user}/>
       <Grid container spacing={2}>
         {cards.map(({ title, icon, path, subtitle, value }) => (
           <Grid item key={title} xs={12} sm={6} md={3}>
@@ -165,7 +232,7 @@ const Dashpage = () => {
             <Typography variant="h6">No. of Employees</Typography>
             <Box sx={{ paddingTop: "30px", marginLeft: "15px" }}>
               <PeopleAltRoundedIcon fontSize="large" />
-              <Typography variant="h6">3K</Typography>
+              <Typography variant="h6">{stats.employees}</Typography>
               <Typography variant="h6">Total Employees</Typography>
             </Box>
           </CardContent>
