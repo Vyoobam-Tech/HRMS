@@ -78,8 +78,7 @@ const EachEmployeeTimeTracker = () => {
                 height: 450,
                 width: "100%",
                 marginRight: "60px",
-                paddingTop: "140px",
-                marginLeft: "30px",
+                paddingTop: "120px",
             }}
         >
             <Header title="MY ATTENDANCE"/>
@@ -89,6 +88,7 @@ const EachEmployeeTimeTracker = () => {
                 rowData={rowData}
                 columnDefs={columDefs}
                 defaultColDef={defaultColDef}
+                domLayout="autoHeight"
                 pagination={true}
                 paginationPageSize={10}
                 paginationPageSizeSelector={[10,25,50]}

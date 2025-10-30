@@ -121,12 +121,23 @@ const Navbar = ({ isSidebarOpen }) => {
         const totalhours = `${hours}h ${minutes}m`;
         console.log(totalMinutes)
 
+        const remaining = 8 - hours
+
         let status = ""
-        if ( hours >= 6){
+
+        if(hours >= 8){
           status = "Present"
-        }
-        else if (hours > 1 && hours < 6) {
+        } else if(hours >= 6 && hours < 8){
+          const confirm = window.confirm(`You have worked ${hours.toFixed(1)} hrs.\n${remaining} hrs remaining to complete 8 hrs.\nDo you want to mark this as Half-day?`)
+          if(confirm){
+            status = "Half-day"
+          }else{
+            return
+          }
+        } else if(hours >= 4 && hours < 6){
           status = "Half-day"
+        }else{
+          status = "Absent"
         }
 
         try {
@@ -143,17 +154,17 @@ const Navbar = ({ isSidebarOpen }) => {
             status
           });
 
-          // Clear local storage
-          localStorage.removeItem("loginTime");
-          localStorage.removeItem("breakIn");
-          localStorage.removeItem("breakOut");
-          localStorage.removeItem("lunchIn");
-          localStorage.removeItem("lunchOut");
+
+          localStorage.removeItem("loginTime")
+          localStorage.removeItem("breakIn")
+          localStorage.removeItem("breakOut")
+          localStorage.removeItem("lunchIn")
+          localStorage.removeItem("lunchOut")
 
           window.location.href = "/login"
         } catch (err) {
-          console.error("Error submitting attendance:", err);
-          alert("Failed to submit attendance. Try again.");
+          console.error("Error submitting attendance:", err)
+          alert("Failed to submit attendance. Try again.")
         }
     }
 
@@ -163,10 +174,8 @@ const Navbar = ({ isSidebarOpen }) => {
         position="fixed"
         elevation={-1}
         sx={{
-          // zIndex: 1201,
           backgroundColor: "#fff",
-          width: isSidebarOpen ? "calc(100% - 265px)" : "calc(100% - 60px)",
-          // marginLeft: isSidebarOpen ? "265px" : "60px",
+          width: isSidebarOpen ? "calc(100% - 37vh)" : "calc(100% - 60px)",
           transition: "margin-left 0.2s ease-in-out",
         }}
       >

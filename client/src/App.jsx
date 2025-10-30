@@ -22,13 +22,14 @@ import Holidays from "./scenes/holidays/index";
 import Events from "./scenes/events/index";
 import Payroll from "./scenes/payroll/index";
 import Accounts from "./scenes/accounts/index";
-import Reports from "./scenes/reports/index";
 import Navbar from "./Components/Navbar";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "./theme";
 import EachEmployeeTimeTracker from "./scenes/reports/EachEmployeeTimeTracker";
 import EmpDetails from "./scenes/employees/EmpDetails";
 import AllActivities from "./scenes/activities/AllActivity";
+import AllEmployeeTimeTraker from "./scenes/reports/AllEmployeeTimeTraker";
+import AttendanceSummary from "./scenes/reports/AttendanceSummary";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -206,7 +207,9 @@ function App() {
                         <Route path="/events" element={<Events />} />
                         <Route path="/payroll" element={<Payroll />} />
                         <Route path="/accounts" element={<Accounts />} />
-                        <Route path="/reports" element={<Reports />} />
+                        {/* <Route path="/reports" element={<Reports />} /> */}
+                        <Route path="/attendance-report" element={<AllEmployeeTimeTraker />} />
+                        <Route path="/attendance-summary" element={<AttendanceSummary />} />
                       </Routes>
                     </Box>
                   </Box>

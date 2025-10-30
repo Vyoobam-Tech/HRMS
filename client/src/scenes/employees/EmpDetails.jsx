@@ -76,7 +76,6 @@ const EmpDetails = () => {
         width: "100%",
         marginRight: "60px",
         paddingTop: "100px",
-        marginLeft: "20px",
       }}
     >
       <Box>

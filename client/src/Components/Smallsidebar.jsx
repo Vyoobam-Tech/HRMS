@@ -84,9 +84,15 @@ const Smallsidebar = ({ onToggle, setIsAuthenticated }) => {
         boxShadow: "2px 0 5px rgba(0,0,0,0.1)",
       }}
     >
-      <List sx={{ margin: "-12px" }}>
+      <List sx={{
+        margin: "-12px",
+        padding: 0 ,
+        "& .MuiListItem-root": {
+          paddingY: "3px",
+        },}}
+      >
         <IconButton onClick={onToggle}>
-          <MenuIcon sx={{ color: "#fff", marginLeft: "22px", marginBottom: "50px" }} />
+          <MenuIcon sx={{ color: "#fff", marginLeft: "22px", marginBottom: "30px" }} />
         </IconButton>
 
 
@@ -230,12 +236,12 @@ const Smallsidebar = ({ onToggle, setIsAuthenticated }) => {
             <Collapse in={reportsOpen} timeout="auto" unmountOnExit>
               <List component="div" sx={{ paddingLeft: 2 }}>
                 <ListItem disablePadding>
-                  <ListItemButton component={Link} to="/reports?type=attendance">
+                  <ListItemButton component={Link} to="attendance-report">
                     <AccessibilityRoundedIcon sx={{ color: "#fff" }} />
                   </ListItemButton>
                 </ListItem>
                 <ListItem disablePadding>
-                  <ListItemButton component={Link} to="/reports?type=leave">
+                  <ListItemButton component={Link} to="attendance-summary">
                     <CalendarMonthRoundedIcon sx={{ color: "#fff" }} />
                   </ListItemButton>
                 </ListItem>

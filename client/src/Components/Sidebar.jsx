@@ -74,7 +74,7 @@ const Sidebar = ({ onToggle, setIsAuthenticated }) => {
   return (
     <Box
       sx={{
-        width: "29vh",
+        width: "32.3vh",
         backgroundColor: "#34495e",
         color: "#fff",
         height: "100vh",
@@ -84,28 +84,18 @@ const Sidebar = ({ onToggle, setIsAuthenticated }) => {
         position: "fixed",
         left: 0,
         overflowY: "auto",
+        "& .MuiListItemText-primary": {
+          fontSize: "0.85rem"
+        }
       }}
     >
       <IconButton
         onClick={onToggle}
-        sx={{ marginTop: "-15px", marginLeft: "-20px", marginBottom:'50px', color: "#fff" }}
+        sx={{ marginTop: "-15px", marginLeft: "-20px", marginBottom:'30px', color: "#fff" }}
       >
         <ArrowBackIcon />
       </IconButton>
 
-      {/* <Typography
-        variant="h5"
-        sx={{
-          fontFamily: "Poppins",
-          paddingTop: "10px",
-          paddingBottom: "35px",
-          paddingLeft: "30px",
-          fontWeight: "bold",
-          color: "#fff",
-        }}
-      >
-        Tamilmani
-      </Typography> */}
       {role === "employee" && (
         <List>
           <ListItem disablePadding>
@@ -250,46 +240,17 @@ const Sidebar = ({ onToggle, setIsAuthenticated }) => {
         <Collapse in={reportsOpen} timeout="auto" unmountOnExit>
           <List component="div" disablePadding sx={{ paddingLeft: 4 }}>
             <ListItem disablePadding>
-              <ListItemButton component={Link} to="/reports?type=attendance">
+              <ListItemButton component={Link} to="attendance-report">
                 <ListItemText primary="Attendance Report" />
               </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
-              <ListItemButton component={Link} to="/reports?type=leave">
-                <ListItemText primary="Leave Report" />
+              <ListItemButton component={Link} to="attendance-summary">
+                <ListItemText primary="Attendance Summary" />
               </ListItemButton>
             </ListItem>
           </List>
         </Collapse>
-        {/* <br />
-            <Divider width="200px" />
-            <br />
-            <ListItem disablePadding>
-              <ListItemButton component={Link} to="/projects">
-                <ListItemIcon>
-                  <AssignmentRoundedIcon />
-                </ListItemIcon>
-                <ListItemText primary="Projects" />
-              </ListItemButton>
-            </ListItem>
-
-            <ListItem disablePadding>
-              <ListItemButton component={Link} to="/jobportal">
-                <ListItemIcon>
-                  <BusinessCenterRoundedIcon />
-                </ListItemIcon>
-                <ListItemText primary="Job Portal" />
-              </ListItemButton>
-            </ListItem>
-
-            <ListItem disablePadding>
-              <ListItemButton component={Link} to="/auth">
-                <ListItemIcon>
-                  <LockPersonRoundedIcon />
-                </ListItemIcon>
-                <ListItemText primary="Authentication" />
-              </ListItemButton>
-            </ListItem> */}
       </List>
     )}
 
@@ -304,7 +265,7 @@ const Sidebar = ({ onToggle, setIsAuthenticated }) => {
             backgroundColor: "transparent",
             boxShadow: "none",
           },
-          paddingTop: "90px",
+          paddingTop: "60px",
           marginLeft: "35px",
         }}
       >

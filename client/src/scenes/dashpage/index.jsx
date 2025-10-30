@@ -163,7 +163,7 @@ const Dashpage = () => {
   }, []);
 
   return (
-    <Box display="flex" flexDirection="column" gap={1} px={4} paddingTop={20}>
+    <Box display="flex" flexDirection="column" paddingTop={15}>
       <Post user={user}/>
       <Grid container spacing={2}>
         {cards.map(({ title, icon, path, subtitle, value }) => (
@@ -210,11 +210,9 @@ const Dashpage = () => {
         display="flex"
         justifyContent="space-between"
         alignItems="stretch"
+        flexWrap="wrap"
         gap={2}
         my={3}
-        sx={{
-          flexWrap: "nowrap",
-        }}
       >
         <Card
           sx={{

@@ -235,8 +235,7 @@ const handleExportExcel = () => {
         height: 450,
         marginRight: "60px",
         paddingBottom: "35px",
-        paddingTop: "140px",
-        marginLeft: "30px",
+        paddingTop: "100px",
       }}
     >
       <Header title="EMPLOYEES" subtitle="Organisation Employee Details" />
@@ -264,9 +263,9 @@ const handleExportExcel = () => {
         pagination={true}
         paginationPageSize={10}
         paginationPageSizeSelector={[10, 25, 50]}
-        // onGridReady={(params) => {
-        //   params.api.sizeColumnsToFit()
-        // }}
+        onGridReady={(params) => {
+          params.api.sizeColumnsToFit()
+        }}
       />
 
       {/* <Dialog

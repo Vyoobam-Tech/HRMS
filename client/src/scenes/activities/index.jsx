@@ -210,8 +210,7 @@ const Activities = () => {
         height: 450,
         marginRight: "60px",
         paddingBottom: "35px",
-        paddingTop: "140px",
-        marginLeft: "30px",
+        paddingTop: "100px",
       }}
     >
       <Header title="MY ACTIVITIES" />
@@ -243,6 +242,9 @@ const Activities = () => {
         pagination={true}
         paginationPageSize={10}
         paginationPageSizeSelector={[10, 25, 50]}
+        onGridReady={(paramas) => {
+          paramas.api.sizeColumnsToFit()
+        }}
       />
 
       {/*Add Activity Modal*/}

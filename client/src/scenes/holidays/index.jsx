@@ -8,11 +8,10 @@ import { Box } from "@mui/system";
 import axios from "axios";
 
 
-ModuleRegistry.registerModules([AllCommunityModule]);
-
 const Holidays = () => {
   const [rowData, setRowData] = useState([]);
   const [gridKey, setGridKey] = useState(0);
+  const [user, setUser] = useState(null)
   const [holidayForm, setHolidayForm] = useState({
     date: "",
     day: "",
@@ -63,6 +62,19 @@ const Holidays = () => {
     },
   ]
 
+  useEffect(() => {
+    const fetchUser = async () => {
+      try{
+        const response = await axios.get("http://localhost:3000/auth/profile", {withCredentials: true})
+        if(response.data.status){
+          setUser(response.data.user)
+        }
+      } catch(err) {
+        console.log(err)
+      }
+    }
+    fetchUser()
+  }, [])
 
   useEffect(() => {
     const fetchHoliday = async () => {
@@ -106,6 +118,8 @@ const Holidays = () => {
     }
   }
 
+  const role = user?.role
+
 
   return (
     <div
@@ -113,12 +127,13 @@ const Holidays = () => {
         height: 450,
         width: 820,
         marginRight: "60px",
-        paddingTop: "140px",
+        paddingTop: "100px",
         marginLeft: "30px",
       }}
     >
       <Header title="HOLIDAYS" subtitle="Organisation Holidays Details" />
 
+      {(role === "admin") || (role === "superadmin") && (
       <Box
         display="flex"
         alignItems="center"
@@ -132,6 +147,7 @@ const Holidays = () => {
         }}
 
       >
+
         <TextField
           type="date"
           label="Select Date"
@@ -178,6 +194,7 @@ const Holidays = () => {
         </Button>
 
       </Box>
+      )}
 
       <AgGridReact
         key={gridKey}

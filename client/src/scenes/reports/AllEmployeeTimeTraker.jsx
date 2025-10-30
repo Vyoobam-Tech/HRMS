@@ -137,12 +137,13 @@ const AllEmployeeTimeTraker = () => {
         const totalHours = `${hours}h ${minutes}m`
 
         let status = ""
-        if (hours >= 6)
-            status = "Present"
-        else if (hours > 1 && hours < 6)
-            status = "Half-day"
+        if (hours >= 8) status = "Present"
+        else if (hours >= 6 && hours < 8) status = "Half-day"
+        else if (hours >= 4 && hours < 6) status = "Half-day"
+        else status = "Absent"
 
-        setSelectedRow(prev => ({...prev, totalminutes: totalWorkedMins, totalhours: totalHours, status: status}))
+
+        setSelectedRow(prev => ({...prev, totalminutes: totalWorkedMins, totalhours: totalHours, status}))
 
     }, [selectedRow?.login, selectedRow?.breakminutes, selectedRow?.lunchminutes, selectedRow?.logout])
 
@@ -152,8 +153,7 @@ const AllEmployeeTimeTraker = () => {
             height: 450,
             marginRight: "60px",
             paddingBottom: "35px",
-            paddingTop: "140px",
-            marginLeft: "30px",
+            paddingTop: "120px",
             }}
         >
             <Header title="ATTENDANCE TRACKER"/>

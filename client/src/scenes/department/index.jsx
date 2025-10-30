@@ -168,8 +168,7 @@ const Department = () => {
         height: 450,
         marginRight: "60px",
         paddingBottom: "35px",
-        paddingTop: "140px",
-        marginLeft: "30px",
+        paddingTop: "100px",
       }}
     >
       <Header title="DEPARTMENT" subtitle="Organisation Departments Details" />{" "}
