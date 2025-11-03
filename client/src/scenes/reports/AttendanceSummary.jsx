@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import Header from '../../components/Header'
 import { Box } from '@mui/system'
 import { Button, Divider, MenuItem, Paper, TextField, Typography } from '@mui/material'
+import { PieChart } from '@mui/x-charts'
 
 const AttendanceSummary = () => {
 
@@ -39,7 +40,7 @@ const AttendanceSummary = () => {
     <div
       style={{
         height: 450,
-        width: "70%",
+        width: "80%",
         marginRight: "60px",
         paddingTop: "140px",
       }}
@@ -129,16 +130,48 @@ const AttendanceSummary = () => {
       </Box>
 
       {summary && (
-            <>
-              <Typography>Emp ID : {summary.empid}</Typography>
-              <Typography>Period : {summary.period}</Typography>
-              <Typography>Working Days : {summary.workingDays}</Typography>
-              <Typography>Present : {summary.present}</Typography>
-              <Typography>Halfday : {summary.halfday}</Typography>
-              <Typography>Absent : {summary.absent}</Typography>
-              <Divider />
-              <Typography>Total: {summary.total}</Typography>
-            </>
+            <Box display="flex" alignItems="center" sx={{ m: 2 }}>
+              <Box >
+                <Typography sx={{ color: "black" }}>
+                  <span style={{ fontWeight: "bold" }}>Emp ID : </span> {summary.empid}
+                </Typography>
+                <Typography sx={{ color: "black" }}>
+                  <span style={{ fontWeight: "bold" }}>Period :</span> {summary.period}
+                </Typography>
+                <Typography sx={{ color: "black" }}>
+                  <span style={{ fontWeight: "bold" }}>Working Days :</span> {summary.workingDays}
+                </Typography>
+                <Typography sx={{ color: "black" }}>
+                  <span style={{ fontWeight: "bold" }}>Present :</span> {summary.present}
+                </Typography>
+                <Typography sx={{ color: "black" }}>
+                  <span style={{ fontWeight: "bold" }}>Half Day :</span> {summary.halfday}
+                </Typography>
+                <Typography sx={{ color: "black" }}>
+                  <span style={{ fontWeight: "bold" }}>Absent :</span> {summary.absent}
+                </Typography>
+                <Typography sx={{ color: "black" }}>
+                  <span style={{ fontWeight: "bold"}}>Total Present : </span> {summary.total} days
+                </Typography>
+              </Box>
+
+              <Box>
+                <PieChart
+                  series={[
+                    {
+                      data: [
+                        {id: 0, value: summary.present, color: "#5DD39E", label: "Present"},
+                        {id: 1, value: summary.absent, color: "#B497D6", label: "Absent"},
+                        {id: 3, value: summary.halfday, color: "#55C1E7", label: "Halfday"}
+                      ]
+                    }
+                  ]}
+                  width={400}
+                  height={250}
+                  tooltip={{ trigger: "item" }}
+                />
+              </Box>
+            </Box>
         )}
 
     </div>

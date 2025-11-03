@@ -128,7 +128,7 @@ const Navbar = ({ isSidebarOpen }) => {
         if(hours >= 8){
           status = "Present"
         } else if(hours >= 6 && hours < 8){
-          const confirm = window.confirm(`You have worked ${hours.toFixed(1)} hrs.\n${remaining} hrs remaining to complete 8 hrs.\nDo you want to mark this as Half-day?`)
+          const confirm = window.confirm(`You have worked ${hours.toFixed(1)} hrs.\n${remaining} hrs remaining to complete 8 hrs.\nDo you want to logout?`)
           if(confirm){
             status = "Half-day"
           }else{

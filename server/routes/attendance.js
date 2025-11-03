@@ -105,7 +105,7 @@ router.get("/summary", async (req, res) => {
         })
 
         const present = attendance.filter((a) => a.status === "Present").length
-        const absent = attendance.filter((a) => a.status === "Absent").length
+        // const absent = attendance.filter((a) => a.status === "Absent").length
         const halfday = attendance.filter((a) => a.status === "Half-day").length
 
         const holidayDates = holiday.map(h => new Date(h.date).toDateString())
@@ -117,6 +117,10 @@ router.get("/summary", async (req, res) => {
                 workingDays++
             }
         }
+
+        const presentHalfday = present + halfday * 0.5
+
+        const absent = Math.round((workingDays - presentHalfday) * 10) /10
 
         res.json({
             empid,
