@@ -3,6 +3,7 @@ import axios from 'axios'
 import { Box } from '@mui/system'
 import { Card, CardContent, Divider, Typography, Grid, Button, Dialog, DialogContent, DialogTitle, IconButton, DialogActions, TextField} from '@mui/material'
 import EmployeeForm from './EmployeeForm'
+import API from '../../api/axiosInstance'
 
 const EmpDetails = () => {
 
@@ -12,10 +13,11 @@ const EmpDetails = () => {
   const [selectedRow, setSelectedRow] = useState(null)
   const [showEditModal, setShowEditModal] = useState(false)
 
+
   useEffect(() => {
     const fetchProfile = async () => {
       try{
-        const response = await axios.get("http://localhost:3000/auth/profile", {withCredentials: true})
+        const response = await API.get("/auth/profile")
 
         if(response.data.status) {
           setUser(response.data.user)
@@ -31,8 +33,7 @@ const EmpDetails = () => {
     if(!user?.email) return
     const fetchEmployee = async () => {
       try{
-        const response = await axios.get(`http://localhost:3000/api/employees/by-user/${user.email}`, 
-          {withCredentials: true})
+        const response = await API.get(`/api/employees/by-user/${user.email}`)
         if(response.data.status){
           setEmployee(response.data.data)
         }
@@ -53,9 +54,7 @@ const EmpDetails = () => {
     if(!selectedRow) return
 
     try{
-      const response = await axios.put(`http://localhost:3000/api/employees/update/${selectedRow.empId}`,selectedRow,
-        {withCredentials: true}
-      )
+      const response = await API.put(`/api/employees/update/${selectedRow.empId}`,selectedRow)
 
       if(response.data.status){
         setEmployee(response.data.data)

@@ -1,7 +1,7 @@
 import { Box, Button, MenuItem, Step, StepLabel, Stepper, TextField, Grid, Typography, RadioGroup, FormControlLabel, FormLabel, Radio, Card, Divider, Checkbox } from '@mui/material'
-import axios from 'axios'
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import API from '../../api/axiosInstance'
 
 const steps = ["Personal Details", "Educational Details", "Work Experience (if any)", "Bank Details", "Preview & Submit"]
 
@@ -66,7 +66,7 @@ const EmployeeForm = () => {
         useEffect(() => {
             const fetchProfile = async () => {
                 try{
-                    const response = await axios.get("http://localhost:3000/auth/profile", {withCredentials: true})
+                    const response = await API.get("/auth/profile")
 
                     if(response.data.status){
                         setuser(response.data.user)
@@ -266,7 +266,7 @@ const EmployeeForm = () => {
                 empId : user?.empid,
                 email : user?.email
             }
-            const response = await axios.post("http://localhost:3000/api/employees", dataSend)
+            const response = await API.post("/api/employees", dataSend)
             console.log(response.data)
 
             setFormData(initialFormData)

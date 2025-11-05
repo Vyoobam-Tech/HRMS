@@ -12,6 +12,8 @@ const AttendanceSummary = () => {
   const [year, setYear] = useState("")
   const [summary, setSummary] = useState(null)
 
+  const API_URL = import.meta.env.VITE_API_BASE_URL
+
   const months = [
     { num: 1, name: "January" },
     { num: 2, name: "February" },
@@ -31,7 +33,7 @@ const AttendanceSummary = () => {
   const years = Array.from({length: 11}, (_,i) => currentYear - 5 + i)
 
   const handleCheck = async () => {
-    const res = await fetch(`http://localhost:3000/api/attendance/summary?empid=${empId}&month=${month}&year=${year}`);
+    const res = await fetch(`${API_URL}/api/attendance/summary?empid=${empId}&month=${month}&year=${year}`);
     const data = await res.json()
     setSummary(data)
   }

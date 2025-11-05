@@ -1,9 +1,9 @@
 import { AgGridReact } from 'ag-grid-react'
-import axios from 'axios'
 import React, { useEffect, useMemo, useState } from 'react'
 import Header from '../../components/Header'
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, TextField } from '@mui/material'
 import EditIcon from "@mui/icons-material/Edit";
+import API from '../../api/axiosInstance';
 
 const AllEmployeeTimeTraker = () => {
 
@@ -16,7 +16,7 @@ const AllEmployeeTimeTraker = () => {
     useEffect(() => {
         const fetchUser = async () => {
             try{
-                const res = await axios.get("http://localhost:3000/auth/profile", {withCredentials: true})
+                const res = await API.get("/auth/profile")
                 if(res.data.user){
                     setUser(res.data.user)
                 }
@@ -31,7 +31,7 @@ const AllEmployeeTimeTraker = () => {
     useEffect(() => {
         const fetchEmployeeAttendance = async () => {
             try{
-                const response = await axios.get("http://localhost:3000/api/attendance/all")
+                const response = await API.get("/api/attendance/all")
                 setRowData(response.data.data)
             } catch (err) {
                 console.log(err)
@@ -48,7 +48,7 @@ const AllEmployeeTimeTraker = () => {
 
     const handleSave = async () => {
             try{
-                const response = await axios.put(`http://localhost:3000/api/attendance/${selectedRow.id}`,
+                const response = await API.put(`/api/attendance/${selectedRow.id}`,
                     {
                         login: selectedRow.login,
                         breakminutes: selectedRow.breakminutes,

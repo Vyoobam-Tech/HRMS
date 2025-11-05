@@ -11,8 +11,8 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AgCharts } from "ag-charts-community";
 import { border } from "@mui/system";
-import axios from "axios";
 import Post from "./Post";
+import API from "../../api/axiosInstance";
 
 const Dashpage = () => {
   const [value, setValue] = useState(new Date());
@@ -23,7 +23,7 @@ const Dashpage = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try{
-        const response = await axios.get("http://localhost:3000/auth/profile", {withCredentials: true})
+        const response = await API.get("/auth/profile")
         if(response.data.user){
           setUser(response.data.user)
         }
@@ -49,13 +49,13 @@ const Dashpage = () => {
     const fetchStats = async () => {
     try{
       const [dep, myact, allact,emp] = await Promise.all([
-        axios.get("http://localhost:3000/api/departments/all"),
+        API.get("/api/departments/all"),
         // axios.get("http://localhost:3000/api/accounts/all"),
         // axios.get("http://localhost:3000/api/payroll/all"),
-        axios.get(`http://localhost:3000/api/activities/by-user/${user.empid}`),
+        API.get(`/api/activities/by-user/${user.empid}`),
         // axios.get("http://localhost:3000/api/activities/all"),
-        axios.get("http://localhost:3000/api/activities/all"),
-        axios.get("http://localhost:3000/api/employees/all")
+        API.get("/api/activities/all"),
+        API.get("/api/employees/all")
       ])
 
       setstats({

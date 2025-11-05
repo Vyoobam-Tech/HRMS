@@ -3,13 +3,13 @@ import { AppBar, Box, Toolbar, IconButton, Typography, Menu, MenuItem, Button, D
 import OAImage from "../image/vyoobam tech.jpeg";
 import { useState } from "react";
 import { useEffect } from "react";
-import axios from 'axios'
 import Timer from "./Timer";
 import QueryBuilderRoundedIcon from '@mui/icons-material/QueryBuilderRounded';
 import { Avatar } from '@mui/material';
 import { Link } from "react-router-dom";
 import { Stack } from "@mui/system";
 import { setLocale } from "yup";
+import API from "../api/axiosInstance";
 
 const Navbar = ({ isSidebarOpen }) => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -25,9 +25,7 @@ const Navbar = ({ isSidebarOpen }) => {
   useEffect(() => {
     const fetchProfile = async () => {
       try{
-        const res = await axios.get("http://localhost:3000/auth/profile", {
-          withCredentials: true
-        })
+        const res = await API.get("/auth/profile")
           if(res.data.status){
             setUser(res.data.user)
           }
@@ -141,7 +139,7 @@ const Navbar = ({ isSidebarOpen }) => {
         }
 
         try {
-          await axios.post("http://localhost:3000/api/attendance", {
+          await API.post("/api/attendance", {
             empid: user.empid,
             name: user.username,
             attendancedate,
@@ -186,8 +184,6 @@ const Navbar = ({ isSidebarOpen }) => {
           />
           <Box display="flex" alignItems="center" gap={3}>
             <Box sx={{ display: "flex", gap: 0.5}}>
-              {/* <CalendarMonthRoundedIcon sx={{ color: "black" }}/> */}
-              {/* <Typography sx={{ color: "#34495e" }}>{dt}</Typography> */}
             </Box>
             <Box sx={{ display: "flex", gap: 0.5 }}>
               <QueryBuilderRoundedIcon sx={{ color: "black" }}/>
@@ -199,7 +195,6 @@ const Navbar = ({ isSidebarOpen }) => {
             component="div"
             sx={{ fontFamily: "Poppins", color: "#34495e"}}
           >
-            {/* {user ? `${user.username}` : 'Welcome'} */}
             <IconButton onClick={handleClick}>
               <Avatar />
             </IconButton>

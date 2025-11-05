@@ -1,8 +1,8 @@
 import { Card, CardContent, Divider, Typography } from "@mui/material";
 import { Box, Grid } from "@mui/system";
-import axios from "axios";
 import React, { useState, useEffect } from "react";
 import Confetti from 'react-confetti';
+import API from "../../api/axiosInstance";
 
 const Post = () => {
 
@@ -11,7 +11,7 @@ const Post = () => {
     useEffect(() => {
         const fetchAllEmployee = async () => {
             try{
-                const response = await axios.get("http://localhost:3000/api/employees/all", {withCredentials: true})
+                const response = await API.get("/api/employees/all")
                 if(response.data.status){
                     const allEmployee = response.data.data
 
@@ -63,7 +63,7 @@ const Post = () => {
                         src="https://plus.unsplash.com/premium_photo-1692880430494-3bf9cfd56545?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NjF8fGJpcnRoZGF5fGVufDB8fDB8fHww&auto=format&fit=crop&q=60&w=600"
                         alt="Birthday"
                         sx={{
-                            maxWidth: 300,
+                            maxWidth: 250,
                             borderRadius: 3,
                             boxShadow: 3,
                         }}

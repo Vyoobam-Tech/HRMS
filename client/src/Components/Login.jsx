@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import api from "../api/auth";
+import API from "../api/axiosInstance";
 import { Link, useNavigate } from "react-router-dom";
 import {
   Box,
@@ -27,18 +27,10 @@ const Login = ({ setIsAuthenticated }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    api
-      .post("/auth/login", { email, password }, {withCredentials: true})
+    API
+      .post("/auth/login", { email, password })
       .then((response) => {
         if (response.data.status) {
-          // const existingLogin = localStorage.getItem("loginTime")
-
-          // if(!existingLogin){
-          //   const loginTime = new Date()
-          //   const loginTimeStr = `${loginTime.getHours().toString().padStart(2,'0')}:${loginTime.getMinutes().toString().padStart(2,'0')}`;
-          //   localStorage.setItem("loginTime", loginTimeStr)
-          // }
-
           setIsAuthenticated(true);
           localStorage.setItem("isLoggedIn", "true");
           navigate("/dashpage");
@@ -61,7 +53,7 @@ const Login = ({ setIsAuthenticated }) => {
       const profile = await res.json();
       const { email, name, picture } = profile;
 
-      const backendRes = await api.post("/auth/google-login", {
+      const backendRes = await API.post("/auth/google-login", {
         email,
         name,
         picture,

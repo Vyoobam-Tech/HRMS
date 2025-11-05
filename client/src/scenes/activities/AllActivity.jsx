@@ -2,13 +2,13 @@ import React, { useMemo, useState, useEffect, useRef } from "react";
 import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
 import Header from "../../components/Header";
-import axios from "axios";
 import { Button } from "@mui/material";
 import * as XLSX from "xlsx"
 import {saveAs} from "file-saver"
 import DownloadIcon from "@mui/icons-material/Download";
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import { Box } from "@mui/system";
+import API from "../../api/axiosInstance";
 
 const AllActivities = () => {
     const [rowData, setRowData] = useState([])
@@ -19,7 +19,7 @@ const AllActivities = () => {
   useEffect(() => {
     const fetchUser = async () => {
         try{
-            const response = await axios.get("http://localhost:3000/auth/profile", {withCredentials: true})
+            const response = await API.get("/auth/profile")
             if(response.data.user){
             setUser(response.data.user)
         }
@@ -32,8 +32,8 @@ const AllActivities = () => {
 
   const fetchActivities = async () => {
     try {
-      const response = await axios.get(
-        "http://localhost:3000/api/activities/all", {withCredentials: true}
+      const response = await API.get(
+        "/api/activities/all"
       );
       setRowData(response.data.data);
     } catch (error) {

@@ -5,8 +5,7 @@ import { useState, useEffect } from "react";
 import Header from "../../components/Header";
 import hrmsData from "../../data/hrmsData.json"
 import { Box } from "@mui/system";
-import axios from "axios";
-
+import API from "../../api/axiosInstance";
 
 const Holidays = () => {
   const [rowData, setRowData] = useState([]);
@@ -62,10 +61,11 @@ const Holidays = () => {
     },
   ]
 
+
   useEffect(() => {
     const fetchUser = async () => {
       try{
-        const response = await axios.get("http://localhost:3000/auth/profile", {withCredentials: true})
+        const response = await API.get("/auth/profile")
         if(response.data.status){
           setUser(response.data.user)
         }
@@ -79,7 +79,7 @@ const Holidays = () => {
   useEffect(() => {
     const fetchHoliday = async () => {
       try{
-        const response = await axios.get("http://localhost:3000/api/holiday/all", {withCredentials: true})
+        const response = await API.get("/api/holiday/all")
         if(response.data.success){
           setRowData(response.data.data)
         }
@@ -96,7 +96,7 @@ const Holidays = () => {
       return
     }
     try{
-      const response = await axios.post("http://localhost:3000/api/holiday", {
+      const response = await API.post("/api/holiday", {
         date: holidayForm.date,
         day: holidayForm.day,
         name: holidayForm.name,

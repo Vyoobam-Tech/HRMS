@@ -17,7 +17,7 @@ import Header from "../../components/Header";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CloseIcon from "@mui/icons-material/Close";
-import axios from "axios";
+import API from "../../api/axiosInstance";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -41,7 +41,7 @@ const Activities = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try{
-        const response = await axios.get("http://localhost:3000/auth/profile", {withCredentials: true})
+        const response = await API.get("/auth/profile")
         if(response.data.user){
           setUser(response.data.user)
         }
@@ -56,7 +56,7 @@ const Activities = () => {
     if (!user?.email) return
     const fetchEmployee = async () => {
       try{
-        const response = await axios.get(`http://localhost:3000/api/employees/by-user/${user.email}`, {withCredentials: true})
+        const response = await API.get(`/api/employees/by-user/${user.email}`)
         if(response.data.status){
           setEmployee(response.data.data)
         }
@@ -71,7 +71,7 @@ const Activities = () => {
     if (!user?.empid) return
     const fetchEachActivity = async () => {
       try{
-      const response = await axios.get(`http://localhost:3000/api/activities/by-user/${user.empid}`, {withCredentials: true})
+      const response = await API.get(`/api/activities/by-user/${user.empid}`)
       setRowData(response.data.data)
       } catch(err){
         console.log(err)
@@ -83,7 +83,7 @@ const Activities = () => {
 
   const handleDelete = async (actid) => {
     try {
-      await axios.delete(`http://localhost:3000/api/activities/${actid}`);
+      await API.delete(`/api/activities/${actid}`);
       // fetchActivities();
     } catch (error) {
       console.error("Error deleting activity:", error);
@@ -99,8 +99,8 @@ const Activities = () => {
     console.log("Saving Activity Data:", selectedRow);
     if (!selectedRow || !selectedRow.actid) return;
     try {
-      await axios.put(
-        `http://localhost:3000/api/activities/update/${selectedRow.actid}`,
+      await API.put(
+        `/api/activities/update/${selectedRow.actid}`,
         selectedRow
       );
       // fetchActivities();
@@ -121,7 +121,7 @@ const Activities = () => {
       };
 
       console.log("Payload:", payload)
-      await axios.post("http://localhost:3000/api/activities", payload)
+      await API.post("/api/activities", payload)
       setOpen(false)
       setRowData((prev) => [...prev, payload])
     } catch (error) {
@@ -153,44 +153,12 @@ const Activities = () => {
     { headerName: "Status", field: "status" },
     { headerName: "Remarks", field: "remarks" },
     { headerName: "Github Link", field: "githublink"}
-    // {
-    //   headerName: "Actions",
-    //   field: "actions",
-    //   cellRenderer: (params) => (
-    //     <div style={{ display: "flex", gap: "8px" }}>
-    //       <IconButton
-    //         onClick={() => handleEdit(params.data)}
-    //         color="primary"
-    //         size="small"
-    //       >
-    //         <EditIcon />
-    //       </IconButton>
-    //       <IconButton
-    //         onClick={() => {
-    //           setDeleteId(params.data._id);
-    //           setConfirmOpen(true);
-    //         }}
-    //         color="primary"
-    //         size="small"
-    //       >
-    //         <DeleteIcon />
-    //       </IconButton>
-    //     </div>
-    //   ),
-    //   width: 120,
-    // },
   ]);
 
-  // localStorage.removeItem("activitystart")
 
   const ActivitySchema = Yup.object().shape({
-    // actid: Yup.string().required("ID is required"),
-    // employeeName: Yup.string().required("Employee Name is required"),
-    // type: Yup.string().required("Type is required"),
-    // date: Yup.date().required("Date is required"),
     taskname: Yup.string().required("Task Name is required"),
     duration: Yup.string().required("Duration is required"),
-    // department: Yup.string().required("Department is required"),
     status: Yup.string().required("Status is required"),
     complete: Yup.string().required("Complete is required")
   

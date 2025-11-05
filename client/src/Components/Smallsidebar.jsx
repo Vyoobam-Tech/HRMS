@@ -27,7 +27,7 @@ import AccessibilityRoundedIcon from "@mui/icons-material/AccessibilityRounded";
 import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
 import DateRangeIcon from "@mui/icons-material/DateRange";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import API from "../api/axiosInstance";
 
 const Smallsidebar = ({ onToggle, setIsAuthenticated }) => {
   const [reportsOpen, setReportsOpen] = useState(false)
@@ -39,7 +39,7 @@ const Smallsidebar = ({ onToggle, setIsAuthenticated }) => {
 
   const handleLogout = async () => {
     try {
-      await axios.get("http://localhost:3000/auth/logout", { withCredentials: true });
+      await API.get("/auth/logout");
       localStorage.removeItem("isLoggedIn");
       setIsAuthenticated(false);
       navigate("/login");
@@ -51,9 +51,7 @@ const Smallsidebar = ({ onToggle, setIsAuthenticated }) => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/auth/profile", {
-          withCredentials: true,
-        })
+        const response = await API.get("/auth/profile")
         if (response.data.status) setUser(response.data.user)
       } catch (err) {
         console.log(err)

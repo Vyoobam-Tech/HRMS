@@ -22,7 +22,6 @@ import Header from "../../components/Header";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CloseIcon from "@mui/icons-material/Close";
-import axios from "axios";
 import {margin } from "@mui/system";
 import { Grid } from '@mui/material';
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -32,6 +31,7 @@ import EmployeeForm from "./EmployeeForm";
 import DownloadIcon from "@mui/icons-material/Download";
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import API from "../../api/axiosInstance";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -45,32 +45,12 @@ const Employees = () => {
   const [tabIndex, setTabIndex] = useState(0)
   const [dob, setDob] = useState(null)
   const gridRef = useRef(null)
-
-  // const [formData, setFormData] = useState({
-  //   empid: "",
-  //   name: "",
-  //   dob: null,
-  //   gender: "Male",
-  //   email: "",
-  //   contact: "",
-  //   qualification: "",
-  //   specialization: "",
-  //   yearOfPassing: "",
-  //   cgpa: "",
-  //   institution: "",
-  //   bankName: "",
-  //   branchName: "",
-  //   accountNumber: "",
-  //   ifscCode: ""
-  // })
-
   const [error, setError] = useState({})
-
 
   const fetchEmployees = async () => {
     try {
-      const response = await axios.get(
-        "http://localhost:3000/api/employees/all", {withCredentials: true}
+      const response = await API.get(
+        "/api/employees/all"
       );
       setRowData(response.data.data);
     } catch (error) {
@@ -84,28 +64,12 @@ const Employees = () => {
 
   const handleDelete = async (empId) => {
     try {
-      await axios.delete(`http://localhost:3000/api/employees/delete/${empId}`);
+      await API.delete(`/api/employees/delete/${empId}`);
       fetchEmployees();
     } catch (error) {
       console.error("Error deleting employee:", error);
     }
   };
-
-
-  // const handleSave = async () => {
-  //   console.log("Saving Employee Data:", selectedRow);
-  //   if (!selectedRow || !selectedRow.empid) return;
-  //   try {
-  //     await axios.put(
-  //       `http://localhost:3000/api/employees/update/${selectedRow.empid}`,
-  //       selectedRow
-  //     );
-  //     fetchEmployees();
-  //     setShowEditModal(false);
-  //   } catch (error) {
-  //     console.error("Error updating employee:", error);
-  //   }
-  // };
 
 
 const handleExportExcel = () => {
@@ -186,17 +150,6 @@ const handleExportExcel = () => {
     { headerName: "Email ID", field: "email" },
     { headerName: "Contact Number", field: "contact" },
     { headerName: "Address", field: "permanentAddress" },
-    // { headerName: "Status", field: "status" },
-    // {
-    //   headerName: "Joining Date",
-    //   field: "joining",
-    //   valueFormatter: (params) => {
-    //     if (!params.value) return "";
-    //     return new Date(params.value).toLocaleDateString();
-    //   },
-    // },
-    // { headerName: "Role", field: "role" },
-    // { headerName: "Band", field: "band" },
     {
       headerName: "Actions",
       field: "actions",
@@ -268,151 +221,6 @@ const handleExportExcel = () => {
         }}
       />
 
-      {/* <Dialog
-        open={open}
-        onClose={() => setOpen(false)}
-        fullWidth
-      >
-        <div
-          style={{ 
-            background: '#1976D2',
-            color: "white",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            padding: "16px"
-          }}
-        >
-          <DialogTitle>Add Employee</DialogTitle>
-
-        </div>
-        <DialogContent>
-          <EmployeeForm />
-        </DialogContent>
-      </Dialog> */}
-
-
-      {/* Edit Activity*/}
-      {/* <Dialog
-        open={showEditModal}
-        onClose={() => setShowEditModal(false)}
-        fullWidth
-        maxWidth="sm"
-      >
-        <div
-          className="modal-header"
-          style={{
-            background: "#1976D2",
-            color: "white",
-            fontWeight: "bold",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            padding: "16px",
-            borderBottom: "1px solid #ddd",
-          }}
-        >
-          <DialogTitle>Edit Employee</DialogTitle>
-          <IconButton onClick={() => setShowEditModal(false)} color="dark">
-            <CloseIcon sx={{ color: "white" }} />
-          </IconButton>
-        </div>
-
-          {selectedRow && (
-            <div className="modal-body" style={{ padding: "16px" }}>
-              <DialogContent>
-                <TextField
-                  label="Employee ID"
-                  fullWidth
-                  margin="dense"
-                  value={selectedRow.empId || ""}
-                  disabled
-                />
-
-                <TextField
-                  label="Employee Name"
-                  fullWidth
-                  margin="dense"
-                  value={selectedRow.name || ""}
-                  onChange={(e) =>
-                    setSelectedRow({ ...selectedRow, name: e.target.value })
-                  }
-                />
-                <TextField
-                  label="Email"
-                  fullWidth
-                  margin="dense"
-                  value={selectedRow.email || ""}
-                  onChange={(e) =>
-                    setSelectedRow({ ...selectedRow, email: e.target.value })
-                  }
-                />
-                <TextField
-                  label="Contact"
-                  fullWidth
-                  margin="dense"
-                  value={selectedRow.contact || ""}
-                  onChange={(e) =>
-                    setSelectedRow({ ...selectedRow, contact: e.target.value })
-                  }
-                />
-                <TextField
-                  label="Address"
-                  fullWidth
-                  margin="dense"
-                  value={selectedRow.permanentAddress || ""}
-                  onChange={(e) =>
-                    setSelectedRow({
-                      ...selectedRow,
-                      permanentAddress: e.target.value,
-                    })
-                  }
-                />
-                <TextField
-                  label="Role"
-                  fullWidth
-                  margin="dense"
-                  value={selectedRow.role || ""}
-                  onChange={(e) =>
-                    setSelectedRow({ ...selectedRow, role: e.target.value })
-                  }
-                />
-                <TextField
-                  label="Band"
-                  fullWidth
-                  margin="dense"
-                  value={selectedRow.band || ""}
-                  onChange={(e) =>
-                    setSelectedRow({ ...selectedRow, band: e.target.value })
-                  }
-                />
-              </DialogContent>
-            </div>
-          )}
-
-        <div
-          className="modal-footer"
-          style={{
-            display: "flex",
-            justifyContent: "flex-end",
-            padding: "16px",
-            borderTop: "1px solid #ddd",
-          }}
-        >
-          <DialogActions>
-            <Button
-              color="error"
-              variant="outlined"
-              onClick={() => setShowEditModal(false)}
-            >
-              Cancel
-            </Button>
-            <Button onClick={handleSave} color="primary" variant="outlined">
-              Save
-            </Button>
-          </DialogActions>
-        </div>
-      </Dialog> */}
 
       {/* Delete Activity */}
 

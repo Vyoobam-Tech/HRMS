@@ -17,8 +17,7 @@ import Header from "../../components/Header";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CloseIcon from "@mui/icons-material/Close";
-import axios from "axios";
-
+import API from "../../api/axiosInstance";
 ModuleRegistry.registerModules([AllCommunityModule]);
 
 const Department = () => {
@@ -31,8 +30,8 @@ const Department = () => {
 
   const fetchDepartments = async () => {
     try {
-      const response = await axios.get(
-        "http://localhost:3000/api/departments/all"
+      const response = await API.get(
+        "/api/departments/all"
       );
       setRowData(response.data.data);
     } catch (error) {
@@ -47,8 +46,8 @@ const Department = () => {
   const handleDelete = async (depid) => {
     try {
       console.log("Deleting department with ID:", depid); 
-      await axios.delete(
-        `http://localhost:3000/api/departments/delete/${depid}`
+      await API.delete(
+        `/api/departments/delete/${depid}`
       );
       fetchDepartments();
     } catch (error) {
@@ -65,8 +64,8 @@ const Department = () => {
     console.log("Saving Employee Data:", selectedRow);
     if (!selectedRow || !selectedRow.depid) return;
     try {
-      await axios.put(
-        `http://localhost:3000/api/departments/update/${selectedRow.depid}`,
+      await API.put(
+        `/api/departments/update/${selectedRow.depid}`,
         selectedRow
       );
       fetchDepartments();
@@ -85,7 +84,7 @@ const Department = () => {
       };
 
       console.log("Payload:", payload);
-      await axios.post("http://localhost:3000/api/departments", payload);
+      await API.post("/api/departments", payload);
       await fetchDepartments();
       setOpen(false);
     } catch (error) {
@@ -143,13 +142,9 @@ const Department = () => {
   const DepartmentSchema = Yup.object().shape({
     depid: Yup.string().required("Department ID is required"),
     name: Yup.string().required("Department name is required"),
-    // code: Yup.string().required("Code is required"),
     description: Yup.string().required("Description is required"),
-    // branch: Yup.string().required("Branch is required"),
     hod: Yup.string().required("HOD is required"),
-    // reporting: Yup.string().required("Reporting Manager is required"),
     total: Yup.number().required("Total Employees is required").integer(),
-    // budget: Yup.number().required("Budget is required"),
     created: Yup.date().required("Created Date is required"),
     status: Yup.string().required("Status is required"),
   });

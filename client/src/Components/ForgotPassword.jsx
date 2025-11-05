@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import Axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import {
   Box,
@@ -10,6 +9,7 @@ import {
 } from "@mui/material";
 import EmailIcon from "@mui/icons-material/Email";
 import "../App.css";
+import API from "../api/axiosInstance";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -17,7 +17,7 @@ const ForgotPassword = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    Axios.post("http://localhost:3000/auth/forgot-password", { email })
+    API.post("/auth/forgot-password", { email })
       .then((response) => {
         if (response.data.status) {
           alert("Check your email for the reset password link");

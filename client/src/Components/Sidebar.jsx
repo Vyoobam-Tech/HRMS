@@ -27,7 +27,7 @@ import DateRangeIcon from '@mui/icons-material/DateRange';
 import PowerSettingsNewRoundedIcon from "@mui/icons-material/PowerSettingsNewRounded";
 import { Link, Router, Routes, Route } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import API from "../api/axiosInstance";
 
 const Sidebar = ({ onToggle, setIsAuthenticated }) => {
   const [reportsOpen, setReportsOpen] = useState(false);
@@ -41,7 +41,7 @@ const Sidebar = ({ onToggle, setIsAuthenticated }) => {
 
   const handleLogout = async () => {
     try{
-      await axios.get("http://localhost:3000/auth/logout", {withCredentials: true})
+      await API.get("/auth/logout")
 
       localStorage.removeItem("isLoggedIn")
       setIsAuthenticated(false)
@@ -54,7 +54,7 @@ const Sidebar = ({ onToggle, setIsAuthenticated }) => {
   useEffect(() => {
       const fetchUser = async () => {
         try{
-          const response = await axios.get("http://localhost:3000/auth/profile", {withCredentials: true})
+          const response = await API.get("/auth/profile")
           if(response.data.status){
             setUser(response.data.user)
           }

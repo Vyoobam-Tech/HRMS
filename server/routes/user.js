@@ -6,24 +6,46 @@ import { User } from "../models/User.js";
 
 const router = express.Router();
 
-// Signup Route
 router.post("/signup", async (req, res) => {
-  const {role, username, empid, email, password } = req.body;
-  try {
-    const existingUser = await User.findOne({ where: { email } });
-    if (existingUser) {
-      return res.json({ message: "User already exists" });
+  try{
+    const {role, username, empid, email} = req.body
+
+    const existingUser = await User.findOne({ where: {email}})
+    if(existingUser){
+      return res.json({ message: "User already exists"})
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-    await User.create({role, username, empid, email, password: hashedPassword });
+    const password = Math.random().toString(36).slice(-8)
+    const hashedPassword = await bcrypt.hash(password, 10)
 
-    return res.json({ status: true, message: "User registered successfully" });
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ status: false, message: "Signup failed" });
+    await User.create({
+      role,
+      username,
+      empid,
+      email,
+      password: hashedPassword
+    })
+
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+      }
+    })
+
+    await transporter.sendMail({
+      from: `"Vyoobam HR" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: "Your Employee Account Password",
+      text: `Hi ${username},\n\nYour account has been created.\n\nLogin with:\nEmail: ${email}\nPassword: ${password}\n\nPlease change your password after login.`,
+    })
+    return res.json({status: true, message: "User registered successfully"})
+  }catch(err){
+    console.log(err)
+    return res.status(500).json({status: false, message: "signup failed"})
   }
-});
+})
 
 // Login Route
 router.post("/login", async (req, res) => {

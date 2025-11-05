@@ -1,10 +1,10 @@
 import { Button, MenuItem, Select, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material'
-import axios from 'axios'
 import React, { useEffect, useMemo, useState } from 'react'
 import Header from '../../components/Header'
 import PowerSettingsNewRoundedIcon from "@mui/icons-material/PowerSettingsNewRounded";
 import { Box, Stack } from '@mui/system';
 import { AgGridReact } from 'ag-grid-react';
+import API from '../../api/axiosInstance';
 
 const EachEmployeeTimeTracker = () => {
 
@@ -16,7 +16,7 @@ const EachEmployeeTimeTracker = () => {
     useEffect(() => {
         const fetchUser = async () => {
             try{
-                const res = await axios.get("http://localhost:3000/auth/profile", { withCredentials: true})
+                const res = await API.get("/auth/profile")
                 if(res.data.user){
                     setUser(res.data.user)
                 }
@@ -47,7 +47,7 @@ const EachEmployeeTimeTracker = () => {
         if(!user?.empid) return
         const fetchEmployeeAttendance = async () => {
             try{
-                const response = await axios.get(`http://localhost:3000/api/attendance/by-user/${user.empid}`, {withCredentials: true})
+                const response = await API.get(`/api/attendance/by-user/${user.empid}`)
                 setRowData(response.data.data)
             } catch(err) {
                 console.log(err)

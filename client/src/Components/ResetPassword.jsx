@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "../App.css";
-import Axios from "axios";
+import API from "../api/axiosInstance";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Box } from "@mui/system";
 import {
@@ -24,7 +24,7 @@ const ResetPassword = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    Axios.post("http://localhost:3000/auth/reset-password/" + token, {
+    API.post("/auth/reset-password/" + token, {
       password,
     })
       .then((response) => {
