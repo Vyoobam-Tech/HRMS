@@ -1,5 +1,9 @@
 import React, { useState } from 'react'
+<<<<<<< HEAD
 import Header from '@/components/Header.jsx'
+=======
+import Header from '../../components/Header'
+>>>>>>> parent of 25f6374 (header fix)
 import { Box } from '@mui/system'
 import { Button, Divider, MenuItem, Paper, TextField, Typography } from '@mui/material'
 import { PieChart } from '@mui/x-charts'

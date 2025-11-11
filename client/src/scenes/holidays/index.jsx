@@ -2,7 +2,11 @@ import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
 import { Button, MenuItem, TextField } from "@mui/material";
 import { useState, useEffect } from "react";
+<<<<<<< HEAD
 import Header from "@/components/Header.jsx";
+=======
+import Header from "../../components/Header";
+>>>>>>> parent of 25f6374 (header fix)
 import hrmsData from "../../data/hrmsData.json"
 import { Box } from "@mui/system";
 import API from "../../api/axiosInstance";

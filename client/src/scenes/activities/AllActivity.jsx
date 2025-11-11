@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useEffect, useRef } from "react";
 import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
-import Header from "@/components/Header.jsx";
+import Header from "../../components/Header.jsx";
 import { Button } from "@mui/material";
 import * as XLSX from "xlsx"
 import {saveAs} from "file-saver"

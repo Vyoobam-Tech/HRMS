@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import Header from "@/components/Header.jsx";
+=======
+import Header from "../../components/Header";
+>>>>>>> parent of 25f6374 (header fix)
 import { Card, CardContent, List, Typography, Grid, Button } from "@mui/material";
 
 const cards = [

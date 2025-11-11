@@ -1,6 +1,10 @@
 import { AgGridReact } from 'ag-grid-react'
 import React, { useEffect, useMemo, useState } from 'react'
+<<<<<<< HEAD
 import Header from '@/components/Header.jsx'
+=======
+import Header from '../../components/Header'
+>>>>>>> parent of 25f6374 (header fix)
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, TextField } from '@mui/material'
 import EditIcon from "@mui/icons-material/Edit";
 import API from '../../api/axiosInstance';
