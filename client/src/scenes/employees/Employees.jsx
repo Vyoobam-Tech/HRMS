@@ -18,11 +18,7 @@ import {
 } from "@mui/material";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
-<<<<<<< HEAD
-import Header from "@/components/Header.jsx";
-=======
 import Header from "../../components/Header";
->>>>>>> parent of 25f6374 (header fix)
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CloseIcon from "@mui/icons-material/Close";
