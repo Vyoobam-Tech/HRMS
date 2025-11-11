@@ -25,24 +25,46 @@ app.use(
 
 app.use(cookieParser());
 
+// Routes
 app.use("/auth", UserRouter);
 app.use("/api/employees", EmployeeRouter);
 app.use("/api/departments", DepartmentRouter);
 app.use("/api/activities", ActivityRouter);
-app.use("/api/attendance", AttendanceRouter)
-app.use("/api/holiday", HolidayRouter)
+app.use("/api/attendance", AttendanceRouter);
+app.use("/api/holiday", HolidayRouter);
 
-
+// ✅ Database connection check + sync
 sequelize
-  .sync({alter: true})
+  .authenticate()
   .then(() => {
-    console.log("DB connected");
-    startAutoAbsent()
+    console.log("✅ Connected to Render PostgreSQL successfully");
+
+    return sequelize.sync({ alter: true });
+  })
+  .then(() => {
+    console.log("✅ Database sync complete");
+    startAutoAbsent();
+
     const PORT = process.env.PORT || 3000;
     app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
+      console.log(`🚀 Server running on port ${PORT}`);
     });
   })
   .catch((err) => {
-    console.error("DB connection error:", err);
+    console.error("❌ Database connection failed, using old config:", err);
+
+    // 🟡 Fallback to old code
+    sequelize
+      .sync({ alter: true })
+      .then(() => {
+        console.log("DB connected (old)");
+        startAutoAbsent();
+        const PORT = process.env.PORT || 3000;
+        app.listen(PORT, () => {
+          console.log(`Server running on port ${PORT}`);
+        });
+      })
+      .catch((err2) => {
+        console.error("DB connection error (old):", err2);
+      });
   });
