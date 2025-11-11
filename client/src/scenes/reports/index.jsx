@@ -7,7 +7,7 @@ function App() {
     <div>
       <AllEmployeeTimeTraker />
     </div>
-  )
+  );
 }
 
 export default App;
