@@ -1,4 +1,4 @@
-import Header from "../../components/Header.jsx";
+import Header from "@/components/Header.jsx";
 import { Button, Card, Grid } from "@mui/material";
 import OAImage from "../../image/vyoobam tech.jpeg";
 import AddIcon from "@mui/icons-material/Add";

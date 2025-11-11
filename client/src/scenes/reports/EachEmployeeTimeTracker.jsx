@@ -1,6 +1,6 @@
 import { Button, MenuItem, Select, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material'
 import React, { useEffect, useMemo, useState } from 'react'
-import Header from '../../components/Header.jsx'
+import Header from '@/components/Header.jsx'
 import PowerSettingsNewRoundedIcon from "@mui/icons-material/PowerSettingsNewRounded";
 import { Box, Stack } from '@mui/system';
 import { AgGridReact } from 'ag-grid-react';

@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
-import Header from "../../components/Header.jsx";
+import Header from "@/components/Header.jsx";
 import hrmsData from "../../data/hrmsData.json";
 import { Card, CardContent, Grid2, List, Typography } from "@mui/material";
 import { Box } from "@mui/system";
