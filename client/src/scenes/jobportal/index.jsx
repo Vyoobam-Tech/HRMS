@@ -1,4 +1,4 @@
-import Header from "../../components/Header";
+import Header from "../../Components/Header";
 import { Card, CardContent, List, Typography, Grid, Button } from "@mui/material";
 
 const cards = [

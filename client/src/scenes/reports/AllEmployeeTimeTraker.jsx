@@ -1,6 +1,6 @@
 import { AgGridReact } from 'ag-grid-react'
 import React, { useEffect, useMemo, useState } from 'react'
-import Header from '../../components/Header'
+import Header from '../../Components/Header'
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, TextField } from '@mui/material'
 import EditIcon from "@mui/icons-material/Edit";
 import API from '../../api/axiosInstance';
