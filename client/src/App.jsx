@@ -57,6 +57,7 @@ function App() {
   }, []);
 
   useEffect(() => {
+  if (isAuthenticated) { // only fetch if logged in
     const fetchUser = async () => {
       try {
         const response = await API.get("/auth/profile");
@@ -68,7 +69,9 @@ function App() {
       }
     };
     fetchUser();
-  }, []);
+  }
+}, [isAuthenticated]);
+
 
   const handleToggleSidebar = () => setIsSidebarOpen((prev) => !prev);
   const role = user?.role;
