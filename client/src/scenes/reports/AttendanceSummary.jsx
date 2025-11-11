@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import Header from '../../components/Header'
+import Header from '../../components/Header.jsx'
 import { Box } from '@mui/system'
 import { Button, Divider, MenuItem, Paper, TextField, Typography } from '@mui/material'
 import { PieChart } from '@mui/x-charts'
