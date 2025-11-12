@@ -6,6 +6,57 @@ import { User } from "../models/User.js";
 
 const router = express.Router();
 
+
+
+router.post("/signup", async (req, res) => {
+  try {
+    const { role, username, empid, email } = req.body;
+
+    const existingUser = await User.findOne({ where: { email } });
+    if (existingUser) {
+      return res.json({ status: false, message: "User already exists" });
+    }
+
+    const password = Math.random().toString(36).slice(-8);
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    await User.create({
+      role,
+      username,
+      empid,
+      email,
+      password: hashedPassword,
+    });
+
+    // Try to send email (won’t stop signup if it fails)
+    try {
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS,
+        },
+      });
+
+      await transporter.sendMail({
+        from: `"Vyoobam HR" <${process.env.EMAIL_USER}>`,
+        to: email,
+        subject: "Your Employee Account Password",
+        text: `Hi ${username},\n\nYour account has been created.\n\nLogin with:\nEmail: ${email}\nPassword: ${password}\n\nPlease change your password after login.`,
+      });
+
+      console.log(`✅ Email sent to ${email}`);
+    } catch (emailError) {
+      console.warn("⚠️ Email sending failed:", emailError.message);
+    }
+
+    return res.status(201).json({ status: true, message: "User registered successfully" });
+  } catch (err) {
+    console.error("❌ Signup error:", err.message);
+    return res.status(500).json({ status: false, message: "Signup failed", error: err.message });
+  }
+});
+
 // router.post("/signup", async (req, res) => {
 //   try{
 //     const {role, username, empid, email} = req.body
@@ -47,63 +98,6 @@ const router = express.Router();
 //   }
 // })
 
-router.post("/signup", async (req, res) => {
-  try {
-    const { role, username, empid, email } = req.body;
-
-    // Check if user exists
-    const existingUser = await User.findOne({ where: { email } });
-    if (existingUser) {
-      return res.json({ status: false, message: "User already exists" });
-    }
-
-    // Generate random password
-    const password = Math.random().toString(36).slice(-8);
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Create user
-    await User.create({
-      role,
-      username,
-      empid,
-      email,
-      password: hashedPassword,
-    });
-
-    // Try sending email (but do not crash if it fails)
-    try {
-      const transporter = nodemailer.createTransport({
-        service: "gmail",
-        auth: {
-          user: process.env.EMAIL_USER,
-          pass: process.env.EMAIL_PASS,
-        },
-      });
-
-      await transporter.sendMail({
-        from: `"Vyoobam HR" <${process.env.EMAIL_USER}>`,
-        to: email,
-        subject: "Your Employee Account Password",
-        text: `Hi ${username},\n\nYour account has been created.\n\nLogin details:\nEmail: ${email}\nPassword: ${password}\n\nPlease change your password after login.\n\n- Vyoobam HR Team`,
-      });
-
-      console.log(`✅ Email sent to ${email}`);
-    } catch (emailErr) {
-      console.warn("⚠️ Email sending failed:", emailErr.message);
-      // Don’t throw — continue signup success
-    }
-
-    return res.json({ status: true, message: "User registered successfully" });
-  } catch (err) {
-    console.error("❌ Signup error:", err.message);
-    // Even if email failed, don't show signup failed to user
-    return res.json({
-      status: true,
-      message:
-        "User registered successfully, but email could not be sent. Please contact admin.",
-    });
-  }
-});
 
 
 // Login Route
