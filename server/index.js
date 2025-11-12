@@ -18,7 +18,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://hrms-client1-j8mf.onrender.com"],
+    origin: ["http://localhost:5173", "https://vyoobam-hrms.onrender.com"],
     methods: ['GET', 'POST', 'DELETE'],
     credentials: true,
   })
@@ -33,6 +33,10 @@ app.use("/api/departments", DepartmentRouter);
 app.use("/api/activities", ActivityRouter);
 app.use("/api/attendance", AttendanceRouter);
 app.use("/api/holiday", HolidayRouter);
+app.get("/", (req, res) => {
+  res.send("HRMS Backend is running ✅");
+});
+
 
 // ✅ Database connection check + sync
 sequelize
