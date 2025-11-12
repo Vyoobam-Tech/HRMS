@@ -30,15 +30,15 @@ const Signup = () => {
   const [username, setUsername] = useState("");
   const [empid, setEmpId] = useState("")
   const [email, setEmail] = useState("");
-  // const [password, setPassword] = useState("");
-  // const [showPassword, setShowPassword] = useState(false);
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const [role, setRole] = useState("employee")
 
   const handleSubmit = (e) => {
     e.preventDefault();
     API
-      .post("/auth/signup", {role, username, empid, email })
+      .post("/auth/signup", {role, username, empid, email, password })
 
       .then((response) => {
         if (response.data.status) {
@@ -233,7 +233,7 @@ const Signup = () => {
           }}
         />
 
-        {/* <TextField
+        <TextField
           type={showPassword ? "text" : "password"}
           placeholder="Password"
           required
@@ -267,7 +267,7 @@ const Signup = () => {
             ),
             sx: { paddingTop: "15px", height: "45px", borderRadius: "50px" },
           }}
-        /> */}
+        /> 
         <Button type="submit" variant="contained" color="primary" fullWidth>
           REGISTER
         </Button>
