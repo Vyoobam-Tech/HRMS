@@ -1,10 +1,12 @@
 import express from "express";
 import bcrypt from 'bcryptjs'
 import jwt from "jsonwebtoken";
-import nodemailer from "nodemailer";
 import { User } from "../models/User.js";
+import { Resend } from "resend";
 
 const router = express.Router();
+
+const resend = new Resend(process.env.RESEND_API_KEY)
 
 
 
@@ -12,14 +14,17 @@ router.post("/signup", async (req, res) => {
   try {
     const { role, username, empid, email } = req.body;
 
+    // Check if the user already exists
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
       return res.json({ status: false, message: "User already exists" });
     }
 
+    // Generate random password
     const password = Math.random().toString(36).slice(-8);
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // Create the user
     await User.create({
       role,
       username,
@@ -28,34 +33,43 @@ router.post("/signup", async (req, res) => {
       password: hashedPassword,
     });
 
-    // Try to send email (won’t stop signup if it fails)
+    // ✅ Send email using Resend (no Gmail, no timeout)
     try {
-      const transporter = nodemailer.createTransport({
-        service: "gmail",
-        auth: {
-          user: process.env.EMAIL_USER,
-          pass: process.env.EMAIL_PASS,
-        },
-      });
-
-      await transporter.sendMail({
-        from: `"Vyoobam HR" <${process.env.EMAIL_USER}>`,
+      await resend.emails.send({
+        from: "Vyoobam HR <onboarding@resend.dev>", // use verified domain
         to: email,
-        subject: "Your Employee Account Password",
-        text: `Hi ${username},\n\nYour account has been created.\n\nLogin with:\nEmail: ${email}\nPassword: ${password}\n\nPlease change your password after login.`,
+        subject: "Your HRMS Account Details",
+        text: `Hi ${username},
+
+Your HRMS account has been successfully created!
+
+Login credentials:
+Email: ${email}
+Password: ${password}
+
+Please log in and change your password after first login.
+
+Best regards,
+Vyoobam HR Team`,
       });
 
-      console.log(`✅ Email sent to ${email}`);
+      console.log(`✅ Email sent successfully to ${email}`);
     } catch (emailError) {
       console.warn("⚠️ Email sending failed:", emailError.message);
     }
 
-    return res.status(201).json({ status: true, message: "User registered successfully" });
+    return res.status(201).json({
+      status: true,
+      message: "User registered successfully and email sent",
+    });
   } catch (err) {
     console.error("❌ Signup error:", err.message);
-    return res.status(500).json({ status: false, message: "Signup failed", error: err.message });
+    return res
+      .status(500)
+      .json({ status: false, message: "Signup failed", error: err.message });
   }
 });
+
 
 // router.post("/signup", async (req, res) => {
 //   try{
@@ -138,6 +152,43 @@ router.post("/google-login", async (req, res) => {
 });
 
 // Forgot Password
+// router.post("/forgot-password", async (req, res) => {
+//   const { email } = req.body;
+//   try {
+//     const user = await User.findOne({ where: { email } });
+//     if (!user) return res.json({ message: "User not registered" });
+
+//     const token = jwt.sign({ id: user.id }, process.env.KEY, { expiresIn: "5m" });
+//     const encodedToken = encodeURIComponent(token).replace(/\./g, "%2E");
+
+//     const transporter = nodemailer.createTransport({
+//       service: "gmail",
+//       auth: {
+//         user: process.env.EMAIL_USER,
+//         pass: process.env.EMAIL_PASS,
+//       },
+//     });
+
+//     const mailOptions = {
+//       from: process.env.EMAIL_USER,
+//       to: email,
+//       subject: "Reset Password",
+//       text: `http://localhost:5173/resetPassword/${encodedToken}`,
+//     };
+
+//     transporter.sendMail(mailOptions, (error, info) => {
+//       if (error) {
+//         console.error(error);
+//         return res.json({ message: "Error sending email" });
+//       }
+//       return res.json({ status: true, message: "Email sent" });
+//     });
+//   } catch (err) {
+//     console.error(err);
+//     return res.status(500).json({ message: "Something went wrong" });
+//   }
+// });
+
 router.post("/forgot-password", async (req, res) => {
   const { email } = req.body;
   try {
@@ -145,35 +196,37 @@ router.post("/forgot-password", async (req, res) => {
     if (!user) return res.json({ message: "User not registered" });
 
     const token = jwt.sign({ id: user.id }, process.env.KEY, { expiresIn: "5m" });
-    const encodedToken = encodeURIComponent(token).replace(/\./g, "%2E");
+    const resetLink = `https://vyoobam-hrms.onrender.com/resetPassword/${encodeURIComponent(token)}`;
 
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
+    try {
+      await resend.emails.send({
+        from: "Vyoobam HR <onboarding@resend.dev>",
+        to: email,
+        subject: "Reset your HRMS password",
+        text: `Hi ${user.username},
 
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: "Reset Password",
-      text: `http://localhost:5173/resetPassword/${encodedToken}`,
-    };
+You requested to reset your HRMS password.
+Click the link below to set a new one (valid for 5 minutes):
 
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.error(error);
-        return res.json({ message: "Error sending email" });
-      }
-      return res.json({ status: true, message: "Email sent" });
-    });
+${resetLink}
+
+If you didn’t request this, ignore this message.
+
+– Vyoobam HR Team`,
+      });
+
+      console.log(`✅ Password reset email sent to ${email}`);
+      return res.json({ status: true, message: "Reset link sent to email" });
+    } catch (emailError) {
+      console.error("⚠️ Email sending failed:", emailError.message);
+      return res.json({ status: false, message: "Email sending failed" });
+    }
   } catch (err) {
     console.error(err);
     return res.status(500).json({ message: "Something went wrong" });
   }
 });
+
 
 // Reset Password
 router.post("/reset-password/:token", async (req, res) => {
