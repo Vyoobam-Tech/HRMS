@@ -298,8 +298,8 @@ const router = express.Router();
 // Setup Brevo SMTP transporter
 const transporter = nodemailer.createTransport({
   host: "smtp-relay.brevo.com",
-  port: 587,
-  secure: false, // TLS is used if false with port 587
+  port: 465,
+  secure: true, // TLS is used if false with port 587
   auth: {
     user: process.env.BREVO_USER,
     pass: process.env.BREVO_PASS,
