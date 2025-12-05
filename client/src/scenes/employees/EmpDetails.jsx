@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { Box } from '@mui/system'
+import CloseIcon from "@mui/icons-material/Close";
 import { Card, CardContent, Divider, Typography, Grid, Button, Dialog, DialogContent, DialogTitle, IconButton, DialogActions, TextField} from '@mui/material'
 import EmployeeForm from './EmployeeForm'
 import API from '../../api/axiosInstance'
@@ -44,6 +45,12 @@ const EmpDetails = () => {
     fetchEmployee()
   }, [user])
 
+  const handleAdd = () => {
+    if (employee) return
+    setSelectedRow(employee)
+    setOpen(true)
+  }
+
   const handleEdit = () => {
     if (!employee) return
     setSelectedRow(employee)
@@ -71,14 +78,14 @@ const EmpDetails = () => {
   return (
     <div
       style={{
-        height: 450,
+        height: "100vh",
         width: "100%",
-        marginRight: "60px",
-        paddingTop: "100px",
+        padding: "120px 40px 20px 40px",
+        boxSizing: "border-box",
       }}
     >
       <Box>
-        <Button variant='contained' color='primary' sx={{ mb: 2 }} onClick={() => setOpen(true)}>
+        <Button variant='contained' color='primary' sx={{ mb: 2 }} onClick={handleAdd}>
           Add Details
         </Button>
 
@@ -94,9 +101,13 @@ const EmpDetails = () => {
       </Box>
 
       <Dialog open={open} onClose={() => setOpen(false)}>
-        <DialogTitle sx={{ color: 'white', bgcolor: '#1976D2' }}>Add Details</DialogTitle>
+        <DialogTitle sx={{ color: 'white', bgcolor: '#1976D2', display: "flex", alignItems: "center", justifyContent: "space-between" }}>Add Details
+          <IconButton onClick={() => setOpen(false)} color="dark">
+            <CloseIcon sx={{ color: "white" }} />
+          </IconButton>
+        </DialogTitle>
         <DialogContent>
-          <EmployeeForm />
+          <EmployeeForm setOpen={setOpen}/>
         </DialogContent>
       </Dialog>
 
@@ -213,7 +224,7 @@ const EmpDetails = () => {
         >
           <DialogTitle>Edit Employee</DialogTitle>
           <IconButton onClick={() => setShowEditModal(false)} color="dark">
-            {/* <CloseIcon sx={{ color: "white" }} /> */}
+            <CloseIcon sx={{ color: "white" }} />
           </IconButton>
         </div>
 

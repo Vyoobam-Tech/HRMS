@@ -175,10 +175,10 @@ const Activities = () => {
   return (
     <div
       style={{
-        height: 450,
-        marginRight: "60px",
-        paddingBottom: "35px",
-        paddingTop: "100px",
+        height: "100vh",
+        width: "100%",
+        padding: "120px 40px 20px 40px",
+        boxSizing: "border-box",
       }}
     >
       <Header title="MY ACTIVITIES" />

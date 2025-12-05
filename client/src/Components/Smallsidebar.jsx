@@ -121,7 +121,7 @@ const Smallsidebar = ({ onToggle, setIsAuthenticated }) => {
             </ListItem>
 
             <ListItem>
-              <ListItemButton component={Link} to="/attandence">
+              <ListItemButton component={Link} to="/attendance">
                 <ListItemIcon>
                   <DateRangeIcon sx={{ color: "#fff" }} />
                 </ListItemIcon>

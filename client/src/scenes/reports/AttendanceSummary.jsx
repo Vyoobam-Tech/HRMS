@@ -41,10 +41,10 @@ const AttendanceSummary = () => {
   return (
     <div
       style={{
-        height: 450,
-        width: "80%",
-        marginRight: "60px",
-        paddingTop: "140px",
+        height: "100vh",
+        width: "100%",
+        padding: "120px 40px 20px 40px",
+        boxSizing: "border-box",
       }}
     >
       <Header title="ATTENDANCE SUMMARY "/>

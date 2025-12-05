@@ -159,7 +159,7 @@ const Navbar = ({ isSidebarOpen }) => {
           localStorage.removeItem("lunchIn")
           localStorage.removeItem("lunchOut")
 
-          window.location.href = "/login"
+          window.location.href = "/z"
         } catch (err) {
           console.error("Error submitting attendance:", err)
           alert("Failed to submit attendance. Try again.")
@@ -170,7 +170,7 @@ const Navbar = ({ isSidebarOpen }) => {
     <Box >
       <AppBar
         position="fixed"
-        elevation={-1}
+        elevation={0}
         sx={{
           backgroundColor: "#fff",
           width: isSidebarOpen ? "calc(100% - 37vh)" : "calc(100% - 60px)",
@@ -180,7 +180,7 @@ const Navbar = ({ isSidebarOpen }) => {
         <Toolbar sx={{ display:'flex', justifyContent:'space-between' }}>
           <img 
             src={OAImage}
-            style={{ width: 130, height: 110 }}
+            style={{ width: "130px", height: "auto" }}
           />
           <Box display="flex" alignItems="center" gap={3}>
             <Box sx={{ display: "flex", gap: 0.5}}>

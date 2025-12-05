@@ -75,10 +75,10 @@ const EachEmployeeTimeTracker = () => {
     return (
         <div
             style={{
-                height: 450,
+                height: "100vh",
                 width: "100%",
-                marginRight: "60px",
-                paddingTop: "120px",
+                padding: "120px 40px 20px 40px",
+                boxSizing: "border-box",
             }}
         >
             <Header title="MY ATTENDANCE"/>

@@ -27,10 +27,10 @@ const Event = () => {
   return (
     <div
       style={{
-        height: 500,
-        marginRight: "60px",
-        paddingTop: "140px",
-        marginLeft: "30px",
+        height: "100vh",
+        width: "100%",
+        padding: "120px 40px 20px 40px",
+        boxSizing: "border-box",
       }}
     >
       <Header title="EVENTS" subtitle="Organisation Yearly Events" />

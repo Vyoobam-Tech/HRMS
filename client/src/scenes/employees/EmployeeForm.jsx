@@ -5,7 +5,7 @@ import API from '../../api/axiosInstance'
 
 const steps = ["Personal Details", "Educational Details", "Work Experience (if any)", "Bank Details", "Preview & Submit"]
 
-const EmployeeForm = () => {
+const EmployeeForm = ({setOpen}) => {
 
     const [user, setuser] = useState(null)
     const [activeStep, setActiveStep] = useState(0)
@@ -82,11 +82,23 @@ const EmployeeForm = () => {
             const errors ={}
 
             if(activeStep === 0) {
-                if(!formData.name) errors.name = "Full Name is required"
+                if (!formData.name) {
+                errors.name = "Father Name is required";
+                } else if (!/^[A-Za-z\s]+$/.test(formData.name)) {
+                errors.name = "Name must contain only letters";
+                }
                 if(!formData.contact) errors.contact = "Contact is required";
                 else if(!/^\d{10}$/.test(formData.contact)) errors.contact = "Must be 10 digits"
-                if(!formData.fatherName) errors.fatherName = "Father Name is required"
-                if(!formData.motherName) errors.motherName = "Mother Name is required"
+                if (!formData.fatherName) {
+                errors.fatherName = "Father Name is required";
+                } else if (!/^[A-Za-z\s]+$/.test(formData.fatherName)) {
+                errors.fatherName = "Father Name must contain only letters";
+                }
+                if (!formData.motherName) {
+                errors.motherName = "Mother Name is required";
+                } else if (!/^[A-Za-z\s]+$/.test(formData.motherName)) {
+                errors.motherName = "Mother Name must contain only letters";
+                }
                 if(!formData.faormoNumber) errors.faormoNumber = "Parent Number is required"
                 else if(!/^\d{10}$/.test(formData.faormoNumber)) errors.faormoNumber = "Must be 10 digits"
                 if(!formData.occupation) errors.occupation = "Occupation is required"
@@ -109,33 +121,66 @@ const EmployeeForm = () => {
             }
 
             if(activeStep === 1) {
-                if(!formData.tenthBoard) errors.tenthBoard = "10th Board is required"
+                if (!formData.tenthBoard) {
+                errors.tenthBoard = "10th Board is required";
+                } else if (!/^[A-Za-z\s]+$/.test(formData.tenthBoard)) {
+                errors.tenthBoard = "10th Board must contain only letters"
+                }
+
                 if(!formData.tenthYearofPassing) errors.tenthYearofPassing = "10th Year is required"
                 else if(!/^\d{4}$/.test(formData.tenthYearofPassing)) errors.tenthYearofPassing = "Invalid"
                 if(!formData.tenthPercentage) errors.tenthPercentage = "10th Percentage is required"
-                else if(!/^\d{1,2}$/.test(formData.tenthPercentage)) errors.tenthPercentage = "Invalid"
+                else if(!/^\d{1,2}%?$/.test(formData.tenthPercentage)) errors.tenthPercentage = "Invalid"
 
-                if(!formData.twelveBoard) errors.twelveBoard = "12th Board is required"
+                if (!formData.twelveBoard) {
+                errors.twelveBoard = "12th Board is required";
+                } else if (!/^[A-Za-z\s]+$/.test(formData.twelveBoard)) {
+                errors.twelveBoard = "12th Board must contain only letters"
+                }
                 if(!formData.twelveYearofPassing) errors.twelveYearofPassing = "12th Year is required"
                 else if(!/^\d{4}$/.test(formData.twelveYearofPassing)) errors.twelveYearofPassing = "Invalid"
                 if(!formData.twelvePercentage) errors.twelvePercentage = "12th Percentage is required"
-                else if(!/^\d{1,2}$/.test(formData.twelvePercentage)) errors.twelvePercentage = "Invalid"
+                else if(!/^\d{1,2}%?$/.test(formData.twelvePercentage)) errors.twelvePercentage = "Invalid"
 
-                if(!formData.ugUniversity) errors.ugUniversity = "UG University is required"
+                if (!formData.ugUniversity) {
+                errors.ugUniversity = "Ug University is required";
+                } else if (!/^[A-Za-z\s]+$/.test(formData.ugUniversity)) {
+                errors.ugUniversity = "Ug University must contain only letters"
+                }
                 if(!formData.ugYearofPassing) errors.ugYearofPassing = "UG Year is required"
                 else if(!/^\d{4}$/.test(formData.ugYearofPassing)) errors.ugYearofPassing = "Invalid"
                 if(!formData.ugPercentage) errors.ugPercentage = "UG Percentage is required"
-                else if(!/^\d{1,2}$/.test(formData.ugPercentage)) errors.ugPercentage = "Invalid"
+                else if(!/^\d{1,2}%?$/.test(formData.ugPercentage)) errors.ugPercentage = "Invalid"
+
+                if (formData.pgUniversity) {
+                    if (!/^[A-Za-z\s]+$/.test(formData.pgUniversity)) {
+                        errors.pgUniversity = "PG University must contain only letters";
+                    }
+                }
+                if (formData.pgYearofPassing) {
+                    if (!/^\d{4}$/.test(formData.pgYearofPassing)) {
+                        errors.pgYearofPassing = "Invalid";
+                    }
+                }
+                if (formData.pgPercentage) {
+                    if (!/^\d{1,2}%?$/.test(formData.pgPercentage)) {
+                        errors.pgPercentage = "Invalid";
+                    }
+                }
             }
 
             if(activeStep === 2) {
                 if(formData.hasExperience) {
                     formData.experiences.forEach((exp, index) => {
-                        if(!exp.company) {
-                            errors[`experiences.${index}.company`] = "Company Name is required"
+                        if (!exp.company) {
+                        errors[`experiences.${index}.company`] = "Company Name is required";
+                        } else if (!/^[A-Za-z\s]+$/.test(exp.company)) {
+                        errors[`experiences.${index}.company`] = "Company Name must contain only letters";
                         }
-                        if(!exp.title) {
-                            errors[`experiences.${index}.title`] = "Job Title is required"
+                        if (!exp.title) {
+                        errors[`experiences.${index}.title`] = "Job Title is required";
+                        } else if (!/^[A-Za-z\s]+$/.test(exp.title)) {
+                        errors[`experiences.${index}.title`] = "Job Title must contain only letters";
                         }
                         if(!exp.startDate) {
                             errors[`experiences.${index}.startDate`] = "Start Date is required"
@@ -146,15 +191,23 @@ const EmployeeForm = () => {
                         if(!exp.description) {
                             errors[`experiences.${index}.description`] = "Description is required"
                         }
-                        if(!exp.skills) {
-                            errors[`experiences.${index}.skills`] = "skills is required"
+                        if (!exp.skills) {
+                        errors[`experiences.${index}.skills`] = "Skills is required";
+                        } else if (!/^[A-Za-z\s,]+$/.test(exp.skills)) {
+                        errors[`experiences.${index}.skills`] = "Skills must contain only letters";
                         }
+
                     })
                 }
             }
 
             if(activeStep === 3) {
-                if(!formData.bankName) errors.bankName = "Bank Name is required"
+                if (!formData.bankName) {
+                errors.bankName = "Bank Name is required";
+                } else if (!/^[A-Za-z\s]+$/.test(formData.bankName)) {
+                errors.bankName = "Bank Name must contain only letters";
+                }
+
                 if(!formData.accountNumber) {
                     errors.accountNumber = "Account Number is required"
                 } else if(!/^\d+$/.test(formData.accountNumber)) {
@@ -163,12 +216,18 @@ const EmployeeForm = () => {
                     errors.accountNumber = "Account Number must be 9 to 18 digits"
                 }
 
-                if(!formData.ifscCode) {
-                    errors.ifscCode = "IFSC Code is required"
-                } else if(!/^[A-Za-z]{4}\d{7}$/.test(formData.ifscCode)) {
-                    errors.ifscCode = "Invalid IFSC Code format"
+                if (!formData.ifscCode) {
+                errors.ifscCode = "IFSC Code is required";
+                } else if (!/^[A-Za-z]{4}0[A-Z0-9]{6}$/.test(formData.ifscCode)) {
+                errors.ifscCode = "Invalid IFSC Code format (Example: IDIB000P036)";
                 }
-                if(!formData.branch) errors.branch = "Branch is required"
+
+                if (!formData.branch) {
+                errors.branch = "Branch is required";
+                } else if (!/^[A-Za-z\s]+$/.test(formData.branch)) {
+                errors.branch = "Branch must contain only letters";
+                }
+
             }
 
         setErrors(errors);
@@ -271,6 +330,7 @@ const EmployeeForm = () => {
 
             setFormData(initialFormData)
             setActiveStep(0)
+            setOpen(false)
             navigate("/employee-details")
         } catch(error) {
             console.log(error.response?.data)
@@ -289,6 +349,7 @@ const EmployeeForm = () => {
                                 label="Employee ID"
                                 name="empId"
                                 value={user?.empid}
+                                InputLabelProps={{ shrink: true }}
                             />
                         </Grid>
 
@@ -310,6 +371,7 @@ const EmployeeForm = () => {
                                 label="Email"
                                 name="email"
                                 value={user?.email}
+                                InputLabelProps={{ shrink: true }}
                             />
                         </Grid>
 
@@ -641,15 +703,19 @@ const EmployeeForm = () => {
                                 name="pgUniversity" 
                                 value={formData.pgUniversity} 
                                 onChange={handleChange}
+                                error={!!errors.pgUniversity}
+                                helperText={errors.pgUniversity} 
                                 />
                             </Grid>
                             <Grid item xs={12} sm={6}>
                                 <Typography>Year Of Passing</Typography>
                                 <TextField 
                                 fullWidth 
-                                name="pgYearofPaasing" 
+                                name="pgYearofPassing" 
                                 value={formData.pgYearofPassing} 
                                 onChange={handleChange}
+                                error={!!errors.pgYearofPassing}
+                                helperText={errors.pgYearofPassing} 
                                 />
                             </Grid>
                             <Grid item xs={12} sm={6}>
@@ -659,6 +725,8 @@ const EmployeeForm = () => {
                                 name="pgPercentage" 
                                 value={formData.pgPercentage} 
                                 onChange={handleChange}
+                                error={!!errors.pgPercentage}
+                                helperText={errors.pgPercentage} 
                                 />
                             </Grid>
                         </Grid>
@@ -891,8 +959,8 @@ const EmployeeForm = () => {
                                     {[
                                         ["10th", `${formData.tenthBoard} | Year : ${formData.tenthYearofPassing} | Per/CGPA : ${formData.tenthPercentage}`],
                                         ["12th", `${formData.twelveBoard} | Year : ${formData.twelveYearofPassing} | Per/CGPA : ${formData.twelvePercentage}`],
-                                        ["UG", `${formData.ugUniversity} | Year : ${formData.ugYearofPaasing} | Per/CGPA : ${formData.ugPercentage}`],
-                                        ["PG", `${formData.pgUniversity} | Year : ${formData.pgYearofPaasing} | Per/CGPA : ${formData.pgPercentage}`],
+                                        ["UG", `${formData.ugUniversity} | Year : ${formData.ugYearofPassing} | Per/CGPA : ${formData.ugPercentage}`],
+                                        ["PG", `${formData.pgUniversity} | Year : ${formData.pgYearofPassing} | Per/CGPA : ${formData.pgPercentage}`],
                                     ].map(([label, value], i) => (
                                         <Grid container key={i} sx={{ mb: 1 }}>
                                             <Grid item xs={4}>

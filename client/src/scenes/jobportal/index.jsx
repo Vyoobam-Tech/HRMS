@@ -22,10 +22,10 @@ const JobPortal = () => {
   return (
     <div
       style={{
-        height: 500,
-        paddingTop: "50px",
-        marginRight: "60px",
-        marginLeft: "40px",
+        height: "100vh",
+        width: "100%",
+        padding: "120px 40px 20px 40px",
+        boxSizing: "border-box",
       }}
     >
       <Header title="JOB PORTAL" />

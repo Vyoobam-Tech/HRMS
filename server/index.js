@@ -18,8 +18,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://vyoobam-hrms.onrender.com"],
-    methods: ['GET', 'POST', 'DELETE'],
+    origin: ["https://hrms.vyoobam.com"],
+    methods: ['GET', 'PUT', 'POST', 'DELETE'],
     credentials: true,
   })
 );

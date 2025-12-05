@@ -124,11 +124,10 @@ const Holidays = () => {
   return (
     <div
       style={{
-        height: 450,
-        width: 820,
-        marginRight: "60px",
-        paddingTop: "100px",
-        marginLeft: "30px",
+        height: "100vh",
+        width: "100%",
+        padding: "120px 40px 20px 40px",
+        boxSizing: "border-box",
       }}
     >
       <Header title="HOLIDAYS" subtitle="Organisation Holidays Details" />

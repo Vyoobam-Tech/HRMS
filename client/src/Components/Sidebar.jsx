@@ -73,22 +73,32 @@ const Sidebar = ({ onToggle, setIsAuthenticated }) => {
 
   return (
     <Box
-      sx={{
-        width: "32.3vh",
-        backgroundColor: "#34495e",
-        color: "#fff",
-        height: "100vh",
-        boxShadow: "2px 0 5px rgba(0,0,0,0.1)",
-        paddingTop: "30px",
-        paddingLeft: "30px",
-        position: "fixed",
-        left: 0,
-        overflowY: "auto",
-        "& .MuiListItemText-primary": {
-          fontSize: "0.85rem"
-        }
-      }}
-    >
+  sx={{
+    width: {
+      xs: "200px",   // mobile
+      sm: "250px",   // tablet
+      md: "32.3vh",  // desktop
+    },
+    backgroundColor: "#34495e",
+    color: "#fff",
+    height: "100vh",
+    boxShadow: "2px 0 5px rgba(0,0,0,0.1)",
+    paddingTop: "30px",
+    paddingLeft: {
+      xs: "15px",
+      sm: "20px",
+      md: "30px",
+    },
+    position: "fixed",
+    left: 0,
+    overflowY: "auto",
+    transition: "width 0.2s ease-in-out",
+    "& .MuiListItemText-primary": {
+      fontSize: "0.85rem",
+    },
+    zIndex: 1000,
+  }}
+>
       <IconButton
         onClick={onToggle}
         sx={{ marginTop: "-15px", marginLeft: "-20px", marginBottom:'30px', color: "#fff" }}
