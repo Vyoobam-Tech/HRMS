@@ -134,33 +134,91 @@ router.post("/signup", async (req, res) => {
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
   try {
-    const user = await User.findOne({ where: { email } });
-    if (!user) return res.json({ status: false, message: "User is not registered" });
+    const emailNormalized = email.trim().toLowerCase(); // normalize email
+    const user = await User.findOne({ where: { email: emailNormalized } });
+
+    if (!user) {
+      return res.status(400).json({ status: false, message: "Invalid credentials" });
+    }
 
     const validPassword = await bcrypt.compare(password, user.password);
-    if (!validPassword) return res.json({ status: false, message: "Incorrect password" });
+    if (!validPassword) {
+      return res.status(400).json({ status: false, message: "Invalid credentials" });
+    }
 
-    // Create JWT token
     const token = jwt.sign(
       { id: user.id, username: user.username, role: user.role },
       process.env.KEY,
       { expiresIn: "1h" }
     );
 
-    // Set secure cookie
     res.cookie("token", token, {
       httpOnly: true,
-      maxAge: 3600000, // 1 hour
+      maxAge: 3600000,
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       secure: process.env.NODE_ENV === "production",
     });
 
     return res.json({ status: true, message: "Login successful" });
   } catch (err) {
-    console.error("Login error:", err.message);
+    console.error(err);
     return res.status(500).json({ status: false, message: "Login failed", error: err.message });
   }
 });
+
+
+router.post("/forgot-password",async (req,res) => {
+  try{
+    const {email}=req.body
+    if(!email){
+      return res.status(400).json({error:"Email Required"})
+    }
+    const emailNormalized=email.trim().toLowerCase()
+    const user = await User.findOne({email:emailNormalized})
+    const successMessage={
+      message:"If this email exists, a password reset link has been sent"
+    }
+    if(!user){
+      return res.json(successMessage)
+    }
+    const token=crypto.randomBytes(32).toString("hex")
+    user.resetPasswordToken=token
+    user.resetPasswordExpires=Date.now() + 3600000
+    await user.save()
+
+    const resetLink = `${process.env.VITE_API_BASE_URL}/reset-password/${token}`
+    const mailOptions ={
+      from: `"HRMS App" <${process.env.EMAIL_USER}>`,
+      to:user.email,
+      subject:"Password Reset Request",
+      html:`
+       <p>You requested a password reset. Click the link below:</p>
+        <a href="${resetLink}">${resetLink}</a>
+        <p>This link will expire in 1 hour.</p>
+      `,
+    }
+    let transporter
+    try{
+      transporter = nodemailer.createTransport({
+        service:"gmail",
+        auth:{
+          user:process.env.EMAIL_USER,
+          pass:process.env.EMAIL_PASS,
+        },
+      })
+      transporter.verify((err,success)=>{
+        if(err){
+          console.log("SMTP ERROR:",err)
+        }
+        else{
+          console.log("SMTP OK:",success)
+        }
+      })
+    }catch(err){
+      console.log("Transport creation error:",err.message)
+    }
+  }
+})
 
 // ---------------------- Reset Password Route ----------------------
 router.post("/reset-password", async (req, res) => {

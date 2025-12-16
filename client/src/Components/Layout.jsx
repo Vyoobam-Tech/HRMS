@@ -4,25 +4,45 @@ import SmallSidebar from "./Smallsidebar";
 import Navbar from "./Navbar";
 import { Outlet } from "react-router-dom";
 
+// ✅ SINGLE SOURCE OF TRUTH
+const SIDEBAR_WIDTH = 260;
+const SMALL_SIDEBAR_WIDTH = 60;
+
 function Layout({ isSidebarOpen, handleToggleSidebar, setIsAuthenticated }) {
+  const sidebarWidth = isSidebarOpen
+    ? SIDEBAR_WIDTH
+    : SMALL_SIDEBAR_WIDTH;
+
   return (
     <Box display="flex">
+      {/* Sidebar */}
       {isSidebarOpen ? (
-        <Sidebar onToggle={handleToggleSidebar} setIsAuthenticated={setIsAuthenticated} />
+        <Sidebar
+          onToggle={handleToggleSidebar}
+          setIsAuthenticated={setIsAuthenticated}
+        />
       ) : (
-        <SmallSidebar onToggle={handleToggleSidebar} setIsAuthenticated={setIsAuthenticated} />
+        <SmallSidebar
+          onToggle={handleToggleSidebar}
+          setIsAuthenticated={setIsAuthenticated}
+        />
       )}
-      <Box flex={1} display="flex" flexDirection="column">
-        <Navbar isSidebarOpen={isSidebarOpen} />
-        <Box
-          flex={1}
-          p={5}
-          sx={{
-            marginLeft: isSidebarOpen ? "220px" : "60px",
-            transition: "margin-left 0.2s ease-in-out",
-          }}
-        >
-          {/* This is where child routes will appear */}
+
+      {/* Main Content */}
+      <Box
+        flex={1}
+        display="flex"
+        flexDirection="column"
+        sx={{
+          marginLeft: `${sidebarWidth}px`,
+          transition: "margin-left 0.2s ease-in-out",
+        }}
+      >
+        {/* ✅ PASS WIDTH TO NAVBAR */}
+        <Navbar sidebarWidth={sidebarWidth} />
+
+        {/* Page Content */}
+        <Box flex={1} p={5}>
           <Outlet />
         </Box>
       </Box>

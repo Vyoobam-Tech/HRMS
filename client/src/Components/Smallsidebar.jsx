@@ -30,6 +30,7 @@ import { Link, useNavigate } from "react-router-dom";
 import API from "../api/axiosInstance";
 
 const Smallsidebar = ({ onToggle, setIsAuthenticated }) => {
+  const SMALL_SIDEBAR_WIDTH = 80;
   const [reportsOpen, setReportsOpen] = useState(false)
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -68,16 +69,17 @@ const Smallsidebar = ({ onToggle, setIsAuthenticated }) => {
 
   return (
     <Box
-      sx={{
-        position: "fixed",
+       sx={{
+        width: `${SMALL_SIDEBAR_WIDTH}px`,
         height: "100vh",
+        position: "fixed",
+        left: 0,
+        top: 0,
+        backgroundColor: "#34495e",
+        zIndex: 1200,
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        width: "60px",
-        backgroundColor: "#34495e",
-        zIndex: 1000,
-        left: 0,
         paddingTop: "20px",
         boxShadow: "2px 0 5px rgba(0,0,0,0.1)",
       }}

@@ -23,16 +23,15 @@ import AccountBalanceRoundedIcon from "@mui/icons-material/AccountBalanceRounded
 import AssessmentRoundedIcon from "@mui/icons-material/AssessmentRounded";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
-import DateRangeIcon from '@mui/icons-material/DateRange';
+import DateRangeIcon from "@mui/icons-material/DateRange";
 import PowerSettingsNewRoundedIcon from "@mui/icons-material/PowerSettingsNewRounded";
-import { Link, Router, Routes, Route } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import API from "../api/axiosInstance";
 
 const Sidebar = ({ onToggle, setIsAuthenticated }) => {
   const [reportsOpen, setReportsOpen] = useState(false);
-  const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   const toggleReportsDropdown = () => {
@@ -40,68 +39,74 @@ const Sidebar = ({ onToggle, setIsAuthenticated }) => {
   };
 
   const handleLogout = async () => {
-    try{
-      await API.get("/auth/logout")
-
-      localStorage.removeItem("isLoggedIn")
-      setIsAuthenticated(false)
-      navigate("/login")
-    } catch(err) {
-      console.log(err)
+    try {
+      await API.get("/auth/logout", { withCredentials: true });
+      localStorage.removeItem("token"); // remove JWT if using token
+      localStorage.removeItem("isLoggedIn");
+      setIsAuthenticated(false);
+      navigate("/login");
+    } catch (err) {
+      console.log(err);
     }
-  }
+  };
 
   useEffect(() => {
-      const fetchUser = async () => {
-        try{
-          const response = await API.get("/auth/profile")
-          if(response.data.status){
-            setUser(response.data.user)
-          }
-        } catch(err) {
-          console.log(err)
-        } finally {
-          setLoading(false)
+    const fetchUser = async () => {
+      try {
+        // Use JWT from localStorage or rely on cookies
+        const token = localStorage.getItem("token");
+        const response = await API.get("/auth/profile", {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+          withCredentials: true, // important for cookies
+        });
+
+        if (response.data.status) {
+          setUser(response.data.user);
+        } else {
+          // If unauthorized, redirect to login
+          setIsAuthenticated(false);
+          navigate("/login");
         }
+      } catch (err) {
+        console.log(err);
+        setIsAuthenticated(false);
+        navigate("/login");
+      } finally {
+        setLoading(false);
       }
-      fetchUser()
-    }, [])
+    };
 
-    const role = user?.role
+    fetchUser();
+  }, [navigate, setIsAuthenticated]);
 
-    if(loading) return null
+  const role = user?.role;
+
+  if (loading) return null;
 
   return (
     <Box
-  sx={{
-    width: {
-      xs: "200px",   // mobile
-      sm: "250px",   // tablet
-      md: "32.3vh",  // desktop
-    },
-    backgroundColor: "#34495e",
-    color: "#fff",
-    height: "100vh",
-    boxShadow: "2px 0 5px rgba(0,0,0,0.1)",
-    paddingTop: "30px",
-    paddingLeft: {
-      xs: "15px",
-      sm: "20px",
-      md: "30px",
-    },
-    position: "fixed",
-    left: 0,
-    overflowY: "auto",
-    transition: "width 0.2s ease-in-out",
-    "& .MuiListItemText-primary": {
-      fontSize: "0.85rem",
-    },
-    zIndex: 1000,
-  }}
->
+      sx={{
+        width: "260px",
+        backgroundColor: "#34495e",
+        color: "#fff",
+        height: "100vh",
+        position: "fixed",
+        left: 0,
+        top: 0,
+        overflowY: "auto",
+        boxShadow: "2px 0 5px rgba(0,0,0,0.1)",
+        paddingTop: "30px",
+        paddingLeft: "20px",
+        transition: "width 0.2s ease-in-out",
+        zIndex: 1200,
+        "& .MuiListItemText-primary": {
+          fontSize: "0.85rem",
+        },
+      }}
+    >
       <IconButton
         onClick={onToggle}
-        sx={{ marginTop: "-15px", marginLeft: "-20px", marginBottom:'30px', color: "#fff" }}
+        sx={{ marginTop: "-15px", marginLeft: "-20px", marginBottom: "30px", color: "#fff" }}
       >
         <ArrowBackIcon />
       </IconButton>
@@ -109,160 +114,172 @@ const Sidebar = ({ onToggle, setIsAuthenticated }) => {
       {role === "employee" && (
         <List>
           <ListItem disablePadding>
-          <ListItemButton component={Link} to="/dashpage">
-            <ListItemIcon>
-              <DashboardRoundedIcon sx={{ color: "#fff" }} />
-            </ListItemIcon>
-            <ListItemText primary="Dashpage" />
-          </ListItemButton>
-        </ListItem>
-        <ListItem disablePadding>
-          <ListItemButton component={Link} to="/department">
-            <ListItemIcon>
-              <PolylineRoundedIcon sx={{ color: "#fff" }} />
-            </ListItemIcon>
-            <ListItemText primary="Department" />
-          </ListItemButton>
-        </ListItem>
-        <ListItem disablePadding>
-          <ListItemButton component={Link} to="/employee-details">
-            <ListItemIcon>
-              <BadgeRoundedIcon sx={{ color: "#fff" }} />
-            </ListItemIcon>
-            <ListItemText primary="My Details" />
-          </ListItemButton>
-        </ListItem>
-        <ListItem disablePadding>
-          <ListItemButton component={Link} to="/attendance">
-            <ListItemIcon>
-              <DateRangeIcon sx={{ color: "#fff" }} />
-            </ListItemIcon>
-            <ListItemText primary="My Attendance" />
-          </ListItemButton>
-        </ListItem>
-        <ListItem disablePadding>
-          <ListItemButton component={Link} to="/activities">
-            <ListItemIcon>
-              <HandymanRoundedIcon sx={{ color: "#fff" }} />
-            </ListItemIcon>
-            <ListItemText primary="My Activities" />
-          </ListItemButton>
-        </ListItem>
-        <ListItem disablePadding>
-          <ListItemButton component={Link} to="/holidays">
-            <ListItemIcon>
-              <CelebrationRoundedIcon sx={{ color: "#fff" }} />
-            </ListItemIcon>
-            <ListItemText primary="Holidays" />
-          </ListItemButton>
-        </ListItem>
-        <ListItem disablePadding>
-          <ListItemButton component={Link} to="/events">
-            <ListItemIcon>
-              <EmojiEventsRoundedIcon sx={{ color: "#fff" }} />
-            </ListItemIcon>
-            <ListItemText primary="Events" />
-          </ListItemButton>
-        </ListItem>
+            <ListItemButton component={Link} to="/dashpage">
+              <ListItemIcon>
+                <DashboardRoundedIcon sx={{ color: "#fff" }} />
+              </ListItemIcon>
+              <ListItemText primary="Dashpage" />
+            </ListItemButton>
+          </ListItem>
+
+          <ListItem disablePadding>
+            <ListItemButton component={Link} to="/department">
+              <ListItemIcon>
+                <PolylineRoundedIcon sx={{ color: "#fff" }} />
+              </ListItemIcon>
+              <ListItemText primary="Department" />
+            </ListItemButton>
+          </ListItem>
+
+          <ListItem disablePadding>
+            <ListItemButton component={Link} to="/employee-details">
+              <ListItemIcon>
+                <BadgeRoundedIcon sx={{ color: "#fff" }} />
+              </ListItemIcon>
+              <ListItemText primary="My Details" />
+            </ListItemButton>
+          </ListItem>
+
+          <ListItem disablePadding>
+            <ListItemButton component={Link} to="/attendance">
+              <ListItemIcon>
+                <DateRangeIcon sx={{ color: "#fff" }} />
+              </ListItemIcon>
+              <ListItemText primary="My Attendance" />
+            </ListItemButton>
+          </ListItem>
+
+          <ListItem disablePadding>
+            <ListItemButton component={Link} to="/activities">
+              <ListItemIcon>
+                <HandymanRoundedIcon sx={{ color: "#fff" }} />
+              </ListItemIcon>
+              <ListItemText primary="My Activities" />
+            </ListItemButton>
+          </ListItem>
+
+          <ListItem disablePadding>
+            <ListItemButton component={Link} to="/holidays">
+              <ListItemIcon>
+                <CelebrationRoundedIcon sx={{ color: "#fff" }} />
+              </ListItemIcon>
+              <ListItemText primary="Holidays" />
+            </ListItemButton>
+          </ListItem>
+
+          <ListItem disablePadding>
+            <ListItemButton component={Link} to="/events">
+              <ListItemIcon>
+                <EmojiEventsRoundedIcon sx={{ color: "#fff" }} />
+              </ListItemIcon>
+              <ListItemText primary="Events" />
+            </ListItemButton>
+          </ListItem>
         </List>
       )}
 
-    {(role === "admin" || role === "superadmin")  && (
-      <List>
-        <ListItem disablePadding>
-          <ListItemButton component={Link} to="/dashpage">
-            <ListItemIcon>
-              <DashboardRoundedIcon sx={{ color: "#fff" }} />
-            </ListItemIcon>
-            <ListItemText primary="Dashpage" />
-          </ListItemButton>
-        </ListItem>
-        <ListItem disablePadding>
-          <ListItemButton component={Link} to="/department">
-            <ListItemIcon>
-              <PolylineRoundedIcon sx={{ color: "#fff" }} />
-            </ListItemIcon>
-            <ListItemText primary="Department" />
-          </ListItemButton>
-        </ListItem>
-        <ListItem disablePadding>
-          <ListItemButton component={Link} to="/employee">
-            <ListItemIcon>
-              <BadgeRoundedIcon sx={{ color: "#fff" }} />
-            </ListItemIcon>
-            <ListItemText primary="Employees" />
-          </ListItemButton>
-        </ListItem>
-        <ListItem disablePadding>
-          <ListItemButton component={Link} to="/allactivities">
-            <ListItemIcon>
-              <HandymanRoundedIcon sx={{ color: "#fff" }} />
-            </ListItemIcon>
-            <ListItemText primary="All Activities" />
-          </ListItemButton>
-        </ListItem>
-        <ListItem disablePadding>
-          <ListItemButton component={Link} to="/holidays">
-            <ListItemIcon>
-              <CelebrationRoundedIcon sx={{ color: "#fff" }} />
-            </ListItemIcon>
-            <ListItemText primary="Holidays" />
-          </ListItemButton>
-        </ListItem>
-        <ListItem disablePadding>
-          <ListItemButton component={Link} to="/events">
-            <ListItemIcon>
-              <EmojiEventsRoundedIcon sx={{ color: "#fff" }} />
-            </ListItemIcon>
-            <ListItemText primary="Events" />
-          </ListItemButton>
-        </ListItem>
-        <ListItem disablePadding>
-          <ListItemButton component={Link} to="/payroll">
-            <ListItemIcon>
-              <PaymentOutlinedIcon sx={{ color: "#fff" }} />
-            </ListItemIcon>
-            <ListItemText primary="Payroll" />
-          </ListItemButton>
-        </ListItem>
-        <ListItem disablePadding>
-          <ListItemButton component={Link} to="/accounts">
-            <ListItemIcon>
-              <AccountBalanceRoundedIcon sx={{ color: "#fff" }} />
-            </ListItemIcon>
-            <ListItemText primary="Accounts" />
-          </ListItemButton>
-        </ListItem>
+      {(role === "admin" || role === "superadmin") && (
+        <List>
+          <ListItem disablePadding>
+            <ListItemButton component={Link} to="/dashpage">
+              <ListItemIcon>
+                <DashboardRoundedIcon sx={{ color: "#fff" }} />
+              </ListItemIcon>
+              <ListItemText primary="Dashpage" />
+            </ListItemButton>
+          </ListItem>
 
-        {/* Reports Dropdown */}
-        <ListItem disablePadding>
-          <ListItemButton onClick={toggleReportsDropdown}>
-            <ListItemIcon>
-              <AssessmentRoundedIcon sx={{ color: "#fff" }} />
-            </ListItemIcon>
-            <ListItemText primary="Reports" />
-            {reportsOpen ? <ExpandLess /> : <ExpandMore />}
-          </ListItemButton>
-        </ListItem>
-        
+          <ListItem disablePadding>
+            <ListItemButton component={Link} to="/department">
+              <ListItemIcon>
+                <PolylineRoundedIcon sx={{ color: "#fff" }} />
+              </ListItemIcon>
+              <ListItemText primary="Department" />
+            </ListItemButton>
+          </ListItem>
 
-        {/* Dropdown Items */}
-        <Collapse in={reportsOpen} timeout="auto" unmountOnExit>
-          <List component="div" disablePadding sx={{ paddingLeft: 4 }}>
-            <ListItem disablePadding>
-              <ListItemButton component={Link} to="attendance-report">
-                <ListItemText primary="Attendance Report" />
-              </ListItemButton>
-            </ListItem>
-            <ListItem disablePadding>
-              <ListItemButton component={Link} to="attendance-summary">
-                <ListItemText primary="Attendance Summary" />
-              </ListItemButton>
-            </ListItem>
-          </List>
-        </Collapse>
-      </List>
-    )}
+          <ListItem disablePadding>
+            <ListItemButton component={Link} to="/employee">
+              <ListItemIcon>
+                <BadgeRoundedIcon sx={{ color: "#fff" }} />
+              </ListItemIcon>
+              <ListItemText primary="Employees" />
+            </ListItemButton>
+          </ListItem>
+
+          <ListItem disablePadding>
+            <ListItemButton component={Link} to="/allactivities">
+              <ListItemIcon>
+                <HandymanRoundedIcon sx={{ color: "#fff" }} />
+              </ListItemIcon>
+              <ListItemText primary="All Activities" />
+            </ListItemButton>
+          </ListItem>
+
+          <ListItem disablePadding>
+            <ListItemButton component={Link} to="/holidays">
+              <ListItemIcon>
+                <CelebrationRoundedIcon sx={{ color: "#fff" }} />
+              </ListItemIcon>
+              <ListItemText primary="Holidays" />
+            </ListItemButton>
+          </ListItem>
+
+          <ListItem disablePadding>
+            <ListItemButton component={Link} to="/events">
+              <ListItemIcon>
+                <EmojiEventsRoundedIcon sx={{ color: "#fff" }} />
+              </ListItemIcon>
+              <ListItemText primary="Events" />
+            </ListItemButton>
+          </ListItem>
+
+          <ListItem disablePadding>
+            <ListItemButton component={Link} to="/payroll">
+              <ListItemIcon>
+                <PaymentOutlinedIcon sx={{ color: "#fff" }} />
+              </ListItemIcon>
+              <ListItemText primary="Payroll" />
+            </ListItemButton>
+          </ListItem>
+
+          <ListItem disablePadding>
+            <ListItemButton component={Link} to="/accounts">
+              <ListItemIcon>
+                <AccountBalanceRoundedIcon sx={{ color: "#fff" }} />
+              </ListItemIcon>
+              <ListItemText primary="Accounts" />
+            </ListItemButton>
+          </ListItem>
+
+          {/* Reports Dropdown */}
+          <ListItem disablePadding>
+            <ListItemButton onClick={toggleReportsDropdown}>
+              <ListItemIcon>
+                <AssessmentRoundedIcon sx={{ color: "#fff" }} />
+              </ListItemIcon>
+              <ListItemText primary="Reports" />
+              {reportsOpen ? <ExpandLess /> : <ExpandMore />}
+            </ListItemButton>
+          </ListItem>
+
+          {/* Dropdown Items */}
+          <Collapse in={reportsOpen} timeout="auto" unmountOnExit>
+            <List component="div" disablePadding sx={{ paddingLeft: 4 }}>
+              <ListItem disablePadding>
+                <ListItemButton component={Link} to="attendance-report">
+                  <ListItemText primary="Attendance Report" />
+                </ListItemButton>
+              </ListItem>
+              <ListItem disablePadding>
+                <ListItemButton component={Link} to="attendance-summary">
+                  <ListItemText primary="Attendance Summary" />
+                </ListItemButton>
+              </ListItem>
+            </List>
+          </Collapse>
+        </List>
+      )}
 
       <IconButton
         size="large"
@@ -271,10 +288,7 @@ const Sidebar = ({ onToggle, setIsAuthenticated }) => {
         color="inherit"
         onClick={handleLogout}
         sx={{
-          "&:hover": {
-            backgroundColor: "transparent",
-            boxShadow: "none",
-          },
+          "&:hover": { backgroundColor: "transparent", boxShadow: "none" },
           paddingTop: "60px",
           marginLeft: "35px",
         }}

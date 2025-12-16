@@ -18,28 +18,37 @@ import { useGoogleLogin } from "@react-oauth/google";
 import "../App.css";
 import FormBg from "../asset/navy-bg.jpg";
 import GoogleLogo from "../asset/google-icon.webp";
+import { color } from "@mui/system";
 
 const Login = ({ setIsAuthenticated }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [error,setError] = useState("")
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    API
-      .post("/auth/login", { email, password })
-      .then((response) => {
-        if (response.data.status) {
-          setIsAuthenticated(true);
-          localStorage.setItem("isLoggedIn", "true");
-          navigate("/dashpage");
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError(""); // clear previous error
+
+  try {
+    const response = await API.post("/auth/login", { email, password });
+
+    if (response.data.status) {
+      // Successful login
+      setIsAuthenticated(true);
+      localStorage.setItem("isLoggedIn", "true");
+      navigate("/dashpage");
+    } else {
+      // Display backend error (e.g., invalid credentials)
+      setError(response.data.message || "Invalid credentials");
+    }
+  } catch (err) {
+    // Handle network/server errors
+    setError(err.response?.data?.message || "Something went wrong");
+  }
+};
+
 
   const handleGoogleSuccess = async (tokenResponse) => {
     try {
@@ -117,7 +126,11 @@ const Login = ({ setIsAuthenticated }) => {
         >
           Login to continue
         </Typography>
-
+ {error && (
+  <Typography align="center" color="error" sx={{ mt: 1, mb: 1 }}>
+    {error}
+  </Typography>
+)}
         <TextField
           type="email"
           placeholder="Email"

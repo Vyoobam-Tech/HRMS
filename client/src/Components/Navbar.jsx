@@ -11,7 +11,7 @@ import { Stack } from "@mui/system";
 import { setLocale } from "yup";
 import API from "../api/axiosInstance";
 
-const Navbar = ({ isSidebarOpen }) => {
+const Navbar = ({ sidebarWidth }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl)
   const [user, setUser] = useState(null)
@@ -168,15 +168,17 @@ const Navbar = ({ isSidebarOpen }) => {
 
   return (
     <Box >
-      <AppBar
-        position="fixed"
-        elevation={0}
-        sx={{
-          backgroundColor: "#fff",
-          width: isSidebarOpen ? "calc(100% - 37vh)" : "calc(100% - 60px)",
-          transition: "margin-left 0.2s ease-in-out",
-        }}
-      >
+    <AppBar
+      position="fixed"
+      elevation={0}
+      sx={{
+        backgroundColor: "#fff",
+        width: `calc(100% - ${sidebarWidth}px)`,
+        marginLeft: `${sidebarWidth}px`,
+        transition: "all 0.2s ease-in-out",
+      }}
+    >
+
         <Toolbar sx={{ display:'flex', justifyContent:'space-between' }}>
           <img 
             src={OAImage}
