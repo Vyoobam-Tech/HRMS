@@ -18,11 +18,11 @@ const ForgotPassword = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     API.post("/auth/forgot-password", { email })
-      .then((response) => {
-        if (response.data.status) {
+      .then(() => {
+        
           alert("Check your email for the reset password link");
           navigate("/login");
-        }
+        
       })
       .catch((err) => {
         console.log(err);

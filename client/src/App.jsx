@@ -40,19 +40,20 @@ function App() {
       setIsAuthenticated(true);
     } else {
       API.get("/auth/checkSession")
-        .then((response) => {
-          if (response.data.loggedIn) {
-            setIsAuthenticated(true);
-            localStorage.setItem("isLoggedIn", "true");
-          } else {
-            setIsAuthenticated(false);
-            localStorage.removeItem("isLoggedIn");
-          }
-        })
-        .catch(() => {
-          setIsAuthenticated(false);
-          localStorage.removeItem("isLoggedIn");
-        });
+  .then((response) => {
+    if (response.data.status) {   // 🔴 FIX HERE
+      setIsAuthenticated(true);
+      localStorage.setItem("isLoggedIn", "true");
+    } else {
+      setIsAuthenticated(false);
+      localStorage.removeItem("isLoggedIn");
+    }
+  })
+  .catch(() => {
+    setIsAuthenticated(false);
+    localStorage.removeItem("isLoggedIn");
+  });
+
     }
   }, []);
 
@@ -90,7 +91,8 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} />} />
           <Route path="/forgotPassword" element={<ForgotPassword />} />
-          <Route path="/resetPassword/:token" element={<ResetPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
+
 
           {/* Protected Routes (after login) */}
           {isAuthenticated && (

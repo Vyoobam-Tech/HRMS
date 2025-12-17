@@ -25,6 +25,7 @@ import { useGoogleLogin } from "@react-oauth/google";
 import "../App.css";
 import GoogleLogo from "../asset/google-icon.webp";
 import FormBg from "../asset/navy-bg.jpg";
+import { useEffect } from "react";
 
 const Signup = () => {
   const [username, setUsername] = useState("");
@@ -34,6 +35,8 @@ const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const [role, setRole] = useState("employee")
+  const [hasSuperAdmin, setHasSuperAdmin] = useState(false);
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -87,6 +90,19 @@ const Signup = () => {
   const handleRoleChange = (e) => {
     setRole(e.target.value)
   }
+
+  useEffect(() => {
+  const checkSuperAdmin = async () => {
+    try {
+      const res = await API.get("/auth/has-superadmin");
+      setHasSuperAdmin(res.data.hasSuperAdmin);
+    } catch (err) {
+      console.error("Error checking super admin:", err);
+    }
+  };
+
+  checkSuperAdmin();
+}, []);
 
   return (
     <Box
@@ -155,18 +171,20 @@ const Signup = () => {
             />
           </FormGroup>
 
-          <FormGroup>
-            <FormControlLabel
-              control={
-                <Radio
-                  checked={role === "superadmin"}
-                  value="superadmin"
-                  onChange={handleRoleChange}
-                />
-              }
-              label="Super Admin"
-            />
-          </FormGroup>
+           {!hasSuperAdmin && (
+    <FormGroup>
+      <FormControlLabel
+        control={
+          <Radio
+            checked={role === "superadmin"}
+            value="superadmin"
+            onChange={handleRoleChange}
+          />
+        }
+        label="Super Admin"
+      />
+    </FormGroup>
+  )}
         </Box>
 
         <TextField
