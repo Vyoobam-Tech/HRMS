@@ -1,10 +1,11 @@
 import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
-import { Button, MenuItem, TextField } from "@mui/material";
+import { Button, IconButton, MenuItem, TextField } from "@mui/material";
 import { useState, useEffect } from "react";
 import Header from "../../Components/Header";
 import hrmsData from "../../data/hrmsData.json"
 import { Box } from "@mui/system";
+import DeleteIcon from "@mui/icons-material/Delete";
 import API from "../../api/axiosInstance";
 
 const Holidays = () => {
@@ -59,6 +60,24 @@ const Holidays = () => {
         }
       }
     },
+    {headerName: "Action", field: "action",
+      cellRenderer: (params) => {
+        if (user?.role === "superadmin") {
+        return (
+          <IconButton
+            onClick={() => handleDelete(params.data.id)}
+            color="error"
+            size="small"
+          >
+            <DeleteIcon />
+          </IconButton>
+        );
+      } else {
+        return null; // hide for non-superadmin
+      }
+    },
+      width: 120,
+    }
   ]
 
 
@@ -76,7 +95,6 @@ const Holidays = () => {
     fetchUser()
   }, [])
 
-  useEffect(() => {
     const fetchHoliday = async () => {
       try{
         const response = await API.get("/api/holiday/all")
@@ -87,8 +105,10 @@ const Holidays = () => {
         console.log(err)
       }
     }
-    fetchHoliday()
-  }, [])
+
+  useEffect(() => {
+    fetchHoliday();
+  }, []);
 
   const handleAdd = async () => {
     const { date, type } = holidayForm
@@ -118,13 +138,22 @@ const Holidays = () => {
     }
   }
 
+  const handleDelete = async (id) => {
+    try{
+      await API.delete(`/api/holiday/${id}`)
+      fetchHoliday()
+    } catch(err){
+      console.error("Error deleting holiday:", err);
+    }
+  }
+
   const role = user?.role
 
 
   return (
     <div
       style={{
-        height: "100vh",
+        minHeight: "100vh",
         width: "100%",
         padding: "120px 40px 20px 40px",
         boxSizing: "border-box",

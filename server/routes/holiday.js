@@ -28,4 +28,32 @@ router.get("/all", async (req, res) => {
     }
 })
 
+router.delete("/:id", async (req, res) => {
+    try{
+        const {id} = req.params
+
+        const holiday = await Holiday.findByPk(id)
+
+        if(!holiday) {
+            return res.status(404).json({
+                success: false,
+                message: "Holiday not found"
+            })
+        }
+
+        await holiday.destroy();
+
+        res.status(200).json({
+        success: true,
+        message: "Holiday deleted successfully",
+    });
+    } catch(err){
+        res.status(500).json({
+        success: false,
+        message: "Error deleting holiday",
+        error: err.message,
+    })
+    }
+})
+
 export { router as HolidayRouter}

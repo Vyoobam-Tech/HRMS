@@ -3,6 +3,7 @@ import Sidebar from "./Sidebar";
 import SmallSidebar from "./Smallsidebar";
 import Navbar from "./Navbar";
 import { Outlet } from "react-router-dom";
+import Footer from "./Footer";
 
 // ✅ SINGLE SOURCE OF TRUTH
 const SIDEBAR_WIDTH = 260;
@@ -36,6 +37,7 @@ function Layout({ isSidebarOpen, handleToggleSidebar, setIsAuthenticated }) {
         sx={{
           marginLeft: `${sidebarWidth}px`,
           transition: "margin-left 0.2s ease-in-out",
+          minHeight: "100%"
         }}
       >
         {/* ✅ PASS WIDTH TO NAVBAR */}
@@ -45,6 +47,7 @@ function Layout({ isSidebarOpen, handleToggleSidebar, setIsAuthenticated }) {
         <Box flex={1} p={5}>
           <Outlet />
         </Box>
+        <Footer />
       </Box>
     </Box>
   );

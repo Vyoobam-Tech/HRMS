@@ -18,7 +18,7 @@ import { useGoogleLogin } from "@react-oauth/google";
 import "../App.css";
 import FormBg from "../asset/navy-bg.jpg";
 import GoogleLogo from "../asset/google-icon.webp";
-import { color } from "@mui/system";
+import OAImage from "../image/vyoobam tech.jpeg";
 
 const Login = ({ setIsAuthenticated }) => {
   const [email, setEmail] = useState("");
@@ -113,6 +113,17 @@ const Login = ({ setIsAuthenticated }) => {
           borderRadius: "50px",
         }}
       >
+        <Box
+          sx={{
+            display:"flex",
+            justifyContent: "center"
+          }}
+        >
+          <img
+          src={OAImage}
+          style={{ width: "130px", height: "auto" }}
+          />
+        </Box>
         <Typography
           variant="h6"
           align="center"
@@ -120,17 +131,15 @@ const Login = ({ setIsAuthenticated }) => {
             color: "#192a56",
             fontWeight: "normal",
             fontFamily: "Poppins",
-            paddingTop: "12px",
-            paddingBottom: "20px",
           }}
         >
           Login to continue
         </Typography>
- {error && (
-  <Typography align="center" color="error" sx={{ mt: 1, mb: 1 }}>
-    {error}
-  </Typography>
-)}
+          {error && (
+            <Typography align="center" color="error" sx={{ mt: 1, mb: 1 }}>
+              {error}
+            </Typography>
+          )}
         <TextField
           type="email"
           placeholder="Email"
