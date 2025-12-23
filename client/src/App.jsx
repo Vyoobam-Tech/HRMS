@@ -28,6 +28,7 @@ import AttendanceSummary from "./scenes/reports/AttendanceSummary";
 import EmpDetails from "./scenes/employees/EmpDetails";
 import API from "./api/axiosInstance";
 import { Box } from "@mui/material";
+import EmployeeHolidays from "./scenes/holidays/EmployeeHolidays";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -113,6 +114,8 @@ function App() {
               <Route path="activities" element={<Activities />} />
               <Route path="allactivities" element={<AllActivities />} />
               <Route path="holidays" element={<Holidays />} />
+              <Route path="emp-holidays" element={
+                user? (<EmployeeHolidays empId={user.empId}/> ) : (<p>Loading...</p>)} />
               <Route path="events" element={<Events />} />
               <Route path="payroll" element={<Payroll />} />
               <Route path="accounts" element={<Accounts />} />

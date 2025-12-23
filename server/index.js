@@ -10,6 +10,7 @@ import { ActivityRouter } from "./routes/activity.js";
 import { AttendanceRouter } from "./routes/attendance.js";
 import { startAutoAbsent } from "./jobs/autoAbsent.js";
 import { HolidayRouter } from "./routes/holiday.js";
+import { LeaveRouter } from "./routes/leave.js";
 
 dotenv.config();
 const app = express();
@@ -33,6 +34,7 @@ app.use("/api/departments", DepartmentRouter);
 app.use("/api/activities", ActivityRouter);
 app.use("/api/attendance", AttendanceRouter);
 app.use("/api/holiday", HolidayRouter);
+app.use("/api/leave", LeaveRouter)
 app.get("/", (req, res) => {
   res.send("HRMS Backend is running ✅");
 });

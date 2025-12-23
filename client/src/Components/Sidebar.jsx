@@ -17,6 +17,7 @@ import PolylineRoundedIcon from "@mui/icons-material/PolylineRounded";
 import BadgeRoundedIcon from "@mui/icons-material/BadgeRounded";
 import HandymanRoundedIcon from "@mui/icons-material/HandymanRounded";
 import CelebrationRoundedIcon from "@mui/icons-material/CelebrationRounded";
+import HolidayVillageIcon from '@mui/icons-material/HolidayVillage';
 import EmojiEventsRoundedIcon from "@mui/icons-material/EmojiEventsRounded";
 import PaymentOutlinedIcon from "@mui/icons-material/PaymentOutlined";
 import AccountBalanceRoundedIcon from "@mui/icons-material/AccountBalanceRounded";
@@ -164,6 +165,15 @@ const Sidebar = ({ onToggle, setIsAuthenticated }) => {
                 <CelebrationRoundedIcon sx={{ color: "#fff" }} />
               </ListItemIcon>
               <ListItemText primary="Holidays" />
+            </ListItemButton>
+          </ListItem>
+
+          <ListItem disablePadding>
+            <ListItemButton component={Link} to="/emp-holidays">
+              <ListItemIcon>
+                <HolidayVillageIcon sx={{ color: "#fff" }} />
+              </ListItemIcon>
+              <ListItemText primary="Leave Management" />
             </ListItemButton>
           </ListItem>
 
