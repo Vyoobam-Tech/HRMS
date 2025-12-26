@@ -36,22 +36,26 @@ const Signup = () => {
   const navigate = useNavigate();
   const [role, setRole] = useState("employee")
   const [hasSuperAdmin, setHasSuperAdmin] = useState(false);
+  const [error, setError] = useState(null)
 
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    API
-      .post("/auth/signup", {role, username, empid, email, password })
+    setError(null);
 
+    API.post("/auth/signup", { role, username, empid, email, password })
       .then((response) => {
-        if (response.data.status) {
+        if (response.data.status === true) {
           navigate("/login");
+        } else {
+          setError(response.data.message);
         }
       })
       .catch((err) => {
-        console.log(err);
+        setError("Server error. Please try again.");
       });
-  };
+  }
+
 
   const handleGoogleSuccess = async (tokenResponse) => {
     try {
@@ -138,11 +142,16 @@ const Signup = () => {
             fontWeight: "normal",
             fontFamily: "Poppins",
             paddingTop: "12px",
-            paddingBottom: "20px",
           }}
         >
           Register
         </Typography>
+
+        {error && (
+            <Typography align="center" color="error" sx={{ mt: 1, mb: 1 }}>
+              {error}
+            </Typography>
+          )}
 
         <Box sx={{ display: "flex" }}>
           <FormGroup>

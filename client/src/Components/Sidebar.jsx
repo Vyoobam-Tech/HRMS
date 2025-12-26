@@ -90,10 +90,10 @@ const Sidebar = ({ onToggle, setIsAuthenticated }) => {
         width: "260px",
         backgroundColor: "#34495e",
         color: "#fff",
-        height: "100vh",
+        height: `calc(100vh - 64px)`,
         position: "fixed",
         left: 0,
-        top: 0,
+        top: "84px",
         overflowY: "auto",
         boxShadow: "2px 0 5px rgba(0,0,0,0.1)",
         paddingTop: "30px",
@@ -107,7 +107,7 @@ const Sidebar = ({ onToggle, setIsAuthenticated }) => {
     >
       <IconButton
         onClick={onToggle}
-        sx={{ marginTop: "-15px", marginLeft: "-20px", marginBottom: "30px", color: "#fff" }}
+        sx={{ marginTop: "-15px", marginLeft: "-20px", color: "#fff" }}
       >
         <ArrowBackIcon />
       </IconButton>
@@ -236,6 +236,15 @@ const Sidebar = ({ onToggle, setIsAuthenticated }) => {
           </ListItem>
 
           <ListItem disablePadding>
+            <ListItemButton component={Link} to="/emp-holidays">
+              <ListItemIcon>
+                <HolidayVillageIcon sx={{ color: "#fff" }} />
+              </ListItemIcon>
+              <ListItemText primary="Leave Management" />
+            </ListItemButton>
+          </ListItem>
+
+          <ListItem disablePadding>
             <ListItemButton component={Link} to="/events">
               <ListItemIcon>
                 <EmojiEventsRoundedIcon sx={{ color: "#fff" }} />
@@ -299,7 +308,7 @@ const Sidebar = ({ onToggle, setIsAuthenticated }) => {
         onClick={handleLogout}
         sx={{
           "&:hover": { backgroundColor: "transparent", boxShadow: "none" },
-          paddingTop: "60px",
+          // paddingTop: "20px",
           marginLeft: "35px",
         }}
       >

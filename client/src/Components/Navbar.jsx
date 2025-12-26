@@ -1,6 +1,6 @@
 import React from "react";
 import { AppBar, Box, Toolbar, IconButton, Typography, Menu, MenuItem, Button, Divider } from "@mui/material";
-import OAImage from "../image/vyoobam tech.jpeg";
+import OAImage from "../image/vyoobamtech.png";
 import { useState } from "react";
 import { useEffect } from "react";
 import Timer from "./Timer";
@@ -21,6 +21,7 @@ const Navbar = ({ sidebarWidth }) => {
   const [lunchIn, setLunchIn] = useState(null)
   const [lunchOut, setLunchOut] = useState(null)
   const [totalHours, setTotalHours] = useState(null)
+  const [hasLeaveToday, setHasLeaveToday] = useState(false)
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -36,6 +37,21 @@ const Navbar = ({ sidebarWidth }) => {
     fetchProfile()
   }, [])
 
+
+    const fetchLeaveToday = async () => {
+      try{
+        const res = await API.get(`/api/leave/today/${user.empid}`)
+        setHasLeaveToday(res.data.hasLeave)
+      }catch(err){
+        console.log(err)
+      }
+    }
+
+    useEffect(() => {
+      if(user){
+        fetchLeaveToday(user.empid)
+      }
+    }, [user])
 
         useEffect(() => {
             const storedLoginTime = localStorage.getItem("loginTime")
@@ -91,8 +107,12 @@ const Navbar = ({ sidebarWidth }) => {
             }, [loginTime, breakIn, breakOut, lunchIn, lunchOut])
 
 
-        const handleClick = (e) => {
+        const handleClick = async (e) => {
           setAnchorEl(e.currentTarget)
+
+          if(user){
+            await fetchLeaveToday(user.empid)
+          }
         }
 
         const handleClose =() => {
@@ -159,7 +179,7 @@ const Navbar = ({ sidebarWidth }) => {
           localStorage.removeItem("lunchIn")
           localStorage.removeItem("lunchOut")
 
-          window.location.href = "/z"
+          window.location.href = "/"
         } catch (err) {
           console.error("Error submitting attendance:", err)
           alert("Failed to submit attendance. Try again.")
@@ -173,8 +193,9 @@ const Navbar = ({ sidebarWidth }) => {
       elevation={0}
       sx={{
         backgroundColor: "#fff",
-        width: `calc(100% - ${sidebarWidth}px)`,
-        marginLeft: `${sidebarWidth}px`,
+        // width: `calc(100% - ${sidebarWidth}px)`,
+        // marginLeft: `${sidebarWidth}px`,
+        height: "84px",
         transition: "all 0.2s ease-in-out",
       }}
     >
@@ -220,11 +241,12 @@ const Navbar = ({ sidebarWidth }) => {
                   color="secondary"
                   fullWidth
                   onClick={() => {
+                    if(hasLeaveToday) return
                     const time = new Date().toLocaleTimeString("en-GB", { hour12: false})
                     localStorage.setItem("loginTime", time)
                     setLoginTime(time)
                   }}
-                  disabled={!!loginTime}
+                  disabled={!!loginTime || hasLeaveToday}
                 >
                   LOGIN
                 </Button>

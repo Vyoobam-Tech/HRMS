@@ -70,12 +70,12 @@ const Smallsidebar = ({ onToggle, setIsAuthenticated }) => {
 
   return (
     <Box
-       sx={{
+        sx={{
         width: `${SMALL_SIDEBAR_WIDTH}px`,
-        height: "100vh",
+        height: `calc(100vh - 64px)`,
         position: "fixed",
         left: 0,
-        top: 0,
+        top: "84px",
         backgroundColor: "#34495e",
         zIndex: 1200,
         display: "flex",
@@ -93,7 +93,7 @@ const Smallsidebar = ({ onToggle, setIsAuthenticated }) => {
         },}}
       >
         <IconButton onClick={onToggle}>
-          <MenuIcon sx={{ color: "#fff", marginLeft: "22px", marginBottom: "30px" }} />
+          <MenuIcon sx={{ color: "#fff", marginLeft: "22px"}} />
         </IconButton>
 
 
@@ -209,6 +209,14 @@ const Smallsidebar = ({ onToggle, setIsAuthenticated }) => {
             </ListItem>
 
             <ListItem>
+              <ListItemButton component={Link} to="/emp-holidays">
+                <ListItemIcon>
+                  <HolidayVillageIcon sx={{ color: "#fff" }} />
+                </ListItemIcon>
+              </ListItemButton>
+            </ListItem>
+
+            <ListItem>
               <ListItemButton component={Link} to="/events">
                 <ListItemIcon>
                   <EmojiEventsRoundedIcon sx={{ color: "#fff" }} />
@@ -266,7 +274,7 @@ const Smallsidebar = ({ onToggle, setIsAuthenticated }) => {
           onClick={handleLogout}
           sx={{
             "&:hover": { backgroundColor: "transparent", boxShadow: "none" },
-            paddingTop: "60px",
+            paddingTop: "20px",
             marginLeft: "22px",
             color: "#fff",
           }}

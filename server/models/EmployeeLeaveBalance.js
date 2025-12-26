@@ -14,9 +14,8 @@ export const EmployeeLeaveBalance = sequelize.define(
             allowNull: false
         },
         month: {
-            type: DataTypes.STRING,
+            type: DataTypes.INTEGER,
             allowNull: false,
-            defaultValue: new Date().toLocaleString("default", { month: "short" })
         },
         clTotal: {
             type: DataTypes.INTEGER,
