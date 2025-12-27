@@ -32,8 +32,8 @@ router.get("/:empid", async (req, res) => {
 
         const year = new Date().getFullYear()
         const month =new Date().getMonth() + 1
-        const employeeLeave = await EmployeeLeaveBalance.findOne({
-            where: {empid},
+        let employeeLeave = await EmployeeLeaveBalance.findOne({
+            where: {empid, year, month},
             include : [
                 {
                     model: LeaveRequest
@@ -62,7 +62,7 @@ router.get("/:empid", async (req, res) => {
                 empid,
                 leaveType: "CL",
                 status: { [Op.in]: ["Pending", "Approved"] },
-                fromDate: { [Op.between]: [new Date(year,0,1), new Date(year,month,0)] }
+                fromDate: { [Op.between]: [new Date(year,0,1), new Date(year,month,31)] }
             }
         })
 
@@ -113,7 +113,7 @@ router.post('/apply', async(req, res) => {
 
 
         const balance = await EmployeeLeaveBalance.findOne({
-            where: {empid, year}
+            where: {empid, year, month}
         })
 
         if(!balance){
@@ -130,7 +130,7 @@ router.post('/apply', async(req, res) => {
                     empid,
                     leaveType: "CL",
                     status: { [Op.in]: ["Pending", "Approved"] },
-                    fromDate: { [Op.between]: [new Date(year,0,1), new Date(year,month,0)] }
+                    fromDate: { [Op.between]: [new Date(year,0,1), new Date(year,month,31)] }
                 }
             });
 
@@ -209,19 +209,24 @@ router.put('/:id/action', async (req, res) => {
         await leave.save()
 
         if (status === "Approved") {
-        const balance = await EmployeeLeaveBalance.findOne({
-            where: { empid: leave.empid },
-        });
 
-        if (leave.leaveType === "CL") {
-            balance.clUsed += leave.days;
-        } else if (leave.leaveType === "SL") {
-            balance.slUsed += leave.days;
-        } else if (leave.leaveType === "PL") {
-            balance.plUsed += leave.days;
-        }
+            const leaveDate = new Date(leave.fromDate);
+            const year = leaveDate.getFullYear();
+            const month = leaveDate.getMonth() + 1;
 
-        await balance.save();
+            const balance = await EmployeeLeaveBalance.findOne({
+                where: { empid: leave.empid, year, month },
+            });
+
+            if (leave.leaveType === "CL") {
+                balance.clUsed += leave.days;
+            } else if (leave.leaveType === "SL") {
+                balance.slUsed += leave.days;
+            } else if (leave.leaveType === "PL") {
+                balance.plUsed += leave.days;
+            }
+
+            await balance.save();
         }
 
         res.json({ message: `Leave ${status} successfully` });
