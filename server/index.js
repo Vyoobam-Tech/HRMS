@@ -46,7 +46,7 @@ sequelize
   .then(() => {
     console.log("✅ Connected to Render PostgreSQL successfully");
 
-    return sequelize.sync({ alter: true });
+    return sequelize.sync();
   })
   .then(() => {
     console.log("✅ Database sync complete");
