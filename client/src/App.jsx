@@ -19,6 +19,7 @@ import Employee from "./scenes/employees/Employees";
 import Activities from "./scenes/activities/index";
 import AllActivities from "./scenes/activities/AllActivity";
 import Holidays from "./scenes/holidays/index";
+import Policy from "./scenes/policy/index";
 import Events from "./scenes/events/index";
 import Payroll from "./scenes/payroll/index";
 import Accounts from "./scenes/accounts/index";
@@ -114,6 +115,7 @@ function App() {
               <Route path="activities" element={<Activities />} />
               <Route path="allactivities" element={<AllActivities />} />
               <Route path="holidays" element={<Holidays />} />
+              <Route path="policy" element={<Policy />} />
               <Route path="emp-holidays" element={
                 user? (<EmployeeHolidays empId={user.empId}/> ) : (<p>Loading...</p>)} />
               <Route path="events" element={<Events />} />

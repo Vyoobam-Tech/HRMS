@@ -25,6 +25,7 @@ import AssessmentRoundedIcon from "@mui/icons-material/AssessmentRounded";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import DateRangeIcon from "@mui/icons-material/DateRange";
+import PolicyIcon from '@mui/icons-material/Policy';
 import PowerSettingsNewRoundedIcon from "@mui/icons-material/PowerSettingsNewRounded";
 import { Link, useNavigate } from "react-router-dom";
 import API from "../api/axiosInstance";
@@ -178,6 +179,15 @@ const Sidebar = ({ onToggle, setIsAuthenticated }) => {
           </ListItem>
 
           <ListItem disablePadding>
+            <ListItemButton component={Link} to="/policy">
+              <ListItemIcon>
+                <PolicyIcon sx={{ color: "#fff" }} />
+              </ListItemIcon>
+              <ListItemText primary="Workplace Ethics" />
+            </ListItemButton>
+          </ListItem>
+
+          <ListItem disablePadding>
             <ListItemButton component={Link} to="/events">
               <ListItemIcon>
                 <EmojiEventsRoundedIcon sx={{ color: "#fff" }} />
@@ -241,6 +251,15 @@ const Sidebar = ({ onToggle, setIsAuthenticated }) => {
                 <HolidayVillageIcon sx={{ color: "#fff" }} />
               </ListItemIcon>
               <ListItemText primary="Leave Management" />
+            </ListItemButton>
+          </ListItem>
+
+          <ListItem disablePadding>
+            <ListItemButton component={Link} to="/policy">
+              <ListItemIcon>
+                <PolicyIcon sx={{ color: "#fff" }} />
+              </ListItemIcon>
+              <ListItemText primary="Workplace Ethics" />
             </ListItemButton>
           </ListItem>
 

@@ -10,13 +10,13 @@ import API from '../../api/axiosInstance';
 
 import { Dialog, DialogTitle, DialogContent, DialogActions, TextField } from "@mui/material";
 
+
+
 import Card from '@mui/material/Card';
 
 const EachEmployeeTimeTracker = () => {
 
-    const [gridKey, setGridKey] = useState(0)
     const [user, setUser] = useState(null)
-    // const [employee, setEmployee] = useState(null)
     const [rowData, setRowData] = useState([])
 
     useEffect(() => {
@@ -32,22 +32,6 @@ const EachEmployeeTimeTracker = () => {
         }
         fetchUser()
     }, [])
-
-    // useEffect(() => {
-    //     if(!user?.email) return
-    //     const fetchEmployee = async () => {
-    //     try{
-    //         const response = await axios.get(`http://localhost:3000/api/employees/by-user/${user.email}`, {withCredentials: true})
-    //         if(response.data.status){
-    //         setEmployee(response.data.data)
-    //         }
-    //     } catch(err){
-    //         console.log(err)
-    //     }
-    //     }
-    //     fetchEmployee()
-    // }, [user])
-
 
     useEffect(() => {
         if(!user?.empid) return
@@ -85,132 +69,135 @@ const EachEmployeeTimeTracker = () => {
     const TOTAL_BREAK_MINUTES = 60;
     const today = new Date().toISOString().split("T")[0];
 
-const usedBreakMinutesToday = useMemo(() => {
-  return rowData.reduce((total, row) => {
-    if (!row.attendancedate || !row.breakminutes) return total;
-    if (row.attendancedate !== today) return total;
+    const usedBreakMinutesToday = useMemo(() => {
+      return rowData.reduce((total, row) => {
+        if (!row.attendancedate || !row.breakminutes) return total;
+        if (row.attendancedate !== today) return total;
 
-    const minutes = parseInt(row.breakminutes.replace("m", ""), 10);
-    return total + (isNaN(minutes) ? 0 : minutes);
-  }, 0);
-}, [rowData, today]);
+        const minutes = parseInt(row.breakminutes.replace("m", ""), 10);
+        return total + (isNaN(minutes) ? 0 : minutes);
+      }, 0);
+    }, [rowData, today]);
 
-const usedLunchMinutesToday = useMemo(() => {
-  return rowData.reduce((total, row) => {
-    if (!row.attendancedate || !row.lunchminutes) return total;
-    if (row.attendancedate !== today) return total;
+    const usedLunchMinutesToday = useMemo(() => {
+      return rowData.reduce((total, row) => {
+        if (!row.attendancedate || !row.lunchminutes) return total;
+        if (row.attendancedate !== today) return total;
 
-    const minutes = parseInt(row.lunchminutes.replace("m", ""), 10);
-    return total + (isNaN(minutes) ? 0 : minutes);
-  }, 0);
-}, [rowData, today]);
-
-
-const remainingBreakMinutes = Math.max(
-  TOTAL_BREAK_MINUTES - (usedBreakMinutesToday + usedLunchMinutesToday),
-  0
-);
-
-const OFFICE_START = "09:30";
-const GRACE_LIMIT_MINUTES = 30;
-
-const timeToMinutes = (time) => {
-  const [h, m] = time.split(":").map(Number);
-  return h * 60 + m;
-};
-
-let remainingGrace = GRACE_LIMIT_MINUTES;
-let isAbsent = false;
-
-const todayLoginTime = useMemo(() => {
-  const todayRows = rowData.filter(
-    (row) => row.attendancedate === today && row.login
-  );
-
-  if (todayRows.length === 0) return null;
-
-  return todayRows[0].login;
-}, [rowData, today]);
-
-const formattedLoginTime = useMemo(() => {
-  if (!todayLoginTime) return null;
-  return todayLoginTime.slice(0, 5); 
-}, [todayLoginTime]);
+        const minutes = parseInt(row.lunchminutes.replace("m", ""), 10);
+        return total + (isNaN(minutes) ? 0 : minutes);
+      }, 0);
+    }, [rowData, today]);
 
 
-if (formattedLoginTime) {
-  const officeStartMin = timeToMinutes(OFFICE_START);
-  const loginMin = timeToMinutes(formattedLoginTime);
-  if (loginMin <= officeStartMin) {
-    remainingGrace = GRACE_LIMIT_MINUTES;
-  }
+    const remainingBreakMinutes = Math.max(
+      TOTAL_BREAK_MINUTES - (usedBreakMinutesToday + usedLunchMinutesToday),
+      0
+    );
 
-  else if (loginMin > officeStartMin && loginMin < officeStartMin + GRACE_LIMIT_MINUTES) {
-    remainingGrace = GRACE_LIMIT_MINUTES - (loginMin - officeStartMin);
-  }
-  
-  else {
-    remainingGrace = 0;
-    isAbsent = true;
-  }
-}
+    const OFFICE_START = "10:00";
+    const GRACE_LIMIT_MINUTES = 30;
 
+    const timeToMinutes = (time) => {
+      const [h, m] = time.split(":").map(Number);
+      return h * 60 + m;
+    };
 
-const currentMonth = new Date().getMonth();
-const savedMonth = localStorage.getItem("graceMonth");
+    let remainingGrace = GRACE_LIMIT_MINUTES;
+    let isAbsent = false;
 
-if (savedMonth === null || Number(savedMonth) !== currentMonth) {
-  remainingGrace = GRACE_LIMIT_MINUTES;
-  localStorage.setItem("graceMonth", currentMonth);
-}
+    const todayLoginTime = useMemo(() => {
+      const todayRows = rowData.filter(
+        (row) => row.attendancedate === today && row.login
+      );
 
+      if (todayRows.length === 0) return null;
 
-const TOTAL_PERMISSION_MINUTES = 120;
+      return todayRows[0].login;
+    }, [rowData, today]);
 
-const [permissionRemaining, setPermissionRemaining] = useState(TOTAL_PERMISSION_MINUTES);
-const [permissionOpen, setPermissionOpen] = useState(false);
-
-const [permissionForm, setPermissionForm] = useState({
-  date: "",
-  duration: "",
-  reason: ""
-});
+    const formattedLoginTime = useMemo(() => {
+      if (!todayLoginTime) return null;
+      return todayLoginTime.slice(0, 5); 
+    }, [todayLoginTime]);
 
 
-useEffect(() => {
-  const currentMonth = new Date().getMonth();
-  const savedMonth = localStorage.getItem("permissionMonth");
+    if (formattedLoginTime) {
+      const officeStartMin = timeToMinutes(OFFICE_START);
+      const loginMin = timeToMinutes(formattedLoginTime);
+      if (loginMin <= officeStartMin) {
+        remainingGrace = GRACE_LIMIT_MINUTES;
+      }
 
-  if (savedMonth === null || Number(savedMonth) !== currentMonth) {
-    setPermissionRemaining(TOTAL_PERMISSION_MINUTES);
-    localStorage.setItem("permissionMonth", currentMonth);
-  }
-}, []);
+      else if (loginMin > officeStartMin && loginMin < officeStartMin + GRACE_LIMIT_MINUTES) {
+        remainingGrace = GRACE_LIMIT_MINUTES - (loginMin - officeStartMin);
+      }
+      
+    else {
+      isAbsent = true;
+      remainingGrace = GRACE_LIMIT_MINUTES; // show actual grace, not deducted
+    }
 
-const handlePermissionSubmit = () => {
-  const duration = Number(permissionForm.duration);
+    }
 
-  if (!permissionForm.date || !duration || !permissionForm.reason) return;
-  if (duration > permissionRemaining) return;
 
-  setRowData((prev) => [
-    ...prev,
-    {
-      attendancedate: permissionForm.date,
-      login: "-",
-      breakminutes: "-",
-      lunchminutes: "-",
-      logout: "-",
-      totalhours: "-",
-      permission: `${duration}m - ${permissionForm.reason}`,
-    },
-  ]);
+    const currentMonth = new Date().getMonth();
+    const savedMonth = localStorage.getItem("graceMonth");
 
-  setPermissionRemaining((prev) => prev - duration);
+    if (savedMonth === null || Number(savedMonth) !== currentMonth) {
+      remainingGrace = GRACE_LIMIT_MINUTES;
+      localStorage.setItem("graceMonth", currentMonth);
+    }
 
-  setPermissionForm({ date: "", duration: "", reason: "" });
-  setPermissionOpen(false);
-};
+
+    const TOTAL_PERMISSION_MINUTES = 120;
+
+    const [permissionRemaining, setPermissionRemaining] = useState(TOTAL_PERMISSION_MINUTES);
+    const [permissionOpen, setPermissionOpen] = useState(false);
+
+    const [permissionForm, setPermissionForm] = useState({
+      date: "",
+      duration: "",
+      reason: ""
+    });
+
+
+    useEffect(() => {
+      const currentMonth = new Date().getMonth();
+      const savedMonth = localStorage.getItem("permissionMonth");
+
+      if (savedMonth === null || Number(savedMonth) !== currentMonth) {
+        setPermissionRemaining(TOTAL_PERMISSION_MINUTES);
+        localStorage.setItem("permissionMonth", currentMonth);
+      }
+    }, []);
+
+    const handlePermissionSubmit = () => {
+      const duration = Number(permissionForm.duration);
+
+      if (!permissionForm.date || !duration || !permissionForm.reason) return;
+      if (duration > permissionRemaining) return;
+
+      setRowData((prev) => [
+        ...prev,
+        {
+          attendancedate: permissionForm.date,
+          login: "-",
+          breakminutes: "-",
+          lunchminutes: "-",
+          logout: "-",
+          totalhours: "-",
+          permission: `${duration}m - ${permissionForm.reason}`,
+        },
+      ]);
+
+      setPermissionRemaining((prev) => prev - duration);
+
+      setPermissionForm({ date: "", duration: "", reason: "" });
+      setPermissionOpen(false);
+    };
+
+    const PERMISSION_OPTIONS = [30, 60, 90, 120];
 
 
 
@@ -335,7 +322,7 @@ const handlePermissionSubmit = () => {
             <Dialog open={permissionOpen} onClose={() => setPermissionOpen(false)}>
             <DialogTitle>Apply Permission</DialogTitle>
 
-            <DialogContent sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 1 }}>
+            <DialogContent sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 1 ,}}>
                 <TextField
                 type="date"
                 label="Date"
@@ -346,14 +333,28 @@ const handlePermissionSubmit = () => {
                 }
                 />
 
-                <TextField
-                type="number"
-                label="Duration (mins)"
-                value={permissionForm.duration}
-                onChange={(e) =>
+               <Select
+                  value={permissionForm.duration}
+                  displayEmpty
+                  onChange={(e) =>
                     setPermissionForm({ ...permissionForm, duration: e.target.value })
-                }
-                />
+                  }
+                >
+                  <MenuItem value="" disabled>
+                    Select Duration
+                  </MenuItem>
+
+                  {PERMISSION_OPTIONS.map((min) => (
+                    <MenuItem
+                      key={min}
+                      value={min}
+                      disabled={min > permissionRemaining}
+                    >
+                      {min} mins
+                    </MenuItem>
+                  ))}
+                </Select>
+
 
                 <TextField
                 label="Reason"

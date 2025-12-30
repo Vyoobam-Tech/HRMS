@@ -27,6 +27,7 @@ import AccessibilityRoundedIcon from "@mui/icons-material/AccessibilityRounded";
 import HolidayVillageIcon from '@mui/icons-material/HolidayVillage';
 import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
 import DateRangeIcon from "@mui/icons-material/DateRange";
+import PolicyIcon from '@mui/icons-material/Policy';
 import { Link, useNavigate } from "react-router-dom";
 import API from "../api/axiosInstance";
 
@@ -156,6 +157,14 @@ const Smallsidebar = ({ onToggle, setIsAuthenticated }) => {
             </ListItem>
 
             <ListItem>
+              <ListItemButton component={Link} to="/policy">
+                <ListItemIcon>
+                  <PolicyIcon sx={{ color: "#fff" }} />
+                </ListItemIcon>
+              </ListItemButton>
+            </ListItem>
+
+            <ListItem>
               <ListItemButton component={Link} to="/events">
                 <ListItemIcon>
                   <EmojiEventsRoundedIcon sx={{ color: "#fff" }} />
@@ -212,6 +221,14 @@ const Smallsidebar = ({ onToggle, setIsAuthenticated }) => {
               <ListItemButton component={Link} to="/emp-holidays">
                 <ListItemIcon>
                   <HolidayVillageIcon sx={{ color: "#fff" }} />
+                </ListItemIcon>
+              </ListItemButton>
+            </ListItem>
+
+            <ListItem>
+              <ListItemButton component={Link} to="/policy">
+                <ListItemIcon>
+                  <PolicyIcon sx={{ color: "#fff" }} />
                 </ListItemIcon>
               </ListItemButton>
             </ListItem>
