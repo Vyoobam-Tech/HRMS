@@ -5,32 +5,25 @@ const router = express.Router();
 
 router.post("/", async (req, res) => {
   try {
-    console.log("Incoming data:", req.body);
     const {
-      depid,
+      // depid,
+      code,
       name,
-      // code,
-      description,
-      // branch,
+      reporting,
+      email,
+      location,
+      assigned,
+      createdby,
+      type,
+      category,
+      model,
       hod,
-      // reporting,
       total,
-      // budget,
-      created,
       status,
     } = req.body;
-    if (
-      !depid ||
-      !name ||
-      // !code ||
-      !description ||
-      // !branch ||
-      !hod ||
-      // !reporting ||
-      total == null ||
-      // budget == null ||
-      !status
-    ) {
+
+    // Basic validation
+    if (!name || !hod || total == null || !status) {
       return res.status(400).json({
         status: false,
         message: "Missing required fields",
@@ -38,17 +31,20 @@ router.post("/", async (req, res) => {
     }
 
     const newDepartment = await Department.create({
-      depid,
+      code,
       name,
-      // code,
-      description,
-      // branch,
+      reporting,
+      email,
+      location,
+      assigned,
+      createdby,
+      type,
+      category,
+      model,
       hod,
-      // reporting,
       total: parseInt(total),
-      // budget: parseInt(budget),
-      created: created ? new Date(created) : new Date(),
       status,
+      created: new Date(),
     });
 
     return res.json({
@@ -58,8 +54,6 @@ router.post("/", async (req, res) => {
     });
   } catch (err) {
     console.error("Error creating department:", err.message);
-    console.error("Error stack trace:", err.stack);
-
     return res.status(500).json({
       status: false,
       message: "Failed to add department",
@@ -67,6 +61,7 @@ router.post("/", async (req, res) => {
     });
   }
 });
+
 
 router.get("/all", async (req, res) => {
   try {
@@ -96,10 +91,10 @@ router.get("/:depid", async (req, res) => {
   }
 });
 
-router.put("/update/:depid", async (req, res) => {
+router.put("/update/:id", async (req, res) => {
   try {
     const [updated] = await Department.update(req.body, {
-      where: { depid: req.params.depid },
+      where: { id: req.params.id },
     });
 
     if (!updated) {
@@ -109,7 +104,7 @@ router.put("/update/:depid", async (req, res) => {
     }
 
     const updatedDepartment = await Department.findOne({
-      where: { depid: req.params.depid },
+      where: { id: req.params.id },
     });
 
     return res.json({
@@ -125,10 +120,10 @@ router.put("/update/:depid", async (req, res) => {
   }
 });
 
-router.delete("/delete/:depid", async (req, res) => {
+router.delete("/delete/:id", async (req, res) => {
   try {
     const deleted = await Department.destroy({
-      where: { depid: req.params.depid },
+      where: { id: req.params.id },
     });
     if (!deleted)
       return res

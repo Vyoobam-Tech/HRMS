@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import axios from 'axios'
 import { Box } from '@mui/system'
 import CloseIcon from "@mui/icons-material/Close";
 import { Card, CardContent, Divider, Typography, Grid, Button, Dialog, DialogContent, DialogTitle, IconButton, DialogActions, TextField} from '@mui/material'
@@ -66,7 +65,6 @@ const EmpDetails = () => {
       if(response.data.status){
         setEmployee(response.data.data)
         setShowEditModal(false)
-        alert("updated successfully")
       } else{
         alert("falied to update")
       }

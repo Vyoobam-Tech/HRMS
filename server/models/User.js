@@ -20,6 +20,10 @@ export const User = sequelize.define("User", {
     unique: true,
     allowNull: false
   },
+  department: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
   email: {
     type: DataTypes.STRING,
     unique: true,

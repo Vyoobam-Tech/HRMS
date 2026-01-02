@@ -7,45 +7,71 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  TextField,
   IconButton,
-  MenuItem,
   Box,
-  Tabs,
-  Tab,
-  Typography,
-  Select,
 } from "@mui/material";
-import { Formik, Form, Field } from "formik";
-import * as Yup from "yup";
 import Header from "../../Components/Header";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CloseIcon from "@mui/icons-material/Close";
-import {margin } from "@mui/system";
-import { Grid } from '@mui/material';
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import EmployeeForm from "./EmployeeForm";
 import DownloadIcon from "@mui/icons-material/Download";
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import API from "../../api/axiosInstance";
+import EmployeeForm from "./EmployeeForm";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
 const Employees = () => {
   const [rowData, setRowData] = useState([]);
-  const [open, setOpen] = useState(false);
-  const [selectedRow, setSelectedRow] = useState(null);
-  const [showEditModal, setShowEditModal] = useState(false);
+  const [open, setOpen] = useState(false)
   const [deleteId, setDeleteId] = useState(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [tabIndex, setTabIndex] = useState(0)
-  const [dob, setDob] = useState(null)
   const gridRef = useRef(null)
-  const [error, setError] = useState({})
+
+  const headersTemplate = {
+    "Employee ID": "",
+    "Employee Name": "",
+    "Email": "",
+    "Contact": "",
+    "Father Name": "",
+    "Mother Name": "",
+    "Occupation": "",
+    "Parent Contact": "",
+    "Permanent Address": "",
+    "Communication Address": "",
+    "Gender": "",
+    "Date of Birth": "",
+    "Blood Group": "",
+    "Marital Status": "",
+    "Spouse Name": "",
+    "Spouse Contact": "",
+    "Aadhaar": "",
+    "PAN": "",
+    "10th Board": "",
+    "10th Year": "",
+    "10th Percentage": "",
+    "12th Board": "",
+    "12th Year": "",
+    "12th Percentage": "",
+    "UG University": "",
+    "UG Year": "",
+    "UG Percentage": "",
+    "PG University": "",
+    "PG Year": "",
+    "PG Percentage": "",
+    "Experience 1 Company": "",
+    "Experience 1 Title": "",
+    "Experience 1 Start Date": "",
+    "Experience 1 End Date": "",
+    "Experience 1 Description": "",
+    "Experience 1 Skills": "",
+    "Bank Name": "",
+    "Account Number": "",
+    "IFSC Code": "",
+    "Branch": "",
+  }
+
 
   const fetchEmployees = async () => {
     try {
@@ -72,84 +98,78 @@ const Employees = () => {
   };
 
 
-const handleExportExcel = () => {
-  const filteredNodes = gridRef.current.api.getRenderedNodes()
-  const filteredData = filteredNodes.map((node) => node.data)
-  const data = filteredData.map((emp) => (
-    {
-      "Employee ID": emp.empId || "",
-      "Employee Name": emp.name,
-      "Email": emp.email || "",
-      "Contact": emp.contact,
-      "Father Name": emp.fatherName,
-      "Mother Name": emp.motherName,
-      "Occupation": emp.occupation,
-      "Parent Contact": emp.faormoNumber,
-      "Permanent Address": emp.permanentAddress,
-      "Communication Address": emp.communicationAddress,
-      "Gender": emp.gender,
-      "Date of Birth": emp.dob,
-      "Blood Group": emp.bloodGroup,
-      "Marital Status": emp.maritalStatus,
-      "Spouse Name": emp.maritalStatus === "Married" ? emp.spouseName : "",
-      "Spouse Contact": emp.maritalStatus === "Married" ? emp.spouseContact : "",
-      "Aadhaar": emp.aadhaar,
-      "PAN": emp.pan,
-      "10th Board": emp.tenthBoard,
-      "10th Year": emp.tenthYearofPassing,
-      "10th Percentage": emp.tenthPercentage,
-      "12th Board": emp.twelveBoard,
-      "12th Year": emp.twelveYearofPassing,
-      "12th Percentage": emp.twelvePercentage,
-      "UG University": emp.ugUniversity,
-      "UG Year": emp.ugYearofPassing,
-      "UG Percentage": emp.ugPercentage,
-      "PG University": emp.pgUniversity,
-      "PG Year": emp.pgYearofPassing,
-      "PG Percentage": emp.pgPercentage,
-      // Flatten experiences individually like separate columns
-      ...(emp.hasExperience
-        ? emp.experiences.reduce((acc, exp, idx) => {
-            acc[`Experience ${idx + 1} Company`] = exp.company;
-            acc[`Experience ${idx + 1} Title`] = exp.title;
-            acc[`Experience ${idx + 1} Start Date`] = exp.startDate;
-            acc[`Experience ${idx + 1} End Date`] = exp.endDate;
-            acc[`Experience ${idx + 1} Description`] = exp.description;
-            acc[`Experience ${idx + 1} Skills`] = exp.skills;
-            return acc;
-          }, {})
-        : {"Experience": "None"}),
-      "Bank Name": emp.bankName,
-      "Account Number": emp.accountNumber,
-      "IFSC Code": emp.ifscCode,
-      "Branch": emp.branch,
+  const handleExportExcel = () => {
+    const filteredNodes = gridRef.current.api.getRenderedNodes();
+    const filteredData = filteredNodes.map((node) => node.data);
+
+    let data = [];
+
+    if (filteredData.length === 0) {
+      data = [headersTemplate];
+    } else {
+      data = filteredData.map((emp) => ({
+        "Employee ID": emp.empId || "",
+        "Employee Name": emp.name || "",
+        "Email": emp.email || "",
+        "Contact": emp.contact || "",
+        "Father Name": emp.fatherName || "",
+        "Mother Name": emp.motherName || "",
+        "Occupation": emp.occupation || "",
+        "Parent Contact": emp.faormoNumber || "",
+        "Permanent Address": emp.permanentAddress || "",
+        "Communication Address": emp.communicationAddress || "",
+        "Gender": emp.gender || "",
+        "Date of Birth": emp.dob || "",
+        "Blood Group": emp.bloodGroup || "",
+        "Marital Status": emp.maritalStatus || "",
+        "Spouse Name": emp.maritalStatus === "Married" ? emp.spouseName || "" : "",
+        "Spouse Contact": emp.maritalStatus === "Married" ? emp.spouseContact || "" : "",
+        "Aadhaar": emp.aadhaar || "",
+        "PAN": emp.pan || "",
+        "10th Board": emp.tenthBoard || "",
+        "10th Year": emp.tenthYearofPassing || "",
+        "10th Percentage": emp.tenthPercentage || "",
+        "12th Board": emp.twelveBoard || "",
+        "12th Year": emp.twelveYearofPassing || "",
+        "12th Percentage": emp.twelvePercentage || "",
+        "UG University": emp.ugUniversity || "",
+        "UG Year": emp.ugYearofPassing || "",
+        "UG Percentage": emp.ugPercentage || "",
+        "PG University": emp.pgUniversity || "",
+        "PG Year": emp.pgYearofPassing || "",
+        "PG Percentage": emp.pgPercentage || "",
+        ...(emp.hasExperience
+          ? emp.experiences.reduce((acc, exp, idx) => {
+              acc[`Experience ${idx + 1} Company`] = exp.company || "";
+              acc[`Experience ${idx + 1} Title`] = exp.title || "";
+              acc[`Experience ${idx + 1} Start Date`] = exp.startDate || "";
+              acc[`Experience ${idx + 1} End Date`] = exp.endDate || "";
+              acc[`Experience ${idx + 1} Description`] = exp.description || "";
+              acc[`Experience ${idx + 1} Skills`] = exp.skills || "";
+              return acc;
+            }, {})
+          : {}),
+        "Bank Name": emp.bankName || "",
+        "Account Number": emp.accountNumber || "",
+        "IFSC Code": emp.ifscCode || "",
+        "Branch": emp.branch || "",
+      }));
     }
-  ))
 
-  const worksheet = XLSX.utils.json_to_sheet(data);
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, "EmployeeData");
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "EmployeeData");
 
-  const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
-  saveAs(new Blob([excelBuffer], { type: "application/octet-stream" }), "EmployeeData.xlsx");
-};
+    const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+    saveAs(
+      new Blob([excelBuffer], { type: "application/octet-stream" }),
+      "EmployeeData.xlsx"
+    );
+  };
+
 
 
   const [columnDefs] = useState([
-    { headerName: " Emp ID", field: "empId" },
-    { headerName: "Employee Name", field: "name" },
-    { headerName: "Gender", field: "gender" },
-    {
-      headerName: "Date of Birth",
-      field: "dob",
-      valueFormatter: (params) => {
-        if (!params.value) return "";
-        return new Date(params.value).toLocaleDateString();
-      },
-    },
-    { headerName: "Email ID", field: "email" },
-    { headerName: "Contact Number", field: "contact" },
-    { headerName: "Address", field: "permanentAddress" },
     {
       headerName: "Actions",
       field: "actions",
@@ -167,8 +187,22 @@ const handleExportExcel = () => {
           </IconButton>
         </div>
       ),
-      width: 120,
+      width: 200,
     },
+    { headerName: " Emp ID", field: "empId" },
+    { headerName: "Employee Name", field: "name" },
+    { headerName: "Gender", field: "gender" },
+    {
+      headerName: "Date of Birth",
+      field: "dob",
+      valueFormatter: (params) => {
+        if (!params.value) return "";
+        return new Date(params.value).toLocaleDateString();
+      },
+    },
+    { headerName: "Email ID", field: "email" },
+    { headerName: "Contact Number", field: "contact" },
+    { headerName: "Address", field: "permanentAddress" },
   ]);
 
 
@@ -193,7 +227,10 @@ const handleExportExcel = () => {
     >
       <Header title="EMPLOYEES" subtitle="Organisation Employee Details" />
 
-      <Box sx={{ display: "flex", justifyContent: "flex-start", mb: 2, gap: 2 }}>
+    {/* <Box > */}
+      {/* <Button variant='contained' onClick={() => setOpen(true)} color='primary' sx={{ mb: 2 }}>
+        Add Details
+      </Button> */}
       <Button
         startIcon={<DownloadIcon />}
         variant="contained"
@@ -201,11 +238,24 @@ const handleExportExcel = () => {
         sx={{
           backgroundColor: "#1D6F42",
           textTransform: "none",
+          mb: 2,
+          // ml: 2
         }}
       >
         Export Excel
       </Button>
-    </Box>
+    {/* </Box> */}
+
+      {/* <Dialog open={open} onClose={() => setOpen(false)}>
+        <DialogTitle sx={{ color: 'white', bgcolor: '#1976D2', display: "flex", alignItems: "center", justifyContent: "space-between" }}>Add Details
+          <IconButton onClick={() => setOpen(false)} color="dark">
+            <CloseIcon sx={{ color: "white" }} />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent>
+          <EmployeeForm setOpen={setOpen}/>
+        </DialogContent>
+      </Dialog> */}
 
       <AgGridReact
         ref={gridRef}

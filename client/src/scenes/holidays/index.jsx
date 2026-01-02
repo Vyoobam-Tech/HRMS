@@ -21,6 +21,24 @@ const Holidays = () => {
   })
 
   const holidaycolumn = [
+    {headerName: "Action", field: "action",
+      cellRenderer: (params) => {
+        if (user?.role === "superadmin") {
+        return (
+          <IconButton
+            onClick={() => handleDelete(params.data.id)}
+            color="error"
+            size="small"
+          >
+            <DeleteIcon />
+          </IconButton>
+        );
+      } else {
+        return null; // hide for non-superadmin
+      }
+    },
+      width: 120,
+    },
     {headerName: "Date",
       field: "date",
       sortable: true,
@@ -60,24 +78,6 @@ const Holidays = () => {
         }
       }
     },
-    {headerName: "Action", field: "action",
-      cellRenderer: (params) => {
-        if (user?.role === "superadmin") {
-        return (
-          <IconButton
-            onClick={() => handleDelete(params.data.id)}
-            color="error"
-            size="small"
-          >
-            <DeleteIcon />
-          </IconButton>
-        );
-      } else {
-        return null; // hide for non-superadmin
-      }
-    },
-      width: 120,
-    }
   ]
 
 

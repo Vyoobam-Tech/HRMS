@@ -102,35 +102,44 @@ const AllActivities = () => {
 
   const reader = new FileReader();
 
-  reader.onload = (e) => {
-    const data = new Uint8Array(e.target.result);
-    const workbook = XLSX.read(data, { type: "array" });
-    const sheetName = workbook.SheetNames[0];
-    const worksheet = workbook.Sheets[sheetName];
+  reader.onload = async (e) => {
+    try{
 
-    // raw: false → get Excel formatted text exactly as shown
-    const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: "", raw: false }).map((row) => {
-      // Convert string dates 10/10/2025 → 10-10-2025
-      let rawDate = row["Date"] || row["date"] || row["DATE"] || "";
-      let formattedDate = rawDate ? rawDate.toString().replace(/\//g, "-") : "";
+      const data = new Uint8Array(e.target.result);
+      const workbook = XLSX.read(data, { type: "array" });
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
 
-      return {
-        date: formattedDate,
-        empid: row["Employee ID"] || "",
-        employeename: row["Employee Name"] || "",
-        taskname: row["Task Name"] || "",
-        startingtime: row["Starting Time"] || "",
-        endingtime: row["Ending Time"] || "",
-        duration: row["Durations"] || "",
-        complete: row["% Complete"] || "",
-        status: row["Status"] || "",
-        remarks: row["Remarks"] || "",
-        githublink: row["Github Link"] || "",
-      };
-    });
+      // raw: false → get Excel formatted text exactly as shown
+      const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: "", raw: false }).map((row) => {
+        // Convert string dates 10/10/2025 → 10-10-2025
+        let rawDate = row["Date"] || row["date"] || row["DATE"] || "";
+        let formattedDate = rawDate ? rawDate.toString().replace(/\//g, "-") : "";
 
-    setRowData((prev) => [...prev, ...jsonData]);
-  };
+        return {
+          date: formattedDate,
+          empid: row["Employee ID"] || "",
+          employeename: row["Employee Name"] || "",
+          taskname: row["Task Name"] || "",
+          startingtime: row["Starting Time"] || "",
+          endingtime: row["Ending Time"] || "",
+          duration: row["Durations"] || "",
+          complete: row["% Complete"] || "",
+          status: row["Status"] || "",
+          remarks: row["Remarks"] || "",
+          githublink: row["Github Link"] || "",
+        };
+      });
+      await API.post("/api/activities/bulk", {
+          activities: jsonData,
+        });
+
+        fetchActivities();
+      }catch(err){
+        console.error("Import failed:", error);
+        alert("Failed to import Excel");
+      }
+    };
 
   reader.readAsArrayBuffer(file);
   event.target.value = "";

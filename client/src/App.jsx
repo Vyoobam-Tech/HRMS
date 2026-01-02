@@ -109,7 +109,6 @@ function App() {
               }
             >
               <Route path="dashpage" element={<Dashpage />} />
-              <Route path="department" element={<Department />} />
               <Route path="employee-details" element={<EmpDetails />} />
               <Route path="employee" element={<Employee />} />
               <Route path="activities" element={<Activities />} />
@@ -125,7 +124,10 @@ function App() {
               <Route path="attendance-report" element={<AllEmployeeTimeTraker />} />
               <Route path="attendance-summary" element={<AttendanceSummary />} />
               {role === "admin" || role === "superadmin" ? (
-                <Route path="create-user" element={<Users />} />
+                <>
+                  <Route path="department" element={<Department />} />
+                  <Route path="create-user" element={<Users />} />
+                </>
               ) : null}
             </Route>
           )}

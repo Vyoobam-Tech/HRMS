@@ -109,14 +109,6 @@ const Smallsidebar = ({ onToggle, setIsAuthenticated }) => {
             </ListItem>
 
             <ListItem>
-              <ListItemButton component={Link} to="/department">
-                <ListItemIcon>
-                  <PolylineRoundedIcon sx={{ color: "#fff" }} />
-                </ListItemIcon>
-              </ListItemButton>
-            </ListItem>
-
-            <ListItem>
               <ListItemButton component={Link} to="/employee-details">
                 <ListItemIcon>
                   <BadgeRoundedIcon sx={{ color: "#fff" }} />

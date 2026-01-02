@@ -9,7 +9,7 @@ import {
   DialogActions,
   TextField,
   IconButton,
-  Card,
+  MenuItem,
 } from "@mui/material";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
@@ -43,11 +43,11 @@ const Department = () => {
     fetchDepartments();
   }, []);
 
-  const handleDelete = async (depid) => {
+  const handleDelete = async (id) => {
     try {
-      console.log("Deleting department with ID:", depid); 
+      console.log("Deleting department with ID:", id); 
       await API.delete(
-        `/api/departments/delete/${depid}`
+        `/api/departments/delete/${id}`
       );
       fetchDepartments();
     } catch (error) {
@@ -60,13 +60,10 @@ const Department = () => {
     setShowEditModal(true);
   };
 
-  const handleSave = async () => {
-    console.log("Saving Employee Data:", selectedRow);
-    if (!selectedRow || !selectedRow.depid) return;
+  const handleSave = async (values) => {
     try {
       await API.put(
-        `/api/departments/update/${selectedRow.depid}`,
-        selectedRow
+        `/api/departments/update/${selectedRow.id}`,values
       );
       fetchDepartments();
       setShowEditModal(false);
@@ -79,8 +76,6 @@ const Department = () => {
     try {
       const payload = {
         ...values,
-        depid: values.depid.toString(),
-        // code: values.code.toString(),
       };
 
       console.log("Payload:", payload);
@@ -93,24 +88,6 @@ const Department = () => {
   };
 
   const [columnDefs] = useState([
-    { headerName: " Dep ID", field: "depid" },
-    { headerName: "Department Name", field: "name" },
-    // { headerName: "Code", field: "code" },
-    { headerName: "Description", field: "description" },
-    // { headerName: "Branch", field: "branch" },
-    { headerName: "HOD", field: "hod" },
-    // { headerName: "Reporting Manager", field: "reporting" },
-    { headerName: "Total Employees", field: "total" },
-    // { headerName: "Budget Allocation", field: "budget" },
-    {
-      headerName: "Created Date",
-      field: "created",
-      valueFormatter: (params) => {
-        if (!params.value) return "";
-        return new Date(params.value).toLocaleDateString();
-      },
-    },
-    { headerName: "Status", field: "status" },
     {
       headerName: "Actions",
       field: "actions",
@@ -125,27 +102,45 @@ const Department = () => {
           </IconButton>
           <IconButton
             onClick={() => {
-              setDeleteId(params.data.depid);
+              setDeleteId(params.data.id);
               setConfirmOpen(true);
             }}
-            color="primary"
+            color="error"
             size="small"
           >
             <DeleteIcon />
           </IconButton>
         </div>
       ),
-      width: 120,
+      width: 350,
     },
+    { headerName: "Department Code", field: "code" },
+    { headerName: "Department Name", field: "name" },
+    { headerName: "Reporting To", field: "reporting" },
+    { headerName: "Department Email", field: "email" },
+    { headerName: "Department Location", field: "location" },
+    { headerName: "Project Assigned", field: "assigned" },
+    { headerName: "Created By", field: "createdby" },
+    { headerName: "Department Type", field: "type" },
+    { headerName: "Skill Category", field: "category" },
+    { headerName: "Working Model", field: "model" },
+    { headerName: "HOD", field: "hod" },
+    { headerName: "Total Employees", field: "total" },
+    { headerName: "Status", field: "status" },
   ]);
 
   const DepartmentSchema = Yup.object().shape({
-    depid: Yup.string().required("Department ID is required"),
+    code: Yup.string().required("Department Code is required"),
     name: Yup.string().required("Department name is required"),
-    description: Yup.string().required("Description is required"),
+    reporting: Yup.string().required("Reporting is required"),
+    email: Yup.string().required("Department Email is required"),
+    location: Yup.string().required("Location is required"),
+    assigned: Yup.string().required("Project Assigned is required"),
+    createdby: Yup.string().required("Created By is required"),
+    type: Yup.string().required("Department Type is required"),
+    category: Yup.string().required("Skill category is required"),
+    model: Yup.string().required("Working Model is required"),
     hod: Yup.string().required("HOD is required"),
-    total: Yup.number().required("Total Employees is required").integer(),
-    created: Yup.date().required("Created Date is required"),
     status: Yup.string().required("Status is required"),
   });
 
@@ -156,6 +151,59 @@ const Department = () => {
     }),
     []
   );
+
+  const departmentFields = [
+  { name: "code", label: "Department Code" },
+  {
+    name: "name", 
+    label: "Department Name",
+    type: "select",
+    options: ["Admin", "HR", "Project Manager", "Development", "Testing", "UI & UX"],
+  },
+  { 
+    name: "reporting", 
+    label: "Reporting To",
+    type: "select",
+    options: ["CEO", "CTO", "MANAGER"]
+  },
+  { name: "email", label: "Department Email" },
+  {
+    name: "location",
+    label: "Department Location",
+    type: "select",
+    options: ["Chennai", "Kumbakonam"],
+  },
+  { name: "assigned", label: "Project Assigned" },
+  { 
+    name: "createdby", 
+    label: "Created By",
+    type: "select",
+    options: ["HR", "Admin"],
+  },
+  { 
+    name: "type", 
+    label: "Department Type",
+    type: "select",
+    options: ["IT", "Non IT"],
+  },
+  { name: "category", label: "Skill Category" },
+  { 
+    name: "model", 
+    label: "Working Model",
+    type: "select",
+    options: ["Hybrid", "Remote", "Onsite"],
+  },
+  { name: "hod", label: "HOD" },
+  { name: "total", label: "Total Employees", type: "number" },
+  // { name: "created", label: "Created By" },
+  { 
+    name: "status", 
+    label: "Status",
+    type: "select",
+    options: ["Active", "In active"],
+  },
+];
+
 
   return (
     <div
@@ -213,16 +261,23 @@ const Department = () => {
         </div>
         <Formik
           initialValues={{
-            depid: "",
-            name: "",
+            // depid: "",
             code: "",
-            description: "",
-            branch: "",
-            hod: "",
+            name: "",
             reporting: "",
-            total: "",
-            budget: "",
-            created: "",
+            email: "",
+            location: "",
+            assigned: "",
+            createdby: "",
+            type: "",
+            category: "",
+            model: "",
+            // description: "",
+            // branch: "",
+            hod: "",
+            total: 0,
+            // budget: "",
+            // created: "",
             status: "",
           }}
           validationSchema={DepartmentSchema}
@@ -232,44 +287,53 @@ const Department = () => {
             resetForm();
           }}
         >
-          {({ errors, touched }) => (
+          {({ errors, touched, setFieldValue }) => (
             <Form>
               <div className="modal-body" style={{ padding: "16px" }}>
                 <DialogContent>
-                  {[
-                    "depid",
-                    "name",
-                    // "code",
-                    "description",
-                    // "branch",
-                    "hod",
-                    // "reporting",
-                    "total",
-                    // "budget",
-                    "created",
-                    "status",
-                  ].map((field) => (
-                    <Field
-                      key={field}
-                      as={TextField}
-                      name={field}
-                      label={field.charAt(0).toUpperCase() + field.slice(1)}
-                      error={touched[field] && !!errors[field]}
-                      helperText={touched[field] && errors[field]}
-                      fullWidth
-                      margin="dense"
-                      type={
-                        field === "created"
-                          ? "date"
-                          : ["total", "budget"].includes(field)
-                          ? "number"
-                          : "text"
+                  {departmentFields.map(({ name, label, type, options }) => (
+                  <Field
+                    key={name}
+                    as={TextField}
+                    name={name}
+                    label={label}
+                    select={type === "select"} 
+                    fullWidth
+                    margin="dense"
+                    type={type || "text"}
+                    error={touched[name] && !!errors[name]}
+                    helperText={touched[name] && errors[name]}
+                    InputLabelProps={type === "date" ? { shrink: true } : {}}
+                    disabled={name === "total"}
+                    onChange={async (e) => {
+                      const value = e.target.value;
+
+                      // normal Formik update
+                      setFieldValue(name, value);
+
+                      if (name === "name") {
+                        try {
+                          const res = await API.get(
+                            `/auth/employees/count?department=${value.toLowerCase()}`
+                          );
+                          setFieldValue("total", res.data.total);
+                        } catch (err) {
+                          console.error(err);
+                          setFieldValue("total", 0);
+                        }
                       }
-                      InputLabelProps={
-                        field === "created" ? { shrink: true } : {}
-                      }
-                    />
-                  ))}
+                    }}
+
+                  >
+                    {type === "select" && 
+                      options.map((option) => (
+                      <MenuItem key={option} value={option}>
+                        {option}
+                      </MenuItem>
+                      ))}
+                  </Field>
+                ))}
+
                 </DialogContent>
               </div>
               <div
@@ -312,86 +376,101 @@ const Department = () => {
         fullWidth
         maxWidth="sm"
       >
-        <div
-          className="modal-header"
-          style={{
-            background: "#1976D2",
-            color: "white",
-            fontWeight: "bold",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            padding: "16px",
-            borderBottom: "1px solid #ddd",
-          }}
-        >
+        <div className="modal-header"
+            style={{
+              background: "#1976D2",
+              color: "white",
+              fontWeight: "bold",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              padding: "16px",
+              borderBottom: "1px solid #ddd",
+            }}>
           <DialogTitle>Edit Department</DialogTitle>
-          <IconButton onClick={() => setShowEditModal(false)} color="dark">
+          <IconButton onClick={() => setShowEditModal(false)}>
             <CloseIcon sx={{ color: "white" }} />
           </IconButton>
         </div>
 
-        <div className="modal-body" style={{ padding: "16px" }}>
-          <DialogContent>
-            {selectedRow && (
-              <>
-                {Object.keys(selectedRow).map(
-                  (key) =>
-                    key !== "_id" &&
-                    key !== "__v" && (
-                      <TextField
-                        key={key}
-                        label={key.charAt(0).toUpperCase() + key.slice(1)}
-                        fullWidth
-                        margin="dense"
-                        type={key === "created" ? "date" : "text"}
-                        value={
-                          key === "date"
-                            ? new Date(selectedRow[key])
-                                .toISOString()
-                                .split("T")[0]
-                            : selectedRow[key] || ""
-                        }
-                        InputLabelProps={
-                          key === "craeted" ? { shrink: true } : {}
-                        }
-                        onChange={(e) =>
-                          setSelectedRow({
-                            ...selectedRow,
-                            [key]: e.target.value,
-                          })
-                        }
-                      />
-                    )
-                )}
-              </>
-            )}
-          </DialogContent>
-        </div>
+        {selectedRow && (
+          <Formik
+            initialValues={{
+              code: selectedRow.code || "",
+              name: selectedRow.name || "",
+              reporting: selectedRow.reporting || "",
+              email: selectedRow.email || "",
+              location: selectedRow.location || "",
+              assigned: selectedRow.assigned || "",
+              createdby: selectedRow.createdby || "",
+              type: selectedRow.type || "",
+              category: selectedRow.category || "",
+              model: selectedRow.model || "",
+              hod: selectedRow.hod || "",
+              total: selectedRow.total || 0,
+              status: selectedRow.status || "",
+            }}
+            validationSchema={DepartmentSchema}
+            onSubmit={(values) => handleSave(values)}
+            enableReinitialize
+          >
+            {({ errors, touched, setFieldValue, values }) => (
+              <Form>
+                <DialogContent>
+                  {departmentFields.map(({ name, label, type, options }) => (
+                    <Field
+                      key={name}
+                      as={TextField}
+                      name={name}
+                      label={label}
+                      select={type === "select"}
+                      fullWidth
+                      margin="dense"
+                      type={type || "text"}
+                      value={values[name] || ""}
+                      error={touched[name] && !!errors[name]}
+                      helperText={touched[name] && errors[name]}
+                      disabled={name === "total"}
+                      onChange={async (e) => {
+                        const value = e.target.value;
+                        setFieldValue(name, value);
 
-        <div
-          className="modal-footer"
-          style={{
-            display: "flex",
-            justifyContent: "flex-end",
-            padding: "16px",
-            borderTop: "1px solid #ddd",
-          }}
-        >
-          <DialogActions>
-            <Button
-              color="error"
-              variant="outlined"
-              onClick={() => setShowEditModal(false)}
-            >
-              Cancel
-            </Button>
-            <Button onClick={handleSave} color="primary" variant="outlined">
-              Save
-            </Button>
-          </DialogActions>
-        </div>
+                        if (name === "name") {
+                          try {
+                            const res = await API.get(
+                              `/auth/employees/count?department=${value.toLowerCase()}`
+                            );
+                            setFieldValue("total", res.data.total);
+                          } catch {
+                            setFieldValue("total", 0);
+                          }
+                        }
+                      }}
+                    >
+                      {type === "select" &&
+                        options.map((opt) => (
+                          <MenuItem key={opt} value={opt}>
+                            {opt}
+                          </MenuItem>
+                        ))}
+                    </Field>
+                  ))}
+                </DialogContent>
+
+                <DialogActions sx={{ p: 2 }}>
+                  <Button onClick={() => setShowEditModal(false)} color="error" variant="outlined">
+                    Cancel
+                  </Button>
+                  <Button type="submit" color="primary" variant="outlined">
+                    Update Department
+                  </Button>
+                </DialogActions>
+              </Form>
+            )}
+          </Formik>
+        )}
       </Dialog>
+
       {/* Delete Activity */}
       <Dialog open={confirmOpen} onClose={() => setConfirmOpen(false)}>
         <div

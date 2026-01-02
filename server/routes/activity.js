@@ -24,6 +24,18 @@ router.post("/", async (req, res) => {
   }
 });
 
+router.post("/bulk", async (req, res) => {
+  try {
+    const { activities } = req.body;
+    await Activity.bulkCreate(activities, { validate: true });
+    res.json({ status: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ status: false, message: err.message });
+  }
+});
+
+
 router.get("/all", async (req, res) => {
   try {
     const activity = await Activity.findAll();

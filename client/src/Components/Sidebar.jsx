@@ -125,15 +125,6 @@ const Sidebar = ({ onToggle, setIsAuthenticated }) => {
           </ListItem>
 
           <ListItem disablePadding>
-            <ListItemButton component={Link} to="/department">
-              <ListItemIcon>
-                <PolylineRoundedIcon sx={{ color: "#fff" }} />
-              </ListItemIcon>
-              <ListItemText primary="Department" />
-            </ListItemButton>
-          </ListItem>
-
-          <ListItem disablePadding>
             <ListItemButton component={Link} to="/employee-details">
               <ListItemIcon>
                 <BadgeRoundedIcon sx={{ color: "#fff" }} />

@@ -4,42 +4,59 @@ import { sequelize } from "../config/db.js";
 export const Department = sequelize.define(
   "Department",
   {
-    depid: {
-      type: DataTypes.STRING,
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
       primaryKey: true,
+    },
+    code: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
     name: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    // code: {
-    //   type: DataTypes.STRING,
-    //   allowNull: false,
-    // },
-    description: {
+    reporting: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
-    // branch: {
-    //   type: DataTypes.STRING,
-    //   allowNull: false,
-    // },
+    email: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    location: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    assigned: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    createdby: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    type: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    category: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    model: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     hod: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    // reporting: {
-    //   type: DataTypes.STRING,
-    //   allowNull: false,
-    // },
     total: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    // budget: {
-    //   type: DataTypes.INTEGER,
-    //   allowNull: false,
-    // },
     created: {
       type: DataTypes.DATE,
       allowNull: false,

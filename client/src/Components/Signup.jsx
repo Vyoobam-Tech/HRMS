@@ -14,6 +14,7 @@ import {
   FormControl,
   FormControlLabel,
   Radio,
+  MenuItem,
 } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
 import EmailIcon from "@mui/icons-material/Email";
@@ -22,6 +23,7 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import BadgeIcon from '@mui/icons-material/Badge';
 import { useGoogleLogin } from "@react-oauth/google";
+import AssignmentIcon from "@mui/icons-material/Assignment";
 import "../App.css";
 import GoogleLogo from "../asset/google-icon.webp";
 import FormBg from "../asset/navy-bg.jpg";
@@ -30,6 +32,7 @@ import { useEffect } from "react";
 const Signup = () => {
   const [username, setUsername] = useState("");
   const [empid, setEmpId] = useState("")
+  const [department, setDepartment] = useState("")
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -43,7 +46,7 @@ const Signup = () => {
     e.preventDefault();
     setError(null);
 
-    API.post("/auth/signup", { role, username, empid, email, password })
+    API.post("/auth/signup", { role, username, empid, department, email, password })
       .then((response) => {
         if (response.data.status === true) {
           navigate("/login");
@@ -107,6 +110,15 @@ const Signup = () => {
 
   checkSuperAdmin();
 }, []);
+
+  const departments = [
+    "Admin",
+    "HR",
+    "Project Manager",
+    "Development",
+    "Testing",
+    "UI & UX"
+  ]
 
   return (
     <Box
@@ -181,19 +193,19 @@ const Signup = () => {
           </FormGroup>
 
            {!hasSuperAdmin && (
-    <FormGroup>
-      <FormControlLabel
-        control={
-          <Radio
-            checked={role === "superadmin"}
-            value="superadmin"
-            onChange={handleRoleChange}
-          />
-        }
-        label="Super Admin"
-      />
-    </FormGroup>
-  )}
+            <FormGroup>
+              <FormControlLabel
+                control={
+                  <Radio
+                    checked={role === "superadmin"}
+                    value="superadmin"
+                    onChange={handleRoleChange}
+                  />
+                }
+                label="Super Admin"
+              />
+            </FormGroup>
+          )}
         </Box>
 
         <TextField
@@ -237,6 +249,33 @@ const Signup = () => {
             sx: { paddingTop: "15px", height: "45px", borderRadius: "50px" },
           }}
         />
+
+        <TextField
+          select
+          required
+          label="Department"
+          onChange={(e) => setDepartment(e.target.value)}
+          value={department}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <AssignmentIcon
+                  style={{
+                    fontSize: "20px",
+                    color: "#666",
+                  }}
+                />
+              </InputAdornment>
+            ),
+            sx: {height: "45px", borderRadius: "50px" },
+          }}
+        >
+          {departments.map((dep) => (
+            <MenuItem key={dep} value={dep.toLowerCase()}>
+              {dep}
+            </MenuItem>
+          ) )}
+        </TextField>
 
         <TextField
           type="email"
