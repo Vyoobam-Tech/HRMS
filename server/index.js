@@ -12,6 +12,7 @@ import { startAutoAbsent } from "./jobs/autoAbsent.js";
 import { HolidayRouter } from "./routes/holiday.js";
 import { LeaveRouter } from "./routes/leave.js";
 import { PolicyRouter } from "./routes/policy.js";
+import { NamesRouter } from "./routes/names.js";
 
 dotenv.config();
 const app = express();
@@ -37,6 +38,7 @@ app.use("/api/attendance", AttendanceRouter);
 app.use("/api/holiday", HolidayRouter);
 app.use("/api/leave", LeaveRouter)
 app.use("/api/policy", PolicyRouter)
+app.use("/api/names", NamesRouter)
 app.get("/", (req, res) => {
   res.send("HRMS Backend is running ✅");
 });
@@ -48,7 +50,7 @@ sequelize
   .then(() => {
     console.log("✅ Connected to Render PostgreSQL successfully");
 
-    return sequelize.sync();
+    return sequelize.sync({alter: true});
   })
   .then(() => {
     console.log("✅ Database sync complete");

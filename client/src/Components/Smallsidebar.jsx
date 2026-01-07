@@ -27,6 +27,7 @@ import AccessibilityRoundedIcon from "@mui/icons-material/AccessibilityRounded";
 import HolidayVillageIcon from '@mui/icons-material/HolidayVillage';
 import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
 import DateRangeIcon from "@mui/icons-material/DateRange";
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import PolicyIcon from '@mui/icons-material/Policy';
 import { Link, useNavigate } from "react-router-dom";
 import API from "../api/axiosInstance";
@@ -273,6 +274,14 @@ const Smallsidebar = ({ onToggle, setIsAuthenticated }) => {
                 </ListItem>
               </List>
             </Collapse>
+
+            <ListItem >
+              <ListItemButton component={Link} to="/adding-names">
+                <ListItemIcon>
+                  <ManageAccountsIcon sx={{ color: "#fff" }} />
+                </ListItemIcon>
+              </ListItemButton>
+            </ListItem>
           </>
         )}
 

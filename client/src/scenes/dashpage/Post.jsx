@@ -63,7 +63,7 @@ const Post = () => {
                         src="https://plus.unsplash.com/premium_photo-1692880430494-3bf9cfd56545?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NjF8fGJpcnRoZGF5fGVufDB8fDB8fHww&auto=format&fit=crop&q=60&w=600"
                         alt="Birthday"
                         sx={{
-                            maxWidth: 250,
+                            maxWidth: 200,
                             borderRadius: 3,
                             boxShadow: 3,
                         }}

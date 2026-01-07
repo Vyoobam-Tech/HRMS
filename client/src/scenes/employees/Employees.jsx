@@ -18,6 +18,7 @@ import DownloadIcon from "@mui/icons-material/Download";
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import API from "../../api/axiosInstance";
+import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import EmployeeForm from "./EmployeeForm";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -167,6 +168,58 @@ const Employees = () => {
     );
   };
 
+  const handleImportExcel = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = async (event) => {
+      try {
+        const binaryStr = event.target.result;
+        const workbook = XLSX.read(binaryStr, { type: "binary" });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+
+        const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
+
+        if (jsonData.length === 0) {
+          alert("Excel file is empty");
+          return;
+        }
+
+        // OPTIONAL: map Excel headers → backend fields if needed
+        const formattedData = jsonData.map((row) => ({
+          empId: row["Employee ID"],
+          name: row["Employee Name"],
+          email: row["Email"],
+          contact: row["Contact"],
+          fatherName: row["Father Name"],
+          motherName: row["Mother Name"],
+          gender: row["Gender"],
+          dob: row["Date of Birth"],
+          permanentAddress: row["Permanent Address"],
+          communicationAddress: row["Communication Address"],
+          aadhaar: row["Aadhaar"],
+          pan: row["PAN"],
+          bankName: row["Bank Name"],
+          accountNumber: row["Account Number"],
+          ifscCode: row["IFSC Code"],
+          branch: row["Branch"],
+        }));
+
+        await API.post("/api/employees/import", formattedData);
+
+        fetchEmployees();
+        e.target.value = ""; // reset input
+      } catch (error) {
+        console.error("Import Error:", error);
+        alert("Failed to import Excel");
+      }
+    };
+
+    reader.readAsBinaryString(file);
+  }
 
 
   const [columnDefs] = useState([
@@ -187,7 +240,7 @@ const Employees = () => {
           </IconButton>
         </div>
       ),
-      width: 200,
+      width: 100,
     },
     { headerName: " Emp ID", field: "empId" },
     { headerName: "Employee Name", field: "name" },
@@ -227,7 +280,7 @@ const Employees = () => {
     >
       <Header title="EMPLOYEES" subtitle="Organisation Employee Details" />
 
-    {/* <Box > */}
+    <Box sx={{ display: "flex", justifyContent: "flex-start", mb: 2, gap: 2 }}>
       {/* <Button variant='contained' onClick={() => setOpen(true)} color='primary' sx={{ mb: 2 }}>
         Add Details
       </Button> */}
@@ -238,13 +291,31 @@ const Employees = () => {
         sx={{
           backgroundColor: "#1D6F42",
           textTransform: "none",
-          mb: 2,
-          // ml: 2
+          // mb: 2,
+          // // ml: 2
         }}
       >
         Export Excel
       </Button>
-    {/* </Box> */}
+
+      <input
+        type="file"
+        accept=".xlsx, .xls"
+        style={{ display: "none" }}
+        id="excel-upload"
+        onChange={handleImportExcel}
+      />
+
+      <Button
+        startIcon={<InsertDriveFileIcon />}
+        variant="contained"
+        color="primary"
+        onClick={() => document.getElementById("excel-upload").click()}
+        sx={{ textTransform: "none" }}
+      >
+        Import Excel
+      </Button>
+    </Box>
 
       {/* <Dialog open={open} onClose={() => setOpen(false)}>
         <DialogTitle sx={{ color: 'white', bgcolor: '#1976D2', display: "flex", alignItems: "center", justifyContent: "space-between" }}>Add Details

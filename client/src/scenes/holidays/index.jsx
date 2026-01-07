@@ -21,10 +21,12 @@ const Holidays = () => {
   })
 
   const holidaycolumn = [
-    {headerName: "Action", field: "action",
+    {headerName: "Action",
+      field: "action",
+      hide: user?.role !== "superadmin",
       cellRenderer: (params) => {
-        if (user?.role === "superadmin") {
         return (
+        <>
           <IconButton
             onClick={() => handleDelete(params.data.id)}
             color="error"
@@ -32,12 +34,10 @@ const Holidays = () => {
           >
             <DeleteIcon />
           </IconButton>
-        );
-      } else {
-        return null; // hide for non-superadmin
-      }
-    },
-      width: 120,
+          </>
+        )
+      },
+      width: 70,
     },
     {headerName: "Date",
       field: "date",
@@ -213,6 +213,7 @@ const Holidays = () => {
           <MenuItem value="">Select</MenuItem>
           <MenuItem value="RH">RH</MenuItem>
           <MenuItem value="CH">CH</MenuItem>
+          <MenuItem value="CH">NH</MenuItem>
         </TextField>
         <Button
           variant="contained"

@@ -22,7 +22,7 @@ export const Holiday = sequelize.define(
             allowNull: false,
         },
         type: {
-            type:DataTypes.ENUM("RH","CH"),
+            type:DataTypes.ENUM("RH","CH","NH"),
             allowNull: false,
         },
     },

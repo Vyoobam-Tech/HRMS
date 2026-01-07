@@ -40,6 +40,8 @@ const Signup = () => {
   const [role, setRole] = useState("employee")
   const [hasSuperAdmin, setHasSuperAdmin] = useState(false);
   const [error, setError] = useState(null)
+  const [departments, setDepartments] = useState([])
+
 
 
   const handleSubmit = (e) => {
@@ -111,14 +113,21 @@ const Signup = () => {
   checkSuperAdmin();
 }, []);
 
-  const departments = [
-    "Admin",
-    "HR",
-    "Project Manager",
-    "Development",
-    "Testing",
-    "UI & UX"
-  ]
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      try {
+        const res = await API.get("/api/names/all");
+        if (res.data.status) {
+          setDepartments(res.data.data.map(dep => dep.name));
+        }
+      } catch (err) {
+        console.error("Error fetching department names:", err);
+      }
+    };
+
+    fetchDepartments()
+  }, [])
+
 
   return (
     <Box
@@ -270,6 +279,7 @@ const Signup = () => {
             sx: {height: "45px", borderRadius: "50px" },
           }}
         >
+          <MenuItem value="admin">Admin</MenuItem>
           {departments.map((dep) => (
             <MenuItem key={dep} value={dep.toLowerCase()}>
               {dep}

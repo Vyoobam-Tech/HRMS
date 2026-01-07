@@ -13,6 +13,7 @@ const EmployeeForm = ({setOpen}) => {
         empId: "",
         name: "",
         email: "",
+        personalEmail: "",
         contact: "",
         fatherName: "",
         motherName: "",
@@ -238,6 +239,7 @@ const EmployeeForm = ({setOpen}) => {
         const initialFormData = {
                 empId: "",
                 name: "",
+                personalEmail: "",
                 gender: "",
                 dob: "",
                 bloodGroup: "",
@@ -372,6 +374,18 @@ const EmployeeForm = ({setOpen}) => {
                                 name="email"
                                 value={user?.email}
                                 InputLabelProps={{ shrink: true }}
+                            />
+                        </Grid>
+
+                        <Grid item xs={12}>
+                            <TextField
+                                fullWidth
+                                label="Personal Email"
+                                name="personalEmail"
+                                value={formData.personalEmail || ""}
+                                onChange={handleChange}
+                                error={!!errors.personalEmail}
+                                helperText={errors.personalEmail}
                             />
                         </Grid>
 
@@ -925,6 +939,7 @@ const EmployeeForm = ({setOpen}) => {
                                         ["Employee ID", user?.empid],
                                         ["Full Name", formData.name],
                                         ["Email", user?.email],
+                                        ["Personal Email", formData?.personalEmail],
                                         ["Contact Number", formData.contact],
                                         ["Father Name", formData.fatherName],
                                         ["Mother Name", formData.motherName],

@@ -18,6 +18,10 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CloseIcon from "@mui/icons-material/Close";
 import API from "../../api/axiosInstance";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import AddNamesDialog from "../../Components/AddNamesDialog";
+
 ModuleRegistry.registerModules([AllCommunityModule]);
 
 const Department = () => {
@@ -27,20 +31,46 @@ const Department = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [departmentName, setDepartmentName] = useState([])
+  const [reportNames, setReportNames] = useState([]);
 
   const fetchDepartments = async () => {
     try {
       const response = await API.get(
         "/api/departments/all"
       );
+
       setRowData(response.data.data);
     } catch (error) {
       console.error("Error fetching department:", error);
     }
   };
 
+  const fetchDepartmentAndReportNames = async () => {
+    try {
+      const res = await API.get("/api/names/all");
+
+      const departments = res.data.data
+        .filter(n => n.type === "DEPARTMENT")
+        .map(n => n.name);
+
+      const reports = res.data.data
+        .filter(n => n.type === "REPORT")
+        .map(n => n.name);
+
+      setDepartmentName(departments);
+
+      setReportNames(reports);
+    } catch (error) {
+      console.error("Error fetching names:", error);
+    }
+  };
+
+
+
   useEffect(() => {
     fetchDepartments();
+    fetchDepartmentAndReportNames()
   }, []);
 
   const handleDelete = async (id) => {
@@ -78,12 +108,13 @@ const Department = () => {
         ...values,
       };
 
-      console.log("Payload:", payload);
+      toast.success("Department added successfully");
       await API.post("/api/departments", payload);
       await fetchDepartments();
       setOpen(false);
     } catch (error) {
       console.error("Error adding department:", error);
+      toast.error("Failed to add department ❌");
     }
   };
 
@@ -112,13 +143,12 @@ const Department = () => {
           </IconButton>
         </div>
       ),
-      width: 350,
+      width: 300,
     },
     { headerName: "Department Code", field: "code" },
     { headerName: "Department Name", field: "name" },
     { headerName: "Reporting To", field: "reporting" },
     { headerName: "Department Email", field: "email" },
-    { headerName: "Department Location", field: "location" },
     { headerName: "Project Assigned", field: "assigned" },
     { headerName: "Created By", field: "createdby" },
     { headerName: "Department Type", field: "type" },
@@ -134,13 +164,12 @@ const Department = () => {
     name: Yup.string().required("Department name is required"),
     reporting: Yup.string().required("Reporting is required"),
     email: Yup.string().required("Department Email is required"),
-    location: Yup.string().required("Location is required"),
-    assigned: Yup.string().required("Project Assigned is required"),
+    assigned: Yup.string().matches(/^[A-Za-z\s]+$/, "must contain only letters").required("Project Assigned is required"),
     createdby: Yup.string().required("Created By is required"),
     type: Yup.string().required("Department Type is required"),
-    category: Yup.string().required("Skill category is required"),
+    category: Yup.string().matches(/^[A-Za-z\s]+$/, "Skill must contain only letters").required("Skill category is required"),
     model: Yup.string().required("Working Model is required"),
-    hod: Yup.string().required("HOD is required"),
+    hod: Yup.string().matches(/^[A-Za-z\s]+$/, "HOD name must contain only letters").required("HOD is required"),
     status: Yup.string().required("Status is required"),
   });
 
@@ -158,21 +187,15 @@ const Department = () => {
     name: "name", 
     label: "Department Name",
     type: "select",
-    options: ["Admin", "HR", "Project Manager", "Development", "Testing", "UI & UX"],
+    options: departmentName
   },
   { 
     name: "reporting", 
     label: "Reporting To",
     type: "select",
-    options: ["CEO", "CTO", "MANAGER"]
+    options: reportNames
   },
   { name: "email", label: "Department Email" },
-  {
-    name: "location",
-    label: "Department Location",
-    type: "select",
-    options: ["Chennai", "Kumbakonam"],
-  },
   { name: "assigned", label: "Project Assigned" },
   { 
     name: "createdby", 
@@ -193,9 +216,8 @@ const Department = () => {
     type: "select",
     options: ["Hybrid", "Remote", "Onsite"],
   },
-  { name: "hod", label: "HOD" },
+  { name: "hod", label: "HOD Name" },
   { name: "total", label: "Total Employees", type: "number" },
-  // { name: "created", label: "Created By" },
   { 
     name: "status", 
     label: "Status",
@@ -223,6 +245,7 @@ const Department = () => {
       >
         Add Department
       </Button>
+
       <AgGridReact
         rowData={rowData}
         columnDefs={columnDefs}
@@ -261,23 +284,17 @@ const Department = () => {
         </div>
         <Formik
           initialValues={{
-            // depid: "",
             code: "",
             name: "",
             reporting: "",
             email: "",
-            location: "",
             assigned: "",
             createdby: "",
             type: "",
             category: "",
             model: "",
-            // description: "",
-            // branch: "",
             hod: "",
             total: 0,
-            // budget: "",
-            // created: "",
             status: "",
           }}
           validationSchema={DepartmentSchema}
@@ -400,7 +417,6 @@ const Department = () => {
               name: selectedRow.name || "",
               reporting: selectedRow.reporting || "",
               email: selectedRow.email || "",
-              location: selectedRow.location || "",
               assigned: selectedRow.assigned || "",
               createdby: selectedRow.createdby || "",
               type: selectedRow.type || "",
@@ -529,6 +545,15 @@ const Department = () => {
           </DialogActions>
         </div>
       </Dialog>
+
+    <ToastContainer
+      position="top-right"
+      autoClose={3000}
+      hideProgressBar={false}
+      newestOnTop
+      closeOnClick
+      pauseOnHover
+    />
     </div>
   );
 };

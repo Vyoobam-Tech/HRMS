@@ -122,6 +122,7 @@ const EmpDetails = () => {
               ["Emp ID", user?.empid],
               ["Name", employee?.name],
               ["Email", user?.email],
+              ["Personal Email", employee?.personalEmail],
               ["Contact", employee?.contact],
               ["Father Name", employee?.fatherName],
               ["Mother Name", employee?.motherName],
@@ -252,6 +253,16 @@ const EmpDetails = () => {
                   margin="dense"
                   value={selectedRow.email || ""}
                   disabled
+                />
+
+                <TextField
+                  label="Personal Email"
+                  fullWidth
+                  margin="dense"
+                  value={selectedRow.personalEmail || ""}
+                  onChange={(e) =>
+                    setSelectedRow({ ...selectedRow, personalEmail: e.target.value })
+                  }
                 />
                 <TextField
                   label="Contact"

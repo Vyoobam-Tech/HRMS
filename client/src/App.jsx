@@ -30,7 +30,8 @@ import EmpDetails from "./scenes/employees/EmpDetails";
 import API from "./api/axiosInstance";
 import { Box } from "@mui/material";
 import EmployeeHolidays from "./scenes/holidays/EmployeeHolidays";
-
+import AddingNames from "./scenes/manageButton/index"
+ 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -109,6 +110,7 @@ function App() {
               }
             >
               <Route path="dashpage" element={<Dashpage />} />
+              <Route path="department" element={<Department />} />
               <Route path="employee-details" element={<EmpDetails />} />
               <Route path="employee" element={<Employee />} />
               <Route path="activities" element={<Activities />} />
@@ -123,12 +125,13 @@ function App() {
               <Route path="attendance" element={<EachEmployeeTimeTracker />} />
               <Route path="attendance-report" element={<AllEmployeeTimeTraker />} />
               <Route path="attendance-summary" element={<AttendanceSummary />} />
-              {role === "admin" || role === "superadmin" ? (
+              <Route path="adding-names" element={<AddingNames />} />
+              {/* {role === "admin" || role === "superadmin" ? (
                 <>
                   <Route path="department" element={<Department />} />
                   <Route path="create-user" element={<Users />} />
                 </>
-              ) : null}
+              ) : null} */}
             </Route>
           )}
         </Routes>

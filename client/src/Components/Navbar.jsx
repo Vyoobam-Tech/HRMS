@@ -22,6 +22,7 @@ const Navbar = ({ sidebarWidth }) => {
   const [lunchOut, setLunchOut] = useState(null)
   const [totalHours, setTotalHours] = useState(null)
   const [hasLeaveToday, setHasLeaveToday] = useState(false)
+  const [todayHoliday, setTodayHoliday] = useState(false)
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -47,11 +48,34 @@ const Navbar = ({ sidebarWidth }) => {
       }
     }
 
+    const fetchHoliday = async () => {
+      try{
+        const res = await API.get("/api/holiday/all")
+        
+        const today = new Date().toISOString().split("T")[0]
+
+        const isTodayHoliday = res.data.data.some((holiday) => {
+              const holidayDate = new Date(holiday.date)
+                .toISOString()
+                .split("T")[0]
+
+              return holidayDate === today
+        })
+      setTodayHoliday(isTodayHoliday)
+      }catch(err){
+        console.log(err)
+      }
+    }
+
     useEffect(() => {
       if(user){
         fetchLeaveToday(user.empid)
       }
     }, [user])
+
+    useEffect(() => {
+      fetchHoliday()
+    }, [])
 
         useEffect(() => {
             const storedLoginTime = localStorage.getItem("loginTime")
@@ -241,12 +265,12 @@ const Navbar = ({ sidebarWidth }) => {
                   color="secondary"
                   fullWidth
                   onClick={() => {
-                    if(hasLeaveToday) return
+                    if(hasLeaveToday || todayHoliday) return
                     const time = new Date().toLocaleTimeString("en-GB", { hour12: false})
                     localStorage.setItem("loginTime", time)
                     setLoginTime(time)
                   }}
-                  disabled={!!loginTime || hasLeaveToday}
+                  disabled={!!loginTime || hasLeaveToday || todayHoliday}
                 >
                   LOGIN
                 </Button>

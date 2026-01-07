@@ -17,6 +17,10 @@ export const Employee = sequelize.define(
       type: DataTypes.STRING,
       unique: true
     },
+    personalEmail: {
+      type: DataTypes.STRING,
+      unique: true
+    },
     contact: {
       type: DataTypes.STRING
     },

@@ -318,7 +318,7 @@ const Activities = () => {
                           key={field}
                           as={TextField}
                           name={field}
-                          label="Emplpoyee Name"
+                          label="Employee Name"
                           fullWidth
                           margin="dense"
                           InputLabelProps={{ shrink: true }}
@@ -329,18 +329,79 @@ const Activities = () => {
 
                     if (field === "startingTime") {
                       return (
+                        <div key={field} style={{ marginBottom: "16px" }}>
+                          <Field
+                            as={TextField}
+                            name="startingTime"
+                            label="Starting Time"
+                            fullWidth
+                            margin="dense"
+                            InputProps={{ readOnly: true }}
+                            value={startingtime}
+                          />
+
+                          <Button
+                            variant="outlined"
+                            color="secondary"
+                            sx={{ mt: 1 }}
+                            onClick={() => {
+                              const now = new Date();
+                              const hh = now.getHours().toString().padStart(2, "0");
+                              const mm = now.getMinutes().toString().padStart(2, "0");
+                              const formatted = `${hh}:${mm}`
+                              setEndingTime(formatted);
+
+                              if (startingtime) {
+                                const [startH, startM] = startingtime.split(":").map(Number);
+                                const [endH, endM] = formatted.split(":").map(Number);
+
+                                let totalMinutes = endH * 60 + endM - (startH * 60 + startM);
+                                if (totalMinutes < 0) totalMinutes += 24 * 60;
+
+                                const hours = Math.floor(totalMinutes / 60);
+                                const minutes = totalMinutes % 60;
+                                const dur = `${hours}h ${minutes}m`;
+                                setDurations(dur);
+
+                                setFieldValue("endingtime", formatted);
+                                setFieldValue("duration", dur);
+                              }
+                            }}
+                          >
+                            End Activity
+                          </Button>
+                        </div>
+                      );
+                    }
+
+                    {/* Ending Time - Readonly */}
+                    if (field === "endingtime") {
+                      return (
                         <Field
                           as={TextField}
-                          name="startingTime"
-                          label="Starting Time"
+                          name="endingtime"
+                          label="Ending Time"
                           fullWidth
                           margin="dense"
+                          value={endingtime}
                           InputProps={{ readOnly: true }}
-                          value={startingtime}
                         />
                       )
                     }
 
+                    if (field === "duration") {
+                      return (
+                        <Field
+                          as={TextField}
+                          name="duration"
+                          label="Duration"
+                          fullWidth
+                          margin="dense"
+                          value={durations}
+                          InputProps={{ readOnly: true }}
+                        />
+                      )
+                    }
 
                     if (field === "complete") {
                       return (
@@ -420,37 +481,6 @@ const Activities = () => {
                     },
                   }}
                 >
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    onClick={() => {
-                      const now = new Date();
-                      const hh = now.getHours().toString().padStart(2, "0");
-                      const mm = now.getMinutes().toString().padStart(2, "0");
-                      const formatted = `${hh}:${mm}`; // HH:MM 24-hour
-                      setEndingTime(formatted);
-
-                      if (startingtime) {
-                        const [startH, startM] = startingtime.split(":").map(Number);
-                        const [endH, endM] = formatted.split(":").map(Number);
-
-                        let totalMinutes = (endH * 60 + endM) - (startH * 60 + startM);
-                        // if (totalMinutes < 0) totalMinutes += 24 * 60;
-
-                        const hours = Math.floor(totalMinutes / 60);
-                        const minutes = totalMinutes % 60;
-                        const dur = `${hours}h ${minutes}m`;
-
-                        setDurations(dur);
-
-                        // Update Formik fields
-                        setFieldValue("endingtime", formatted);
-                        setFieldValue("durations", dur);
-                      }
-                    }}
-                  >
-                    End Activity
-                  </Button>
 
                   <Button type="submit" variant="outlined" color="primary">
                     Add Activity

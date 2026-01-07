@@ -125,4 +125,14 @@ router.get("/by-user/:email", async (req, res) => {
 })
 
 
+router.post("/import", async (req, res) => {
+  try {
+    await Employee.bulkCreate(req.body);
+    res.json({ message: "Employees imported" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
 export { router as EmployeeRouter };

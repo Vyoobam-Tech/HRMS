@@ -26,6 +26,7 @@ import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import DateRangeIcon from "@mui/icons-material/DateRange";
 import PolicyIcon from '@mui/icons-material/Policy';
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import PowerSettingsNewRoundedIcon from "@mui/icons-material/PowerSettingsNewRounded";
 import { Link, useNavigate } from "react-router-dom";
 import API from "../api/axiosInstance";
@@ -307,6 +308,15 @@ const Sidebar = ({ onToggle, setIsAuthenticated }) => {
               </ListItem>
             </List>
           </Collapse>
+
+          <ListItem disablePadding>
+            <ListItemButton component={Link} to="/adding-names">
+              <ListItemIcon>
+                <ManageAccountsIcon sx={{ color: "#fff" }} />
+              </ListItemIcon>
+              <ListItemText primary="Manage" />
+            </ListItemButton>
+          </ListItem>
         </List>
       )}
 

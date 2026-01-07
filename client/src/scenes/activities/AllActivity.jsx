@@ -15,6 +15,20 @@ const AllActivities = () => {
     const [user, setUser] = useState(null)
     const gridRef = useRef(null)
 
+    const headerTemplate = {
+      "Date": "",
+      "Employee ID": "",
+      "Employee Name": "",
+      "Task Name": "",
+      "Starting Time": "",
+      "Ending Time": "",
+      "Durations": "",
+      "% Complete": "",
+      "Status": "",
+      "Remarks": "",
+      "Github Link": ""
+    }
+
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -50,7 +64,13 @@ const AllActivities = () => {
   const handleExportExcel = () => {
     const filteredNodes = gridRef.current.api.getRenderedNodes()
     const filteredData = filteredNodes.map((node) => node.data)
-    const data = filteredData.map((act) => ({
+
+    let data = []
+
+    if(filteredData.length === 0){
+      data = [headerTemplate]
+    } else{
+      data = filteredData.map((act) => ({
       "Date" : act.date,
       "Employee ID" : act.empid,
       "Employee Name" : act.employeename,
@@ -63,6 +83,7 @@ const AllActivities = () => {
       "Remarks" : act.remarks,
       "Github Link" : act.githublink
     }))
+    }
 
     const worksheet = XLSX.utils.json_to_sheet(data);
     const workbook = XLSX.utils.book_new();
