@@ -43,7 +43,7 @@ const Index = () => {
         color="secondary"
         onClick={() => setOpenReport(true)}
       >
-        Add Report
+        Add Reporting To
       </Button>
 
       <AddNamesDialog
@@ -59,8 +59,8 @@ const Index = () => {
       <AddNamesDialog
         open={openReport}
         onClose={() => setOpenReport(false)}
-        title="Report To"
-        label="Report Name"
+        title="Reporting To"
+        label="Reporting"
         items={reportNames}
         setItems={setReportNames}
         type="REPORT"

@@ -5,4 +5,5 @@ const API = axios.create({
     withCredentials: true,
 })
 
+export const BASE_URL = API.defaults.baseURL;
 export default API

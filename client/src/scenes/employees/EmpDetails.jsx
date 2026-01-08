@@ -122,7 +122,7 @@ const EmpDetails = () => {
               ["Emp ID", user?.empid],
               ["Name", employee?.name],
               ["Email", user?.email],
-              ["Personal Email", employee?.personalEmail],
+              ["Official Email", employee?.personalEmail],
               ["Contact", employee?.contact],
               ["Father Name", employee?.fatherName],
               ["Mother Name", employee?.motherName],
@@ -256,7 +256,7 @@ const EmpDetails = () => {
                 />
 
                 <TextField
-                  label="Personal Email"
+                  label="Official Email"
                   fullWidth
                   margin="dense"
                   value={selectedRow.personalEmail || ""}

@@ -106,7 +106,7 @@ const ApplyPolicyForm = ({open, handleClose}) => {
                         sx={{ mb: 4 }}
                     />
 
-                    <Typography variant='outlined' sx={{ pr: 2 }}>
+                    <Typography sx={{ pr: 2, mb: 1 }}>
                         Upload Policy
                     </Typography>
                         <input

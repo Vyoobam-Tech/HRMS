@@ -380,7 +380,7 @@ const EmployeeForm = ({setOpen}) => {
                         <Grid item xs={12}>
                             <TextField
                                 fullWidth
-                                label="Personal Email"
+                                label="Official Email"
                                 name="personalEmail"
                                 value={formData.personalEmail || ""}
                                 onChange={handleChange}

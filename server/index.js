@@ -13,6 +13,10 @@ import { HolidayRouter } from "./routes/holiday.js";
 import { LeaveRouter } from "./routes/leave.js";
 import { PolicyRouter } from "./routes/policy.js";
 import { NamesRouter } from "./routes/names.js";
+import { EmployeeDocumentRouter } from "./routes/employeeDocument.js";
+import multer from "multer";
+import path from "path";
+
 
 dotenv.config();
 const app = express();
@@ -38,10 +42,31 @@ app.use("/api/attendance", AttendanceRouter);
 app.use("/api/holiday", HolidayRouter);
 app.use("/api/leave", LeaveRouter)
 app.use("/api/policy", PolicyRouter)
+app.use("/api/document", EmployeeDocumentRouter)
 app.use("/api/names", NamesRouter)
 app.get("/", (req, res) => {
   res.send("HRMS Backend is running ✅");
 });
+
+app.use((err, req, res, next) => {
+  if (err instanceof multer.MulterError) {
+    return res.status(400).json({ message: err.message });
+  }
+
+  if (err) {
+    return res.status(400).json({ message: err.message });
+  }
+
+  next();
+});
+
+
+app.use(
+  "/uploads",
+  express.static(path.join(process.cwd(), "uploads"))
+);
+
+
 
 
 // ✅ Database connection check + sync
