@@ -11,10 +11,13 @@ import {
 import React, { useState } from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
 import API from "../api/axiosInstance";
+import { useDispatch } from "react-redux";
+import { addName, deleteName } from "../features/manageSlice";
 
 const AddNamesDialog = ({ open, onClose, title = "Add Name", label = "Name", items = [], setItems, type }) => {
   const [name, setName] = useState("");
   const [error, setError] = useState("");
+  const dispatch = useDispatch()
 
   const handleSave = async () => {
     if (!name.trim()) {
@@ -22,28 +25,14 @@ const AddNamesDialog = ({ open, onClose, title = "Add Name", label = "Name", ite
       return;
     }
 
-    try {
-      const res = await API.post("/api/names", {
-        name: name.trim(),
-        type,
-      });
-
-      setItems((prev) => [...prev, res.data.data]);
+      dispatch(addName({ name: name.trim(), type }));
       setName("");
+      setError("")
       onClose();
-    } catch (err) {
-      console.log(err);
-      setError(err?.response?.data?.message || "Failed to add name");
-    }
   };
 
   const handleDelete = async (id) => {
-    try {
-      await API.delete(`/api/names/${id}`);
-      setItems((prev) => prev.filter((item) => item.id !== id));
-    } catch (err) {
-      console.log(err);
-    }
+    dispatch(deleteName({id, type}))
   };
 
   return (

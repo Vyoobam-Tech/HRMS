@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-// import api from "../api/auth";
 import API from "../api/axiosInstance";
 import { Link, useNavigate } from "react-router-dom";
 import {
@@ -28,6 +27,9 @@ import "../App.css";
 import GoogleLogo from "../asset/google-icon.webp";
 import FormBg from "../asset/navy-bg.jpg";
 import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { signupUser } from "../features/auth/authSlice";
+
 
 const Signup = () => {
   const [username, setUsername] = useState("");
@@ -39,27 +41,23 @@ const Signup = () => {
   const navigate = useNavigate();
   const [role, setRole] = useState("employee")
   const [hasSuperAdmin, setHasSuperAdmin] = useState(false);
-  const [error, setError] = useState(null)
   const [departments, setDepartments] = useState([])
 
+  const dispatch = useDispatch();
+  const { loading, error } = useSelector((state) => state.auth);
 
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setError(null);
+ const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    API.post("/auth/signup", { role, username, empid, department, email, password })
-      .then((response) => {
-        if (response.data.status === true) {
-          navigate("/login");
-        } else {
-          setError(response.data.message);
-        }
-      })
-      .catch((err) => {
-        setError("Server error. Please try again.");
-      });
+  try {
+    await dispatch(signupUser({ role, username, empid, department, email, password })).unwrap();
+    navigate("/login");
+  } catch (err) {
+    console.error("Signup failed:", err);
   }
+};
+
 
 
   const handleGoogleSuccess = async (tokenResponse) => {
@@ -118,7 +116,11 @@ const Signup = () => {
       try {
         const res = await API.get("/api/names/all");
         if (res.data.status) {
-          setDepartments(res.data.data.map(dep => dep.name));
+          setDepartments(
+            res.data.data
+              .filter(item => item.type === "DEPARTMENT")
+              .map(item => item.name)
+          );
         }
       } catch (err) {
         console.error("Error fetching department names:", err);

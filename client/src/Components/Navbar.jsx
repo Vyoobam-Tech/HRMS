@@ -10,72 +10,39 @@ import { Link } from "react-router-dom";
 import { Stack } from "@mui/system";
 import { setLocale } from "yup";
 import API from "../api/axiosInstance";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchProfile } from "../features/auth/authSlice";
+import { fetchTodayHoliday } from "../features/holidaySlice";
+import { fetchLeaveToday } from "../features/leaveSlice";
+import { submitAttendance } from "../features/attendanceSlice";
 
 const Navbar = ({ sidebarWidth }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl)
-  const [user, setUser] = useState(null)
   const [loginTime, setLoginTime] = useState(null)
   const [breakIn, setBreakIn] = useState(null)
   const [breakOut, setBreakOut] = useState(null)
   const [lunchIn, setLunchIn] = useState(null)
   const [lunchOut, setLunchOut] = useState(null)
   const [totalHours, setTotalHours] = useState(null)
-  const [hasLeaveToday, setHasLeaveToday] = useState(false)
-  const [todayHoliday, setTodayHoliday] = useState(false)
+
+  const dispatch = useDispatch()
+  
+  const { user, loading: authLoading, error: authError } = useSelector(
+    (state) => state.auth)
+
+    const { hasLeaveToday } = useSelector((state) => state.leave);
+  const { todayHoliday } = useSelector((state) => state.holiday);
+  useEffect(() => {
+    dispatch(fetchProfile())
+    dispatch(fetchTodayHoliday());
+  }, [dispatch])
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      try{
-        const res = await API.get("/auth/profile")
-          if(res.data.status){
-            setUser(res.data.user)
-          }
-      } catch (err){
-        console.log(err)
-      }
+    if (user?.empid) {
+      dispatch(fetchLeaveToday(user.empid));
     }
-    fetchProfile()
-  }, [])
-
-
-    const fetchLeaveToday = async () => {
-      try{
-        const res = await API.get(`/api/leave/today/${user.empid}`)
-        setHasLeaveToday(res.data.hasLeave)
-      }catch(err){
-        console.log(err)
-      }
-    }
-
-    const fetchHoliday = async () => {
-      try{
-        const res = await API.get("/api/holiday/all")
-        
-        const today = new Date().toISOString().split("T")[0]
-
-        const isTodayHoliday = res.data.data.some((holiday) => {
-              const holidayDate = new Date(holiday.date)
-                .toISOString()
-                .split("T")[0]
-
-              return holidayDate === today
-        })
-      setTodayHoliday(isTodayHoliday)
-      }catch(err){
-        console.log(err)
-      }
-    }
-
-    useEffect(() => {
-      if(user){
-        fetchLeaveToday(user.empid)
-      }
-    }, [user])
-
-    useEffect(() => {
-      fetchHoliday()
-    }, [])
+  }, [user, dispatch]);
 
         useEffect(() => {
             const storedLoginTime = localStorage.getItem("loginTime")
@@ -143,72 +110,62 @@ const Navbar = ({ sidebarWidth }) => {
           setAnchorEl(null)
         }
 
-      const handleLogout = async () => {
-        if (!user || !loginTime) return;
-
-        const logoutTime = new Date().toLocaleTimeString("en-GB", { hour12: false });
-        const attendancedate = new Date().toISOString().split("T")[0];
-
-        const logoutDate = new Date(`${attendancedate}T${logoutTime}`)
-        const loginDate = new Date(`${attendancedate}T${loginTime}`)
-
-        const workedMinutes = Math.floor((logoutDate - loginDate) / 60000)
-
-        const breakMinutes = calculateMinutes(breakIn, breakOut)
-        const lunchMinutes = calculateMinutes(lunchIn, lunchOut);
-
-        const totalMinutes = Math.max(0, workedMinutes - (breakMinutes + lunchMinutes));
-        const hours = Math.floor(totalMinutes / 60);
-        const minutes = totalMinutes % 60;
-        const totalhours = `${hours}h ${minutes}m`;
-        console.log(totalMinutes)
-
-        const remaining = 8 - hours
-
-        let status = ""
-
-        if(hours >= 8){
-          status = "Present"
-        } else if(hours >= 6 && hours < 8){
-          const confirm = window.confirm(`You have worked ${hours.toFixed(1)} hrs.\n${remaining} hrs remaining to complete 8 hrs.\nDo you want to logout?`)
-          if(confirm){
-            status = "Half-day"
-          }else{
-            return
-          }
-        } else if(hours >= 4 && hours < 6){
-          status = "Half-day"
-        }else{
-          status = "Absent"
-        }
-
-        try {
-          await API.post("/api/attendance", {
-            empid: user.empid,
-            name: user.username,
-            attendancedate,
-            login: loginTime,
-            logout: logoutTime,
-            breakminutes: `${breakMinutes}m`,
-            lunchminutes: `${lunchMinutes}m`,
-            totalMinutes,
-            totalhours,
-            status
-          });
+     if (authLoading) return null;
 
 
-          localStorage.removeItem("loginTime")
-          localStorage.removeItem("breakIn")
-          localStorage.removeItem("breakOut")
-          localStorage.removeItem("lunchIn")
-          localStorage.removeItem("lunchOut")
+  const handleLogout = () => {
+  if (!user || !loginTime) return;
 
-          window.location.href = "/"
-        } catch (err) {
-          console.error("Error submitting attendance:", err)
-          alert("Failed to submit attendance. Try again.")
-        }
-    }
+  const logout = new Date().toLocaleTimeString("en-GB", { hour12: false });
+  const date = new Date().toISOString().split("T")[0];
+
+  const workedMinutes =
+    (new Date(`${date}T${logout}`) -
+      new Date(`${date}T${loginTime}`)) / 60000;
+
+  const breakMinutes = calculateMinutes(breakIn, breakOut);
+  const lunchMinutes = calculateMinutes(lunchIn, lunchOut);
+
+  const totalMinutes = Math.max(
+    0,
+    workedMinutes - (breakMinutes + lunchMinutes)
+  );
+
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+
+  dispatch(
+    submitAttendance({
+      empid: user.empid,
+      name: user.username,
+      attendancedate: date,
+
+      login: loginTime,
+      logout,
+
+      breakIn,
+      breakOut,
+      lunchIn,
+      lunchOut,
+
+      breakminutes: `${breakMinutes}m`,
+      lunchminutes: `${lunchMinutes}m`,
+
+      totalMinutes,
+      totalhours: `${hours}h ${minutes}m`,
+      status: hours >= 8 ? "Present" : hours >= 4 ? "Half-day" : "Absent",
+    })
+  );
+
+  localStorage.removeItem("loginTime");
+  localStorage.removeItem("breakIn");
+  localStorage.removeItem("breakOut");
+  localStorage.removeItem("lunchIn");
+  localStorage.removeItem("lunchOut");
+
+  window.location.href = "/";
+};
+
 
   return (
     <Box >

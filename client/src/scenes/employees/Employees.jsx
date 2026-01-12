@@ -20,15 +20,21 @@ import { saveAs } from 'file-saver';
 import API from "../../api/axiosInstance";
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import EmployeeForm from "./EmployeeForm";
+import { useDispatch, useSelector } from "react-redux";
+import { deleteEmployee, fetchAllEmployees } from "../../features/employeeSlice";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
 const Employees = () => {
-  const [rowData, setRowData] = useState([]);
   const [open, setOpen] = useState(false)
   const [deleteId, setDeleteId] = useState(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const gridRef = useRef(null)
+
+  const dispatch = useDispatch()
+  const {all: rowData, loading, error } = useSelector((state) => 
+    state.employee
+  )
 
   const headersTemplate = {
     "Employee ID": "",
@@ -73,26 +79,13 @@ const Employees = () => {
     "Branch": "",
   }
 
-
-  const fetchEmployees = async () => {
-    try {
-      const response = await API.get(
-        "/api/employees/all"
-      );
-      setRowData(response.data.data);
-    } catch (error) {
-      console.error("Error fetching employees:", error);
-    }
-  };
-
   useEffect(() => {
-    fetchEmployees();
-  }, []);
+    dispatch(fetchAllEmployees())
+  }, [dispatch]);
 
   const handleDelete = async (empId) => {
     try {
-      await API.delete(`/api/employees/delete/${empId}`);
-      fetchEmployees();
+      await dispatch(deleteEmployee(empId))
     } catch (error) {
       console.error("Error deleting employee:", error);
     }
@@ -210,7 +203,7 @@ const Employees = () => {
 
         await API.post("/api/employees/import", formattedData);
 
-        fetchEmployees();
+        fetchAllEmployees();
         e.target.value = ""; // reset input
       } catch (error) {
         console.error("Import Error:", error);
@@ -316,17 +309,6 @@ const Employees = () => {
         Import Excel
       </Button>
     </Box>
-
-      {/* <Dialog open={open} onClose={() => setOpen(false)}>
-        <DialogTitle sx={{ color: 'white', bgcolor: '#1976D2', display: "flex", alignItems: "center", justifyContent: "space-between" }}>Add Details
-          <IconButton onClick={() => setOpen(false)} color="dark">
-            <CloseIcon sx={{ color: "white" }} />
-          </IconButton>
-        </DialogTitle>
-        <DialogContent>
-          <EmployeeForm setOpen={setOpen}/>
-        </DialogContent>
-      </Dialog> */}
 
       <AgGridReact
         ref={gridRef}

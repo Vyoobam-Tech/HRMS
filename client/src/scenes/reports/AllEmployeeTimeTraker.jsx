@@ -4,42 +4,34 @@ import Header from '../../Components/Header'
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, TextField } from '@mui/material'
 import EditIcon from "@mui/icons-material/Edit";
 import API from '../../api/axiosInstance';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchProfile } from '../../features/auth/authSlice';
+import { fetchAllAttendance, updateAttendance } from '../../features/attendanceSlice';
 
 const AllEmployeeTimeTraker = () => {
 
     const [gridKey, setGridKey] = useState(0)
-    const [rowData, setRowData] = useState([])
     const [showEditModal, setShowEditModal] = useState(false)
     const [selectedRow, setSelectedRow] = useState(null)
-    const [user, setUser] = useState(null)
+
+    const dispatch = useDispatch()
+
+    const { user, loading: authLoading, error: authError } = useSelector(
+        (state) => state.auth
+    )
+
+    const { list: rowData, loading } = useSelector(
+    (state) => state.attendance
+    );
 
     useEffect(() => {
-        const fetchUser = async () => {
-            try{
-                const res = await API.get("/auth/profile")
-                if(res.data.user){
-                    setUser(res.data.user)
-                }
-            }catch (err){
-                console.log(err)
-            }
-        }
-        fetchUser()
-    }, [])
+        dispatch(fetchProfile());
+    }, [dispatch])
 
 
     useEffect(() => {
-        const fetchEmployeeAttendance = async () => {
-            try{
-                const response = await API.get("/api/attendance/all")
-                setRowData(response.data.data)
-            } catch (err) {
-                console.log(err)
-            }
-        }
-
-        fetchEmployeeAttendance()
-    }, [user])
+        dispatch(fetchAllAttendance())
+    }, [dispatch])
 
     const handleEdit = (row) => {
         setSelectedRow(row)
@@ -47,26 +39,22 @@ const AllEmployeeTimeTraker = () => {
     }
 
     const handleSave = async () => {
-            try{
-                const response = await API.put(`/api/attendance/${selectedRow.id}`,
-                    {
-                        login: selectedRow.login,
-                        breakminutes: selectedRow.breakminutes,
-                        lunchminutes: selectedRow.lunchminutes,
-                        logout: selectedRow.logout,
-                        totalminutes: selectedRow.totalminutes,
-                        totalhours: selectedRow.totalhours,
-                        status: selectedRow.status
-                    }
-                )
+            dispatch(
+                updateAttendance({
+                id: selectedRow.id,
+                payload: {
+                    login: selectedRow.login,
+                    breakminutes: selectedRow.breakminutes,
+                    lunchminutes: selectedRow.lunchminutes,
+                    logout: selectedRow.logout,
+                    totalminutes: selectedRow.totalminutes,
+                    totalhours: selectedRow.totalhours,
+                    status: selectedRow.status,
+                },
+                })
+            );
 
-                if(response.data.success){
-                    setShowEditModal(false)
-                    setGridKey(prev =>prev+1)
-                }
-            } catch(err) {
-                console.log(err)
-            }
+            setShowEditModal(false)
         }
 
 
@@ -158,7 +146,6 @@ const AllEmployeeTimeTraker = () => {
         >
             <Header title="ATTENDANCE TRACKER"/>
             <AgGridReact
-                key={gridKey}
                 rowData={rowData}
                 columnDefs={columnDefs}
                 defaultColDef={defaultColDef}

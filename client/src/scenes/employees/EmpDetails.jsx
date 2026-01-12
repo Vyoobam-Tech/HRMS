@@ -3,50 +3,39 @@ import { Box } from '@mui/system'
 import CloseIcon from "@mui/icons-material/Close";
 import { Card, CardContent, Divider, Typography, Grid, Button, Dialog, DialogContent, DialogTitle, IconButton, DialogActions, TextField} from '@mui/material'
 import EmployeeForm from './EmployeeForm'
-import API from '../../api/axiosInstance'
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchEmployeeByEmail, updateEmployee } from '../../features/employeeSlice';
+import { fetchProfile } from '../../features/auth/authSlice';
 
 const EmpDetails = () => {
 
-  const [user, setUser] = useState(null)
-  const [employee, setEmployee] = useState(null)
   const [open, setOpen] = useState(false)
   const [selectedRow, setSelectedRow] = useState(null)
   const [showEditModal, setShowEditModal] = useState(false)
 
+  const dispatch = useDispatch()
+
+  const { user, loading: authLoading, error: authError } = useSelector(
+    (state) => state.auth
+  );
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      try{
-        const response = await API.get("/auth/profile")
+    dispatch(fetchProfile());
+  }, [dispatch]);
 
-        if(response.data.status) {
-          setUser(response.data.user)
-        }
-      } catch(err) {
-        console.log(err)
-      }
-    }
-    fetchProfile()
-  }, [])
+  const {single: employee, loading, error} = useSelector((state) =>
+  state.employee
+  )
 
   useEffect(() => {
-    if(!user?.email) return
-    const fetchEmployee = async () => {
-      try{
-        const response = await API.get(`/api/employees/by-user/${user.email}`)
-        if(response.data.status){
-          setEmployee(response.data.data)
-        }
-      } catch(err) {
-        console.log(err)
-      }
+    if(user?.email) {
+      dispatch(fetchEmployeeByEmail(user.email))
     }
-    fetchEmployee()
-  }, [user])
+  }, [user, dispatch])
 
   const handleAdd = () => {
     if (employee) return
-    setSelectedRow(employee)
+    setSelectedRow({})
     setOpen(true)
   }
 
@@ -58,19 +47,13 @@ const EmpDetails = () => {
 
   const handleSave = async () => {
     if(!selectedRow) return
-
     try{
-      const response = await API.put(`/api/employees/update/${selectedRow.empId}`,selectedRow)
-
-      if(response.data.status){
-        setEmployee(response.data.data)
-        setShowEditModal(false)
-      } else{
-        alert("falied to update")
-      }
-    } catch(err) {
-      console.log(err)
+      await dispatch(updateEmployee({empId: selectedRow.empId, data: selectedRow}))
+      setShowEditModal(false)
+    }catch(err){
+      console.log("Update failed:", err);
     }
+
   }
 
   return (

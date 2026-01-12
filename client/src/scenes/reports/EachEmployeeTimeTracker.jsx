@@ -7,44 +7,30 @@ import { AgGridReact } from 'ag-grid-react';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import API from '../../api/axiosInstance';
-
+import { useDispatch, useSelector } from 'react-redux';
 import { Dialog, DialogTitle, DialogContent, DialogActions, TextField } from "@mui/material";
-
-
-
 import Card from '@mui/material/Card';
+import { fetchProfile } from '../../features/auth/authSlice.js';
+import { addPermissionRow, fetchAttendanceByUser } from '../../features/attendanceSlice.js';
 
 const EachEmployeeTimeTracker = () => {
 
-    const [user, setUser] = useState(null)
-    const [rowData, setRowData] = useState([])
+    const dispatch = useDispatch()
+    
+    const { user, loading: authLoading, error: authError } = useSelector(
+      (state) => state.auth
+    )
+
+    const {list: rowData} = useSelector((state) => state.attendance)
 
     useEffect(() => {
-        const fetchUser = async () => {
-            try{
-                const res = await API.get("/auth/profile")
-                if(res.data.user){
-                    setUser(res.data.user)
-                }
-            }catch(err){
-                console.log(err)
-            }
-        }
-        fetchUser()
-    }, [])
+        dispatch(fetchProfile());
+    }, [dispatch])
 
     useEffect(() => {
         if(!user?.empid) return
-        const fetchEmployeeAttendance = async () => {
-            try{
-                const response = await API.get(`/api/attendance/by-user/${user.empid}`)
-                setRowData(response.data.data)
-            } catch(err) {
-                console.log(err)
-            }
-        }
-        fetchEmployeeAttendance()
-    }, [user])
+        dispatch(fetchAttendanceByUser(user.empid))
+    }, [dispatch, user])
 
 
     const [columDefs] = useState([
@@ -178,9 +164,8 @@ const EachEmployeeTimeTracker = () => {
       if (!permissionForm.date || !duration || !permissionForm.reason) return;
       if (duration > permissionRemaining) return;
 
-      setRowData((prev) => [
-        ...prev,
-        {
+      dispatch(
+        addPermissionRow({
           attendancedate: permissionForm.date,
           login: "-",
           breakminutes: "-",
@@ -188,8 +173,8 @@ const EachEmployeeTimeTracker = () => {
           logout: "-",
           totalhours: "-",
           permission: `${duration}m - ${permissionForm.reason}`,
-        },
-      ]);
+        })
+      );
 
       setPermissionRemaining((prev) => prev - duration);
 
@@ -326,6 +311,7 @@ const EachEmployeeTimeTracker = () => {
                 <TextField
                 type="date"
                 label="Date"
+                margin='dense'
                 InputLabelProps={{ shrink: true }}
                 value={permissionForm.date}
                 onChange={(e) =>
@@ -333,7 +319,7 @@ const EachEmployeeTimeTracker = () => {
                 }
                 />
 
-               <Select
+              <Select
                   value={permissionForm.duration}
                   displayEmpty
                   onChange={(e) =>

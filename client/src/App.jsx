@@ -31,50 +31,64 @@ import API from "./api/axiosInstance";
 import { Box } from "@mui/material";
 import EmployeeHolidays from "./scenes/holidays/EmployeeHolidays";
 import AddingNames from "./scenes/manageButton/index"
+import { fetchProfile } from "./features/auth/authSlice";
+import { useDispatch, useSelector } from "react-redux";
  
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [user, setUser] = useState(null);
+
+  const dispatch = useDispatch();
+
+  const { user, loading: authLoading, error: authError } = useSelector(
+    (state) => state.auth
+    )
+
+  const { isAuthenticated } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    const loggedIn = localStorage.getItem("isLoggedIn");
-    if (loggedIn === "true") {
-      setIsAuthenticated(true);
-    } else {
-      API.get("/auth/checkSession")
-  .then((response) => {
-    if (response.data.status) {   // 🔴 FIX HERE
-      setIsAuthenticated(true);
-      localStorage.setItem("isLoggedIn", "true");
-    } else {
-      setIsAuthenticated(false);
-      localStorage.removeItem("isLoggedIn");
+    if (localStorage.getItem("token")) {
+      dispatch(fetchProfile());
     }
-  })
-  .catch(() => {
-    setIsAuthenticated(false);
-    localStorage.removeItem("isLoggedIn");
-  });
+  }, [dispatch]);
 
-    }
-  }, []);
+  // useEffect(() => {
+  //   const loggedIn = localStorage.getItem("isLoggedIn");
+  //   if (loggedIn === "true") {
+  //     setIsAuthenticated(true);
+  //   } else {
+  //     API.get("/auth/checkSession")
+  // .then((response) => {
+  //   if (response.data.status) {   // 🔴 FIX HERE
+  //     setIsAuthenticated(true);
+  //     localStorage.setItem("isLoggedIn", "true");
+  //   } else {
+  //     setIsAuthenticated(false);
+  //     localStorage.removeItem("isLoggedIn");
+  //   }
+  // })
+  // .catch(() => {
+  //   setIsAuthenticated(false);
+  //   localStorage.removeItem("isLoggedIn");
+  // });
 
-  useEffect(() => {
-  if (isAuthenticated) { // only fetch if logged in
-    const fetchUser = async () => {
-      try {
-        const response = await API.get("/auth/profile");
-        if (response.data.status) {
-          setUser(response.data.user);
-        }
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    fetchUser();
-  }
-}, [isAuthenticated]);
+  //   }
+  // }, []);
+
+//   useEffect(() => {
+//   if (isAuthenticated) { // only fetch if logged in
+//     const fetchUser = async () => {
+//       try {
+//         const response = await API.get("/auth/profile");
+//         if (response.data.status) {
+//           setUser(response.data.user);
+//         }
+//       } catch (err) {
+//         console.log(err);
+//       }
+//     };
+//     fetchUser();
+//   }
+// }, [isAuthenticated]);
 
 
   const handleToggleSidebar = () => setIsSidebarOpen((prev) => !prev);
@@ -92,9 +106,9 @@ function App() {
             }
           />
           <Route path="/signup" element={<Signup />} />
-          <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/forgotPassword" element={<ForgotPassword />} />
-        <Route path="/reset-password/:token" element={<ResetPassword />} />
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
 
 
           {/* Protected Routes (after login) */}
@@ -105,7 +119,7 @@ function App() {
                 <Layout
                   isSidebarOpen={isSidebarOpen}
                   handleToggleSidebar={handleToggleSidebar}
-                  setIsAuthenticated={setIsAuthenticated}
+                  // setIsAuthenticated={setIsAuthenticated}
                 />
               }
             >

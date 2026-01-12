@@ -2,6 +2,8 @@ import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, 
 import CloseIcon from "@mui/icons-material/Close";
 import React, { useState } from 'react'
 import API from '../api/axiosInstance';
+import { addPolicy } from '../features/policySlice';
+import { useDispatch, useSelector } from 'react-redux';
 
 const ApplyPolicyForm = ({open, handleClose}) => {
 
@@ -10,6 +12,9 @@ const ApplyPolicyForm = ({open, handleClose}) => {
             pdf: null
         })
     const [error, setError] = useState("")
+
+    const dispatch = useDispatch();
+    const { loading } = useSelector((state) => state.policy);
 
     const handleChange = (e) => {
         setForm({
@@ -44,26 +49,18 @@ const ApplyPolicyForm = ({open, handleClose}) => {
         formData.append("title", form.title)
         formData.append("policy", form.pdf)
 
-        try{
-            await API.post("/api/policy", formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                }
-            })
+        try {
+            const result = await dispatch(addPolicy(formData));
 
-            setForm({
-                title: "",
-                pdf: null,
-            });
-
+            if (addPolicy.fulfilled.match(result)) {
+            setForm({ title: "", pdf: null });
+            setError("");
             handleClose();
-        }catch(err){
-            console.log(err)
-            if(err.response && err.response.data?.message){
-                setError(err.response.data.message)
-            }else{
-                setError("something went wrong")
+            } else {
+            setError(result.payload || "Failed to add policy");
             }
+        } catch (err) {
+            setError("Something went wrong");
         }
     }
   return (

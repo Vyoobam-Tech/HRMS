@@ -13,71 +13,38 @@ import { AgCharts } from "ag-charts-community";
 import { border } from "@mui/system";
 import Post from "./Post";
 import API from "../../api/axiosInstance";
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchProfile } from "../../features/auth/authSlice";
+import { fetchDashboardStats } from "../../features/dashboardSlice";
+
 
 const Dashpage = () => {
   const [value, setValue] = useState(new Date());
   const navigate = useNavigate();
   const chartRef = useRef(null);
-  const [user, setUser] = useState(null)
+
+  const dispatch = useDispatch()
+
+  const { user, loading: authLoading, error: authError } = useSelector(
+    (state) => state.auth
+  )
+
+  const { stats, loading} = useSelector((state) => state.dashboard)
 
   useEffect(() => {
-    const fetchUser = async () => {
-      try{
-        const response = await API.get("/auth/profile")
-        if(response.data.user){
-          setUser(response.data.user)
-        }
-      } catch (err) {
-        console.log(err)
-      }
-    }
-    fetchUser()
-  }, [])
-
-
-  const [stats, setstats] = useState({
-    departments: 0,
-    // accounts: 0,
-    // payroll: 0,
-    myactivity: 0,
-    allactivitities: 0,
-    employees: 0
-  })
+    dispatch(fetchProfile())
+  }, [dispatch])
 
   useEffect(() => {
-    if(!user) return 
-    const fetchStats = async () => {
-    try{
-      const [dep, myact, allact,emp] = await Promise.all([
-        API.get("/api/departments/all"),
-        // axios.get("http://localhost:3000/api/accounts/all"),
-        // axios.get("http://localhost:3000/api/payroll/all"),
-        API.get(`/api/activities/by-user/${user.empid}`),
-        // axios.get("http://localhost:3000/api/activities/all"),
-        API.get("/api/activities/all"),
-        API.get("/api/employees/all")
-      ])
-
-      setstats({
-        departments: dep.data.data.length,
-        // accounts: acc.length,
-        // payroll: prl.length,
-        myactivity: myact.data.data.length,
-        allactivitities: allact.data.data.length,
-        employees: emp.data.data.length 
-      })
-    } catch(err){
-      console.log(err)
-    }
-  }
-  fetchStats()
-  },[user])
+    if (!user) return;
+    dispatch(fetchDashboardStats(user.empid));
+  }, [user, dispatch]);
 
   const cards = [
     {
       title: "Department",
       icon: <BusinessRoundedIcon fontSize="large" />,
-      value: stats.departments,
+      value: stats?.departments ?? 0,
       subtitle: "Totally",
       path: "/department",
     },
@@ -99,7 +66,7 @@ const Dashpage = () => {
       {
       title: "My Report",
       icon: <DataUsageOutlinedIcon fontSize="large" />,
-      value: stats.myactivity,
+      value: stats?.myactivity ?? 0,
       subtitle: "Activities Logged",
       path: "/activities",
     },
@@ -107,7 +74,7 @@ const Dashpage = () => {
     {
       title: "Report",
       icon: <DataUsageOutlinedIcon fontSize="large" />,
-      value: stats.allactivitities,
+      value: stats?.allactivitities ?? 0,
       subtitle: "Activities Logged",
       path: "/allactivities",
     }
@@ -238,7 +205,7 @@ const Dashpage = () => {
             <Typography variant="h6">No. of Employees</Typography>
             <Box sx={{ paddingTop: "30px", marginLeft: "15px" }}>
               <PeopleAltRoundedIcon fontSize="large" />
-              <Typography variant="h6">{stats.employees}</Typography>
+              <Typography variant="h6">{stats?.employees??0}</Typography>
               <Typography variant="h6">Total Employees</Typography>
             </Box>
           </CardContent>

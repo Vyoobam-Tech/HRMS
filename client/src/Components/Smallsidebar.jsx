@@ -30,45 +30,27 @@ import DateRangeIcon from "@mui/icons-material/DateRange";
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import PolicyIcon from '@mui/icons-material/Policy';
 import { Link, useNavigate } from "react-router-dom";
-import API from "../api/axiosInstance";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../features/auth/authSlice";
 
-const Smallsidebar = ({ onToggle, setIsAuthenticated }) => {
+const Smallsidebar = ({ onToggle}) => {
   const SMALL_SIDEBAR_WIDTH = 80;
   const [reportsOpen, setReportsOpen] = useState(false)
-  const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const navigate = useNavigate()
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  
+  const { user } = useSelector((state) => state.auth);
 
   const toggleReportsDropdown = () => setReportsOpen(!reportsOpen);
 
-  const handleLogout = async () => {
-    try {
-      await API.get("/auth/logout");
-      localStorage.removeItem("isLoggedIn");
-      setIsAuthenticated(false);
-      navigate("/login");
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await API.get("/auth/profile")
-        if (response.data.status) setUser(response.data.user)
-      } catch (err) {
-        console.log(err)
-      } finally {
-        setLoading(false)
-      }
+  const handleLogout = () => {
+      dispatch(logout())
+      navigate("/login")
     };
-    fetchUser()
-  }, [])
 
   const role = user?.role
 
-  if (loading) return null
 
   return (
     <Box

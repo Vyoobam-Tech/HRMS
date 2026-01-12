@@ -1,30 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { Box, Button } from "@mui/material";
 import AddNamesDialog from "../../Components/AddNamesDialog";
-import API from "../../api/axiosInstance";
 import Header from "../../Components/Header";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchNames } from "../../features/manageSlice";
 
 const Index = () => {
-  const [departmentNames, setDepartmentNames] = useState([]);
-  const [reportNames, setReportNames] = useState([]);
+
+  const dispatch = useDispatch()
+  const {departmentNames, reportNames, loading, error} = useSelector((state) =>
+  state.names
+  )
   const [openDepartment, setOpenDepartment] = useState(false);
   const [openReport, setOpenReport] = useState(false);
 
-  const fetchNames = async () => {
-    try {
-      const res = await API.get("/api/names/all");
-      const data = res.data.data;
-
-      setDepartmentNames(data.filter((n) => n.type === "DEPARTMENT"));
-      setReportNames(data.filter((n) => n.type === "REPORT"));
-    } catch (err) {
-      console.error("Error fetching names:", err);
-    }
-  };
-
   useEffect(() => {
-    fetchNames();
-  }, []);
+    dispatch(fetchNames())
+  }, [dispatch]);
 
   return (
     <Box sx={{ minHeight: "100vh", width: "100%", padding: "120px 40px 20px 40px" }}>
@@ -52,7 +44,7 @@ const Index = () => {
         title="Department"
         label="Department Name"
         items={departmentNames}
-        setItems={setDepartmentNames}
+        // setItems={setDepartmentNames}
         type="DEPARTMENT"
       />
 
@@ -62,7 +54,7 @@ const Index = () => {
         title="Reporting To"
         label="Reporting"
         items={reportNames}
-        setItems={setReportNames}
+        // setItems={setReportNames}
         type="REPORT"
       />
     </Box>

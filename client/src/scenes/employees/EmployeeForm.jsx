@@ -2,13 +2,17 @@ import { Box, Button, MenuItem, Step, StepLabel, Stepper, TextField, Grid, Typog
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import API from '../../api/axiosInstance'
+import { addEmployeeDetails } from '../../features/employeeSlice'
+import { useDispatch, useSelector } from 'react-redux'
+import { fetchProfile } from '../../features/auth/authSlice'
 
 const steps = ["Personal Details", "Educational Details", "Work Experience (if any)", "Bank Details", "Preview & Submit"]
 
 const EmployeeForm = ({setOpen}) => {
 
-    const [user, setuser] = useState(null)
     const [activeStep, setActiveStep] = useState(0)
+
+    const dispatch = useDispatch()
     const [formData, setFormData] =useState({
         empId: "",
         name: "",
@@ -64,20 +68,13 @@ const EmployeeForm = ({setOpen}) => {
         branch: ""
         })
 
-        useEffect(() => {
-            const fetchProfile = async () => {
-                try{
-                    const response = await API.get("/auth/profile")
+        const { user, loading: authLoading, error: authError } = useSelector(
+        (state) => state.auth
+        );
 
-                    if(response.data.status){
-                        setuser(response.data.user)
-                    }
-                } catch(err){
-                    console.log(err)
-                }
-            }
-            fetchProfile()
-        }, [])
+        useEffect(() => {
+        dispatch(fetchProfile());
+        }, [dispatch]);
 
         const validate = () => {
             const errors ={}
@@ -327,8 +324,8 @@ const EmployeeForm = ({setOpen}) => {
                 empId : user?.empid,
                 email : user?.email
             }
-            const response = await API.post("/api/employees", dataSend)
-            console.log(response.data)
+            const result = await dispatch(addEmployeeDetails(dataSend)).unwrap()
+            console.log(result)
 
             setFormData(initialFormData)
             setActiveStep(0)

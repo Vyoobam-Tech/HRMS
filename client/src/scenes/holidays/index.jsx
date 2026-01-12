@@ -3,15 +3,20 @@ import { AgGridReact } from "ag-grid-react";
 import { Button, IconButton, MenuItem, TextField } from "@mui/material";
 import { useState, useEffect } from "react";
 import Header from "../../Components/Header";
-import hrmsData from "../../data/hrmsData.json"
 import { Box } from "@mui/system";
 import DeleteIcon from "@mui/icons-material/Delete";
-import API from "../../api/axiosInstance";
+import { useDispatch, useSelector } from 'react-redux';
+import { addHoliday, deleteHoliday, fetchHoliday } from "../../features/holidaySlice";
+import { fetchProfile } from "../../features/auth/authSlice";
 
 const Holidays = () => {
-  const [rowData, setRowData] = useState([]);
   const [gridKey, setGridKey] = useState(0);
-  const [user, setUser] = useState(null)
+
+  const dispatch = useDispatch();
+  const { user, loading: authLoading, error: authError } = useSelector(
+  (state) => state.auth
+  )
+  const { holidays, loading, error } = useSelector((state) => state.holiday);
   const [holidayForm, setHolidayForm] = useState({
     date: "",
     day: "",
@@ -80,71 +85,32 @@ const Holidays = () => {
     },
   ]
 
+    useEffect(() => {
+      dispatch(fetchProfile());
+    }, [dispatch]);
 
   useEffect(() => {
-    const fetchUser = async () => {
-      try{
-        const response = await API.get("/auth/profile")
-        if(response.data.status){
-          setUser(response.data.user)
-        }
-      } catch(err) {
-        console.log(err)
-      }
-    }
-    fetchUser()
-  }, [])
+    dispatch(fetchHoliday());
+  }, [dispatch]);
 
-    const fetchHoliday = async () => {
-      try{
-        const response = await API.get("/api/holiday/all")
-        if(response.data.success){
-          setRowData(response.data.data)
-        }
-      }catch(err){
-        console.log(err)
-      }
-    }
+  const handleAdd = () => {
+    const { date, type, name, day } = holidayForm;
+    
+    if (!date || !type || !name) return;
 
-  useEffect(() => {
-    fetchHoliday();
-  }, []);
+    dispatch(addHoliday({ date, type, name, day }));
 
-  const handleAdd = async () => {
-    const { date, type } = holidayForm
-    if (!date || !type ){
-      return
-    }
-    try{
-      const response = await API.post("/api/holiday", {
-        date: holidayForm.date,
-        day: holidayForm.day,
-        name: holidayForm.name,
-        type: holidayForm.type,
-      })
-      if(response.data.success){
-        const newHoliday = response.data.data
-        setRowData([...rowData, newHoliday])
-      }
+    setHolidayForm({
+      date: "",
+      day: "",
+      name: "",
+      type: "",
+    });
+  };
 
-      setHolidayForm({
-        date: "",
-        day: "",
-        name: "",
-        type: "",
-      })
-    }catch(err){
-      console.log(err)
-    }
-  }
 
-  const handleDelete = async (id) => {
-    try{
-      await API.delete(`/api/holiday/${id}`)
-      fetchHoliday()
-    } catch(err){
-      console.error("Error deleting holiday:", err);
-    }
+  const handleDelete = (id) => {
+    dispatch(deleteHoliday(id))
   }
 
   const role = user?.role
@@ -227,7 +193,7 @@ const Holidays = () => {
 
       <AgGridReact
         key={gridKey}
-        rowData={rowData}
+        rowData={holidays}
         columnDefs={holidaycolumn}
         domLayout="autoHeight"
         onGridReady={(params) => {

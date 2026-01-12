@@ -1,7 +1,8 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, MenuItem, TextField, Typography } from '@mui/material'
 import CloseIcon from "@mui/icons-material/Close";
 import React, { useEffect, useState } from 'react'
-import API from '../api/axiosInstance';
+import { useDispatch, useSelector } from 'react-redux';
+import { applyLeave, resetLeaveApply } from '../features/leaveApplySlice';
 
 const ApplyLeaveForm = ({open, handleClose, user, leaveBalance}) => {
 
@@ -11,7 +12,25 @@ const ApplyLeaveForm = ({open, handleClose, user, leaveBalance}) => {
         toDate: "",
         days: 0
     })
-    const [error, setError] = useState("")
+
+    const dispatch = useDispatch();
+
+    const { loading, error, success } = useSelector(
+        (state) => state.leaveApply
+    );
+
+    useEffect(() => {
+        if (success) {
+        setForm({
+            leaveType: "CL",
+            fromDate: "",
+            toDate: "",
+            days: 0,
+        });
+        dispatch(resetLeaveApply());
+        handleClose();
+        }
+    }, [success, dispatch, handleClose]);
 
     useEffect(() => {
         if(form.fromDate && form.toDate){
@@ -34,38 +53,16 @@ const ApplyLeaveForm = ({open, handleClose, user, leaveBalance}) => {
         })
     }
 
-    const handleSubmit = async () => {
-        try{
-            setError("")
+    const handleSubmit = () => {
+        if (!user?.empid) return;
 
-            if (!user?.empid) {
-            setError("Employee ID not found. Please login again.")
-            return
-        }
-
-            await API.post("/api/leave/apply", {
-                empid: user.empid,
-                ...form
-            })
-
-            setForm({
-                leaveType: "CL",
-                fromDate: "",
-                toDate: "",
-                days: 0
-            })
-
-            handleClose()
-        } catch(err){
-            console.log(err)
-
-            if(err.response && err.response.data?.message){
-                setError(err.response.data.message)
-            }else{
-                setError("something went wrong")
-            }
-        }
-    }
+        dispatch(
+        applyLeave({
+            empid: user.empid,
+            form,
+        })
+        );
+    };
   return (
     <div>
         <Dialog open={open} onClose={handleClose}>

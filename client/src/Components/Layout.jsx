@@ -9,7 +9,7 @@ import Footer from "./Footer";
 const SIDEBAR_WIDTH = 260;
 const SMALL_SIDEBAR_WIDTH = 60;
 
-function Layout({ isSidebarOpen, handleToggleSidebar, setIsAuthenticated }) {
+function Layout({ isSidebarOpen, handleToggleSidebar }) {
   const sidebarWidth = isSidebarOpen
     ? SIDEBAR_WIDTH
     : SMALL_SIDEBAR_WIDTH;
@@ -20,12 +20,12 @@ function Layout({ isSidebarOpen, handleToggleSidebar, setIsAuthenticated }) {
       {isSidebarOpen ? (
         <Sidebar
           onToggle={handleToggleSidebar}
-          setIsAuthenticated={setIsAuthenticated}
+          // setIsAuthenticated={setIsAuthenticated}
         />
       ) : (
         <SmallSidebar
           onToggle={handleToggleSidebar}
-          setIsAuthenticated={setIsAuthenticated}
+          // setIsAuthenticated={setIsAuthenticated}
         />
       )}
 

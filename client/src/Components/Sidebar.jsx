@@ -29,62 +29,58 @@ import PolicyIcon from '@mui/icons-material/Policy';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import PowerSettingsNewRoundedIcon from "@mui/icons-material/PowerSettingsNewRounded";
 import { Link, useNavigate } from "react-router-dom";
-import API from "../api/axiosInstance";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../features/auth/authSlice";
 
-const Sidebar = ({ onToggle, setIsAuthenticated }) => {
+const Sidebar = ({ onToggle }) => {
   const [reportsOpen, setReportsOpen] = useState(false);
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const { user } = useSelector((state) => state.auth);
+  
 
   const toggleReportsDropdown = () => {
     setReportsOpen(!reportsOpen);
   };
 
-  const handleLogout = async () => {
-    try {
-      await API.get("/auth/logout", { withCredentials: true });
-      localStorage.removeItem("token"); // remove JWT if using token
-      localStorage.removeItem("isLoggedIn");
-      setIsAuthenticated(false);
-      navigate("/login");
-    } catch (err) {
-      console.log(err);
-    }
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate("/login")
   };
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        // Use JWT from localStorage or rely on cookies
-        const token = localStorage.getItem("token");
-        const response = await API.get("/auth/profile", {
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-          withCredentials: true, // important for cookies
-        });
+  // useEffect(() => {
+  //   const fetchUser = async () => {
+  //     try {
+  //       // Use JWT from localStorage or rely on cookies
+  //       const token = localStorage.getItem("token");
+  //       const response = await API.get("/auth/profile", {
+  //         headers: token ? { Authorization: `Bearer ${token}` } : {},
+  //         withCredentials: true, // important for cookies
+  //       });
 
-        if (response.data.status) {
-          setUser(response.data.user);
-        } else {
-          // If unauthorized, redirect to login
-          setIsAuthenticated(false);
-          navigate("/login");
-        }
-      } catch (err) {
-        console.log(err);
-        setIsAuthenticated(false);
-        navigate("/login");
-      } finally {
-        setLoading(false);
-      }
-    };
+  //       if (response.data.status) {
+  //         setUser(response.data.user);
+  //       } else {
+  //         // If unauthorized, redirect to login
+  //         setIsAuthenticated(false);
+  //         navigate("/login");
+  //       }
+  //     } catch (err) {
+  //       console.log(err);
+  //       setIsAuthenticated(false);
+  //       navigate("/login");
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
 
-    fetchUser();
-  }, [navigate, setIsAuthenticated]);
+  //   fetchUser();
+  // }, [navigate, setIsAuthenticated]);
 
   const role = user?.role;
 
-  if (loading) return null;
 
   return (
     <Box

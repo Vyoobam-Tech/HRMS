@@ -3,39 +3,24 @@ import { Box, Grid } from "@mui/system";
 import React, { useState, useEffect } from "react";
 import Confetti from 'react-confetti';
 import API from "../../api/axiosInstance";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchBirthdayEmployees } from "../../features/dashboardSlice";
 
 const Post = () => {
 
-    const [birthdayEmployee, setBirthdayEmployee] = useState([])
 
-    useEffect(() => {
-        const fetchAllEmployee = async () => {
-            try{
-                const response = await API.get("/api/employees/all")
-                if(response.data.status){
-                    const allEmployee = response.data.data
+    const dispatch = useDispatch()
 
-                    const today = new Date()
-                    const todayStr = `${String(today.getDate()).padStart(2, "0")}-${String(today.getMonth()+1).padStart(2, "0")}-${today.getFullYear()}`
-
-                    const todayBirthday = allEmployee.filter((emp) => {
-                        if (!emp.dob) return
-                        const dob = new Date(emp.dob)
-                        const dobStr = `${String(dob.getDate()).padStart(2, "0")}-${String(dob.getMonth()+1).padStart(2, "0")}-${dob.getFullYear()}`
-                        return dobStr === todayStr
-                    })
-                    setBirthdayEmployee(todayBirthday)
-                    }
-                }catch(err) {
-                    console.log(err)
-            }
-        }
-        fetchAllEmployee()
-    }, [])
+    const { birthdays, loading } = useSelector(
+        (state) => state.dashboard
+    );
+   useEffect(() => {
+    dispatch(fetchBirthdayEmployees());
+  }, [dispatch]);
 
     return (
         <Box sx={{ mb: 3 }}>
-            {birthdayEmployee.map(employee => (
+            {birthdays.map(employee => (
             <Card
                 sx={{
                     maxWidth: "100%",

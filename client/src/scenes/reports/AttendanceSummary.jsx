@@ -3,6 +3,8 @@ import Header from '../../Components/Header'
 import { Box } from '@mui/system'
 import { Button, Divider, MenuItem, Paper, TextField, Typography } from '@mui/material'
 import { PieChart } from '@mui/x-charts'
+import { useDispatch, useSelector } from 'react-redux'
+import { fetchAttendanceSummary } from '../../features/attendanceSummarySlice'
 
 const AttendanceSummary = () => {
 
@@ -10,9 +12,12 @@ const AttendanceSummary = () => {
   const [type, setType] = useState("")
   const [month, setMonth] = useState("")
   const [year, setYear] = useState("")
-  const [summary, setSummary] = useState(null)
 
-  const API_URL = import.meta.env.VITE_API_BASE_URL
+  const dispatch = useDispatch();
+
+  const { data: summary, loading, error } = useSelector(
+    (state) => state.attendanceSummary
+  );
 
   const months = [
     { num: 1, name: "January" },
@@ -32,11 +37,19 @@ const AttendanceSummary = () => {
   const currentYear = new Date().getFullYear()
   const years = Array.from({length: 11}, (_,i) => currentYear - 5 + i)
 
-  const handleCheck = async () => {
-    const res = await fetch(`${API_URL}/api/attendance/summary?empid=${empId}&month=${month}&year=${year}`);
-    const data = await res.json()
-    setSummary(data)
-  }
+  const handleCheck = () => {
+      if (!empId || !type || !year) return;
+      if (type === "Monthly" && !month) return
+
+      dispatch(
+        fetchAttendanceSummary({
+          empid: empId,
+          type,
+          month,
+          year,
+        })
+      );
+    }
 
   return (
     <div

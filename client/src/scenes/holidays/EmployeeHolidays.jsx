@@ -7,13 +7,20 @@ import Header from "../../Components/Header";
 import EventAvailableIcon from '@mui/icons-material/EventAvailable';
 import MedicalServicesIcon from "@mui/icons-material/MedicalServices";
 import WorkOffIcon from "@mui/icons-material/WorkOff";
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchProfile } from "../../features/auth/authSlice";
+import { actionLeave, fetchAllLeaves, fetchEmployeeLeave } from "../../features/leaveSlice";
 
 
 const EmployeeHolidays = () => {
 
   const [open, setOpen] = useState(false)
-  const [user, setUser] = useState(null);
-  const [leaveBalance, setLeaveBalance] = useState(null);
+
+  const dispatch = useDispatch();
+
+  const { user } = useSelector((state) => state.auth);
+  const { data: leaveBalance, loading } = useSelector((state) => state.leave);
+
 
   const month = [
   "January", "February", "March", "April", "May", "June",
@@ -26,61 +33,28 @@ const EmployeeHolidays = () => {
 
   const currentYear = leaveBalance?.year || ""
 
-
-
-
-  // 1️⃣ Fetch logged-in user
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await API.get("/auth/profile");
-        if (response.data.status) {
-          setUser(response.data.user);
-        }
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    fetchUser();
-  }, []);
+    dispatch(fetchProfile())
+  }, [dispatch]);
 
   useEffect(() => {
     if (!user) return;
 
-    const fetchData = async () => {
-      try {
-        if (user.role === "employee") {
-          const res = await API.get(`/api/leave/${user.empid}`);
-          setLeaveBalance(res.data);
-        }
-
-        if (user.role === "superadmin") {
-          const res = await API.get("/api/leave/all");
-          setLeaveBalance({
-            LeaveRequests: Array.isArray(res.data) ? res.data : []
-          });
-        }
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    fetchData();
-  }, [user, leaveBalance]);
-
-
-  const handleAction = async(leaveId, status) => {
-    try{
-      await API.put(`/api/leave/${leaveId}/action`, {status})
-
-      if (user.role === "superadmin") {
-      const res = await API.get("/api/leave/all");
-      setLeaveBalance({ LeaveRequests: Array.isArray(res.data) ? res.data : [] });
-      }
-    } catch(err){
-      console.log(err)
+    if (user.role === "employee") {
+      dispatch(fetchEmployeeLeave(user.empid));
     }
-  }
+
+    if (user.role === "superadmin") {
+      dispatch(fetchAllLeaves());
+    }
+  }, [user, dispatch]);
+
+
+
+  const handleAction = (id, status) => {
+    dispatch(actionLeave({ id, status }));
+  };
+
 
   const cards = [
     {
@@ -97,11 +71,15 @@ const EmployeeHolidays = () => {
     },
     {
       icon : <WorkOffIcon fontSize="large"/>,
-      title: "Privilege Leave (PL)" ?? 0,
-      value: leaveBalance?.availablePL,
+      title: "Privilege Leave (PL)",
+      value: leaveBalance?.availablePL  ?? 0,
       subtitle: `${currentYear}`
     }
   ]
+
+  if (loading) {
+    return <Typography sx={{ p: 4 }}>Loading...</Typography>;
+  }
 
 
   return (

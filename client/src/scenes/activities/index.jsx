@@ -18,73 +18,59 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CloseIcon from "@mui/icons-material/Close";
 import API from "../../api/axiosInstance";
+import { useDispatch, useSelector } from "react-redux";
+import { addActivity, deleteActivity, fetchMyActivities, updateActivity } from "../../features/activitySlice";
+import { fetchEmployeeByEmail } from "../../features/employeeSlice";
+import { fetchProfile } from "../../features/auth/authSlice";
+
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
 const Activities = () => {
-  const [rowData, setRowData] = useState([]);
   const [open, setOpen] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [user, setUser] = useState(null)
-  const [employee,setEmployee] = useState(null)
-  const [taskName, setTaskName] = useState("")
   const [startingtime, setStartingTime] = useState("")
   const [endingtime, setEndingTime] = useState("")
   const [durations, setDurations] = useState("")
  
   const dt = new Date().toISOString().split("T")[0]
 
+  const dispatch = useDispatch()
+
+  const { user, loading: authLoading, error: authError } = useSelector(
+  (state) => state.auth
+  )
+
+  const {single: employee} = useSelector((state) =>
+  state.employee
+  )
+  const { myActivities, loading } = useSelector(
+  (state) => state.activity
+  )
 
   useEffect(() => {
-    const fetchUser = async () => {
-      try{
-        const response = await API.get("/auth/profile")
-        if(response.data.user){
-          setUser(response.data.user)
-        }
-      } catch(err){
-        console.log(err)
-      }
-    }
-    fetchUser()
-  }, [])
+    dispatch(fetchProfile());
+  }, [dispatch]);
 
   useEffect(() => {
-    if (!user?.email) return
-    const fetchEmployee = async () => {
-      try{
-        const response = await API.get(`/api/employees/by-user/${user.email}`)
-        if(response.data.status){
-          setEmployee(response.data.data)
-        }
-      } catch(err){
-        console.log(err)
-      }
+    if(user?.email) {
+      dispatch(fetchEmployeeByEmail(user.email))
     }
-    fetchEmployee()
+  }, [user, dispatch])
+
+  useEffect(() => {
+    if(user?.empid){
+      dispatch(fetchMyActivities(user.empid))
+    }
   }, [user])
-
-  useEffect(() => {
-    if (!user?.empid) return
-    const fetchEachActivity = async () => {
-      try{
-      const response = await API.get(`/api/activities/by-user/${user.empid}`)
-      setRowData(response.data.data)
-      } catch(err){
-        console.log(err)
-      }
-    }
-    fetchEachActivity()
-  }, [employee])
 
 
   const handleDelete = async (actid) => {
     try {
-      await API.delete(`/api/activities/${actid}`);
-      // fetchActivities();
+      await dispatch(deleteActivity(actid))
     } catch (error) {
       console.error("Error deleting activity:", error);
     }
@@ -95,22 +81,17 @@ const Activities = () => {
     setShowEditModal(true);
   };
 
-  const handleSave = async () => {
-    console.log("Saving Activity Data:", selectedRow);
-    if (!selectedRow || !selectedRow.actid) return;
-    try {
-      await API.put(
-        `/api/activities/update/${selectedRow.actid}`,
-        selectedRow
-      );
-      // fetchActivities();
-      setShowEditModal(false);
-    } catch (error) {
-      console.error("Error updating activity:", error);
-    }
-  };
+  // const handleSave = async () => {
+  //   if (!selectedRow || !selectedRow.actid) return;
+  //   try {
+  //     await dispatch(updateActivity({actid: selectedRow.actid, data: selectedRow}))
+  //     setShowEditModal(false);
+  //   } catch (error) {
+  //     console.error("Error updating activity:", error);
+  //   }
+  // };
 
-  const addActivity = async (values) => {
+  const handleAddActivity = async (values) => {
     try {
       const payload = {
         ...values,
@@ -120,10 +101,8 @@ const Activities = () => {
         durations: values.durations
       };
 
-      console.log("Payload:", payload)
-      await API.post("/api/activities", payload)
+      await dispatch(addActivity(payload))
       setOpen(false)
-      setRowData((prev) => [...prev, payload])
     } catch (error) {
       console.error("Error adding activity:", error)
     }
@@ -203,7 +182,7 @@ const Activities = () => {
 
 
       <AgGridReact
-        rowData={rowData}
+        rowData={myActivities}
         columnDefs={columnDefs}
         defaultColDef={defaultColDef}
         domLayout="autoHeight"
@@ -258,7 +237,7 @@ const Activities = () => {
           validationSchema={ActivitySchema}
           onSubmit={(values, { resetForm }) => {
             console.log("Submitting values:", values);
-            addActivity(values);
+            handleAddActivity(values);
             resetForm();
           }}
         >
@@ -578,7 +557,7 @@ const Activities = () => {
             >
               Cancel
             </Button>
-            <Button onClick={handleSave} color="primary" variant="outlined">
+            <Button color="primary" variant="outlined">
               Save
             </Button>
           </DialogActions>

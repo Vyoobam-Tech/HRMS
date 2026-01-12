@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import API from "../api/axiosInstance";
 import { Link, useNavigate } from "react-router-dom";
 import {
@@ -18,36 +18,32 @@ import { useGoogleLogin } from "@react-oauth/google";
 import "../App.css";
 import FormBg from "../asset/navy-bg.jpg";
 import GoogleLogo from "../asset/google-icon.webp";
+import { useDispatch, useSelector } from "react-redux";
 import OAImage from "../image/vyoobam tech.jpeg";
+import { loginUser } from "../features/auth/authSlice";
 
 const Login = ({ setIsAuthenticated }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [error,setError] = useState(null)
+
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-  e.preventDefault();
-  setError(""); // clear previous error
+  const { isAuthenticated, loading, error } = useSelector(
+    (state) => state.auth
+  );
 
-  try {
-    const response = await API.post("/auth/login", { email, password });
-
-    if (response.data.status) {
-      // Successful login
-      setIsAuthenticated(true);
-      localStorage.setItem("isLoggedIn", "true");
+  useEffect(() => {
+    if (isAuthenticated) {
       navigate("/dashpage");
-    } else {
-      // Display backend error (e.g., invalid credentials)
-      setError(response.data.message || "Invalid credentials");
     }
-  } catch (err) {
-    // Handle network/server errors
-    setError(err.response?.data?.message || "Something went wrong");
-  }
-};
+  }, [isAuthenticated, navigate])
+
+const handleSubmit = (e) => {
+    e.preventDefault();
+    dispatch(loginUser({ email, password }));
+  };
 
 
   const handleGoogleSuccess = async (tokenResponse) => {

@@ -9,11 +9,17 @@ import DownloadIcon from "@mui/icons-material/Download";
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import { Box } from "@mui/system";
 import API from "../../api/axiosInstance";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchAllActivities } from "../../features/activitySlice.js";
 
 const AllActivities = () => {
-    const [rowData, setRowData] = useState([])
-    const [user, setUser] = useState(null)
     const gridRef = useRef(null)
+
+    const dispatch = useDispatch()
+
+    const { allActivities, loading, error} = useSelector((state) =>
+      state.activity
+    )
 
     const headerTemplate = {
       "Date": "",
@@ -29,36 +35,23 @@ const AllActivities = () => {
       "Github Link": ""
     }
 
+  // useEffect(() => {
+  //   const fetchUser = async () => {
+  //       try{
+  //           const response = await API.get("/auth/profile")
+  //           if(response.data.user){
+  //           setUser(response.data.user)
+  //       }
+  //       } catch(err){
+  //       console.log(err)
+  //   }
+  //   }
+  //   fetchUser()
+  // }, [])
 
   useEffect(() => {
-    const fetchUser = async () => {
-        try{
-            const response = await API.get("/auth/profile")
-            if(response.data.user){
-            setUser(response.data.user)
-        }
-        } catch(err){
-        console.log(err)
-    }
-    }
-    fetchUser()
-  }, [])
-
-  const fetchActivities = async () => {
-    try {
-      const response = await API.get(
-        "/api/activities/all"
-      );
-      setRowData(response.data.data);
-    } catch (error) {
-      console.error("Error fetching activities:", error);
-    }
-  };
-
-  useEffect(() => {
-    if(!user) return
-    fetchActivities();
-  }, [user]);
+    dispatch(fetchAllActivities())
+  }, [dispatch])
 
 
   const handleExportExcel = () => {
@@ -155,7 +148,7 @@ const AllActivities = () => {
           activities: jsonData,
         });
 
-        fetchActivities();
+        fetchAllActivities();
       }catch(err){
         console.error("Import failed:", error);
         alert("Failed to import Excel");
@@ -219,7 +212,7 @@ const AllActivities = () => {
 
     <AgGridReact
         ref={gridRef}
-        rowData={rowData}
+        rowData={allActivities}
         columnDefs={columnDefs}
         defaultColDef={defaultColDef}
         domLayout="autoHeight"
