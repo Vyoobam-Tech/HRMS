@@ -54,7 +54,7 @@ export const deleteActivity = createAsyncThunk(
     "activity/delete",
     async (actid, { rejectWithValue }) => {
         try {
-        await API.delete(`/api/activities/${actid}`);
+        await API.delete(`/api/activities/delete/${actid}`);
         return actid;
         } catch (err) {
         return rejectWithValue(err.response?.data);
@@ -120,11 +120,11 @@ const activitySlice = createSlice({
         // })
 
         /* ================= DELETE ================= */
-        // .addCase(deleteActivity.fulfilled, (state, action) => {
-        //     state.myActivities = state.myActivities.filter(
-        //     (a) => a.actid !== action.payload
-        //     );
-        // });
+        .addCase(deleteActivity.fulfilled, (state, action) => {
+            state.allActivities = state.allActivities.filter(
+                (item) => item.id !== action.payload
+            );
+        });
     },
 })
 

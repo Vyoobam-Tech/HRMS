@@ -66,7 +66,7 @@ const EmpDetails = () => {
       }}
     >
       <Box>
-        <Button variant='contained' color='primary' sx={{ mb: 2 }} onClick={handleAdd}>
+        <Button variant='contained' color='primary' sx={{ mb: 2 }} onClick={handleAdd} disabled={!!employee}>
           Add Details
         </Button>
 

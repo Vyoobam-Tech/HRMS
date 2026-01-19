@@ -139,4 +139,23 @@ router.get("/summary", async (req, res) => {
 })
 
 
+router.delete('/:id', async (req, res) => {
+    try{
+        const {id} = req.params
+        const attendance = await Attendance.findByPk(id)
+
+        if (!attendance) {
+            return res.status(404).json({ success: false, message: "Attendance not found" });
+        }
+
+        await attendance.destroy();
+
+        res.status(200).json({ success: true, message: "Attendance deleted successfully", data: id });
+    }catch(err){
+        res.status(500).json({ success: false, message: "Error deleting attendance", err });
+
+    }
+})
+
+
 export {router as AttendanceRouter}

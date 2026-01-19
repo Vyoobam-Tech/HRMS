@@ -46,7 +46,7 @@ const Dashpage = () => {
       icon: <BusinessRoundedIcon fontSize="large" />,
       value: stats?.departments ?? 0,
       subtitle: "Totally",
-      path: "/department",
+      // path: "/department",
     },
     {
       title: "Payroll",

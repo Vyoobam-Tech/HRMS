@@ -42,7 +42,7 @@ const Holidays = () => {
           </>
         )
       },
-      width: 70,
+      width: 80,
     },
     {headerName: "Date",
       field: "date",

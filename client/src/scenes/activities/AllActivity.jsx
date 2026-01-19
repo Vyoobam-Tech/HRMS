@@ -2,15 +2,17 @@ import React, { useMemo, useState, useEffect, useRef } from "react";
 import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
 import Header from "../../Components/Header.jsx";
-import { Button } from "@mui/material";
+import { Button, IconButton } from "@mui/material";
 import * as XLSX from "xlsx"
 import {saveAs} from "file-saver"
 import DownloadIcon from "@mui/icons-material/Download";
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import { Box } from "@mui/system";
 import API from "../../api/axiosInstance";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchAllActivities } from "../../features/activitySlice.js";
+import { deleteActivity, fetchAllActivities } from "../../features/activitySlice.js";
 
 const AllActivities = () => {
     const gridRef = useRef(null)
@@ -86,8 +88,33 @@ const AllActivities = () => {
     saveAs(new Blob([excelBuffer], { type: "application/octet-stream" }), "ActivityReport.xlsx");
   }
 
+const handleDelete = (row) => {
+  dispatch(deleteActivity(row.id))
+};
+
+
+
 
     const [columnDefs] = useState([
+      {
+      headerName: "Actions",
+      field: "actions",
+      cellRenderer: (params) => (
+        <div style={{ display: "flex", gap: "8px" }}>
+          <IconButton
+            onClick={() => {
+              handleDelete(params.data)
+            }}
+            color="error"
+            size="small"
+          >
+            <DeleteIcon />
+          </IconButton>
+        </div>
+      ),
+      width: 80,
+    },
+
       {headerName: "Date",field: "date",
         valueFormatter: (params) => {
         if (!params.value) return "";
@@ -166,6 +193,8 @@ const AllActivities = () => {
     floatingFilter: true,
     }),[])
 
+
+
   return (
     <div
     style={{
@@ -219,9 +248,9 @@ const AllActivities = () => {
         pagination={true}
         paginationPageSize={10}
         paginationPageSizeSelector={[10, 25, 50, 100, 1000]}
-        onGridReady={(params) => {
-          params.api.sizeColumnsToFit()
-        }}
+        // onGridReady={(params) => {
+        //   params.api.sizeColumnsToFit()
+        // }}
     />
 
     </div>

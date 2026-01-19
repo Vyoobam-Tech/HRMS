@@ -3,14 +3,13 @@ import React, { useEffect, useMemo, useState } from 'react'
 import Header from '../../Components/Header'
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, TextField } from '@mui/material'
 import EditIcon from "@mui/icons-material/Edit";
-import API from '../../api/axiosInstance';
+import DeleteIcon from "@mui/icons-material/Delete";
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchProfile } from '../../features/auth/authSlice';
-import { fetchAllAttendance, updateAttendance } from '../../features/attendanceSlice';
+import { deleteAttendance, fetchAllAttendance, updateAttendance } from '../../features/attendanceSlice';
 
 const AllEmployeeTimeTraker = () => {
 
-    const [gridKey, setGridKey] = useState(0)
     const [showEditModal, setShowEditModal] = useState(false)
     const [selectedRow, setSelectedRow] = useState(null)
 
@@ -57,8 +56,34 @@ const AllEmployeeTimeTraker = () => {
             setShowEditModal(false)
         }
 
+    const handleDelete = (id) => {
+        dispatch(deleteAttendance(id))
+    }
+
 
     const [columnDefs] = useState([
+        {headerName: "Actions", field: "actions",
+            cellRenderer: (params) => (
+                <div
+                    style={{ display: "flex", gap: 8 }}
+                >
+                    <IconButton
+                        onClick={() => handleEdit(params.data)}
+                        color='primary'
+                        size='small'
+                    >
+                        <EditIcon />
+                    </IconButton>
+                    <IconButton
+                        onClick={() => handleDelete(params.data.id)}
+                        color="error"
+                        size="small"
+                    >
+                        <DeleteIcon />
+                    </IconButton>
+                </div>
+            )
+        },
         {headerName: "Emp ID", field: "empid"},
         {headerName: "Name", field: "name"},
         {headerName: "Date", field: "attendancedate"},
@@ -80,21 +105,6 @@ const AllEmployeeTimeTraker = () => {
                 }
             }
         },
-        {headerName: "Actions", field: "actions",
-            cellRenderer: (params) => (
-                <div
-                    style={{ display: "flex", gap: 8 }}
-                >
-                    <IconButton
-                        onClick={() => handleEdit(params.data)}
-                        color='primary'
-                        size='small'
-                    >
-                        <EditIcon />
-                    </IconButton>
-                </div>
-            )
-        }
     ])
 
     const defaultColDef = useMemo(() => (

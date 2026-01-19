@@ -93,10 +93,10 @@ router.put("/update/:actid", async (req, res) => {
   }
 });
 
-router.delete("/delete/:actid", async (req, res) => {
+router.delete("/delete/:id", async (req, res) => {
   try {
     const deleted = await Activity.destroy({
-      where: { actid: req.params.actid },
+      where: { id: Number(req.params.id) },
     });
     if (!deleted)
       return res

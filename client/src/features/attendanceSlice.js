@@ -41,6 +41,18 @@ export const updateAttendance = createAsyncThunk(
     }
 );
 
+export const deleteAttendance = createAsyncThunk(
+    "attendance/delete",
+    async (id, { rejectWithValue }) => {
+        try {
+        await API.delete(`/api/attendance/${id}`);
+        return id
+        } catch (err) {
+        return rejectWithValue(err.response?.data?.message || err.message);
+        }
+    }
+)
+
 export const submitAttendance = createAsyncThunk(
     "attendance/submit",
     async (payload, { rejectWithValue }) => {
@@ -102,6 +114,13 @@ const attendanceSlice = createSlice({
                 ...action.payload.data,
             };
             }
+        })
+
+        .addCase(deleteAttendance.fulfilled, (state, action) => {
+            state.list = state.list.filter(item => item.id !== action.payload)
+        })
+        .addCase(deleteAttendance.rejected, (state, action) => {
+            state.error = action.payload
         })
 
         .addCase(submitAttendance.pending, (state) => {

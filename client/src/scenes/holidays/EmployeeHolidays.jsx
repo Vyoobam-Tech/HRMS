@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import API from "../../api/axiosInstance";
-import { Button, Card, CardContent, Chip, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
+import { Button, Card, CardContent, Chip, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 import ApplyLeaveForm from "../../Components/ApplyLeaveForm";
 import { Box, Grid } from "@mui/system";
 import Header from "../../Components/Header";
@@ -10,6 +10,9 @@ import WorkOffIcon from "@mui/icons-material/WorkOff";
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchProfile } from "../../features/auth/authSlice";
 import { actionLeave, fetchAllLeaves, fetchEmployeeLeave } from "../../features/leaveSlice";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { deleteLeave } from "../../features/leaveApplySlice";
+
 
 
 const EmployeeHolidays = () => {
@@ -50,9 +53,19 @@ const EmployeeHolidays = () => {
   }, [user, dispatch]);
 
 
-
   const handleAction = (id, status) => {
     dispatch(actionLeave({ id, status }));
+  }
+
+  const handleDelete = async (id) => {
+    await dispatch(deleteLeave(id));
+
+    // re-fetch list after delete
+    if (user.role === "superadmin") {
+      dispatch(fetchAllLeaves());
+    } else {
+      dispatch(fetchEmployeeLeave(user.empid));
+    }
   };
 
 
@@ -160,6 +173,7 @@ const EmployeeHolidays = () => {
         <TableRow>
           {user?.role === "superadmin" && (
             <>
+              <TableCell align="center"><b>Actions</b></TableCell>
               <TableCell align="center"><b>Emp ID</b></TableCell>
               <TableCell align="center"><b>Emp Name</b></TableCell>
             </>
@@ -169,7 +183,7 @@ const EmployeeHolidays = () => {
           <TableCell><b>To Date</b></TableCell>
           <TableCell><b>Status</b></TableCell>
           {user?.role === "superadmin" && (
-            <TableCell align="center"><b>Action</b></TableCell>
+            <TableCell align="center"><b>Approval Action</b></TableCell>
           )}
         </TableRow>
       </TableHead>
@@ -180,6 +194,15 @@ const EmployeeHolidays = () => {
           <TableRow key={lr.id} hover>
             {user?.role === "superadmin" && (
               <>
+                <TableCell>
+                  <IconButton
+                    color="error"
+                    size="small"
+                    onClick={() => handleDelete(lr.id)}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </TableCell>
                 <TableCell>{lr.empid}</TableCell>
                 <TableCell>{lr.User?.username}</TableCell>
               </>

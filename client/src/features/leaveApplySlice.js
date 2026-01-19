@@ -18,6 +18,18 @@ export const applyLeave = createAsyncThunk(
     }
 );
 
+export const deleteLeave = createAsyncThunk(
+    "leave/delete",
+    async (id, { rejectWithValue }) => {
+        try {
+        await API.delete(`/api/leave/${id}`);
+        return id;
+        } catch (err) {
+        return rejectWithValue(err.response?.data?.message);
+        }
+    }
+);
+
 const leaveApplySlice = createSlice({
     name: "leaveApply",
     initialState: {
@@ -46,7 +58,15 @@ const leaveApplySlice = createSlice({
         .addCase(applyLeave.rejected, (state, action) => {
             state.loading = false;
             state.error = action.payload;
-        });
+        })
+
+        .addCase(deleteLeave.fulfilled, (state, action) => {
+            if (state.data?.LeaveRequests) {
+                state.data.LeaveRequests = state.data.LeaveRequests.filter(
+                (lr) => lr.id !== action.payload
+                )
+            }
+        })
     },
 });
 

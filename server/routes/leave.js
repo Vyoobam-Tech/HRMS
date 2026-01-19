@@ -236,6 +236,22 @@ router.put('/:id/action', async (req, res) => {
         }
 })
 
+router.delete("/:id", async(req, res) => {
+    try{
+        const {id} = req.params
+
+        const leave = await LeaveRequest.findByPk(id)
+        if (!leave) {
+        return res.status(404).json({ message: "Leave not found" });
+        }
+        await leave.destroy();
+
+        res.json({ message: "Leave deleted successfully", id });
+    }catch(err){
+        res.status(500).json({ message: "Server error" });
+    }
+})
+
 router.get("/today/:empid", async (req, res) => {
     try{
         const {empid} = req.params
