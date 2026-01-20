@@ -10,6 +10,10 @@ import {
   TextField,
   IconButton,
   MenuItem,
+  Card,
+  CardContent,
+  Typography,
+  Chip,
 } from "@mui/material";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
@@ -22,6 +26,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { addActivity, deleteActivity, fetchMyActivities, updateActivity } from "../../features/activitySlice";
 import { fetchEmployeeByEmail } from "../../features/employeeSlice";
 import { fetchProfile } from "../../features/auth/authSlice";
+import { fetchTasksByEmpId, updateTaskStatus } from "../../features/taskSlice";
+import { Box, Stack } from "@mui/system";
 
 
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -51,6 +57,8 @@ const Activities = () => {
   (state) => state.activity
   )
 
+const tasks = useSelector((state) => state.task?.list || []);
+
   useEffect(() => {
     dispatch(fetchProfile());
   }, [dispatch]);
@@ -66,6 +74,12 @@ const Activities = () => {
       dispatch(fetchMyActivities(user.empid))
     }
   }, [user])
+
+   useEffect(() => {
+    if (user?.empid) {
+      dispatch(fetchTasksByEmpId(user.empid));
+    }
+  }, [dispatch, user]);
 
 
   const handleDelete = async (actid) => {
@@ -623,6 +637,76 @@ const Activities = () => {
           </DialogActions>
         </div>
       </Dialog>
+
+      <Box sx={{ mt: 4 }}>
+        <Header title="My Tasks" />
+      </Box>
+      {tasks.length === 0 && <p>No tasks assigned</p>}
+
+      {tasks.map((task) => (
+  <Card key={task.taskId} sx={{ mb: 3, boxShadow: 3, borderRadius: 2 }}>
+    <CardContent>
+      <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1}>
+        <Typography variant="h6" fontWeight="bold">
+          {task.taskTitle}
+        </Typography>
+
+        <Chip
+          label={task.priority}
+          color={
+            task.priority === "High"
+              ? "error"
+              : task.priority === "Medium"
+              ? "warning"
+              : "success"
+          }
+          size="small"
+        />
+      </Stack>
+
+      <Typography variant="body2" color="text.secondary" mb={2}>
+        {task.description}
+      </Typography>
+
+      <Stack direction={{ xs: "column", sm: "row" }} spacing={2} alignItems="center">
+        <TextField
+          select
+          size="small"
+          value={task.status}
+          onChange={(e) =>
+            dispatch(
+              updateTaskStatus({
+                taskId: task.taskId,
+                status: e.target.value,
+              })
+            )
+          }
+          sx={{ minWidth: 160 }}
+        >
+          {["Pending", "In Progress", "Completed"].map((status) => (
+            <MenuItem key={status} value={status}>
+              {status}
+            </MenuItem>
+          ))}
+        </TextField>
+
+        <Chip
+          label={`Due: ${new Date(task.dueDate).toLocaleDateString()}`}
+          variant="outlined"
+          color="primary"
+          size="small"
+        />
+
+        {task.assignedBy && (
+          <Typography variant="body2" color="text.secondary" mb={2} display="block">
+            Assigned By: <strong>{task.assignedBy}</strong>
+          </Typography>
+        )}
+      </Stack>
+    </CardContent>
+  </Card>
+))}
+
     </div>
   );
 };

@@ -155,7 +155,7 @@ const index = () => {
                 onClick={() => setDocOpen(true)}
                 sx={{ mt: 4, mb: 2 }}
           >
-            Add document
+            Add My document
         </Button>
 
 

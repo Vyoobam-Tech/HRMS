@@ -1,20 +1,24 @@
 import React, { useMemo, useState, useEffect, useRef } from "react";
 import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
+import AssignTaskDialog from "../../Components/AssignTaskDialog";
 import Header from "../../Components/Header.jsx";
-import { Button, IconButton } from "@mui/material";
+import { Button, Card, CardContent, Chip, IconButton, Typography } from "@mui/material";
 import * as XLSX from "xlsx"
 import {saveAs} from "file-saver"
 import DownloadIcon from "@mui/icons-material/Download";
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
-import { Box } from "@mui/system";
+import { Box, Stack } from "@mui/system";
 import API from "../../api/axiosInstance";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteActivity, fetchAllActivities } from "../../features/activitySlice.js";
+import { deleteTasks, fetchAllTasks } from "../../features/taskSlice.js";
 
 const AllActivities = () => {
+
+    const [open, setOpen] = useState(false)
     const gridRef = useRef(null)
 
     const dispatch = useDispatch()
@@ -22,6 +26,8 @@ const AllActivities = () => {
     const { allActivities, loading, error} = useSelector((state) =>
       state.activity
     )
+
+    const tasks = useSelector((state) => state.task?.all || [])
 
     const headerTemplate = {
       "Date": "",
@@ -53,6 +59,7 @@ const AllActivities = () => {
 
   useEffect(() => {
     dispatch(fetchAllActivities())
+    dispatch(fetchAllTasks())
   }, [dispatch])
 
 
@@ -88,9 +95,13 @@ const AllActivities = () => {
     saveAs(new Blob([excelBuffer], { type: "application/octet-stream" }), "ActivityReport.xlsx");
   }
 
-const handleDelete = (row) => {
-  dispatch(deleteActivity(row.id))
-};
+    const handleDelete = (row) => {
+      dispatch(deleteActivity(row.id))
+    };
+
+    const handleDeleteTask = (taskId) => {
+      dispatch(deleteTasks(taskId));
+    };
 
 
 
@@ -237,8 +248,18 @@ const handleDelete = (row) => {
         Import Excel
       </Button>
 
-    </Box>
+      <Button
+        variant="contained"
+        color="secondary"
+        sx={{ textTransform: "none" }}
+        onClick={() => setOpen(true)}
+      >
+        Assign Task
+      </Button>
+      <AssignTaskDialog open={open} handleClose={() => setOpen(false)}/>
 
+    </Box>
+        
     <AgGridReact
         ref={gridRef}
         rowData={allActivities}
@@ -252,6 +273,52 @@ const handleDelete = (row) => {
         //   params.api.sizeColumnsToFit()
         // }}
     />
+
+    <Box sx={{ mt: 4 }}>
+            <Header title="Tasks" />
+          </Box>
+          {tasks.length === 0 && <p>No tasks assigned</p>}
+    
+      {tasks.map((task) => (
+        <Card key={task.taskId} sx={{ mb: 2, borderRadius: 2, boxShadow: 2 }}>
+          <CardContent>
+            <Typography variant="h6" gutterBottom>
+              {task.taskTitle}
+            </Typography>
+
+            <Typography color="text.secondary" gutterBottom>
+              {task.description}
+            </Typography>
+
+            <Stack
+              direction="row"
+              spacing={1}
+              mt={2}
+              alignItems="center"
+              justifyContent="space-between"
+            >
+              <Stack direction="row" spacing={1}>
+                <Chip label={task.priority} color="primary" size="small" />
+                <Chip label={task.status} color="success" size="small" />
+                <Chip
+                  label={`Due: ${new Date(task.dueDate).toLocaleDateString()}`}
+                  size="small"
+                />
+              </Stack>
+
+              <IconButton
+                color="error"
+                aria-label="delete"
+                onClick={() => handleDeleteTask(task.taskId)}
+              >
+                <DeleteIcon />
+              </IconButton>
+            </Stack>
+          </CardContent>
+        </Card>
+      ))}
+
+
 
     </div>
     )
