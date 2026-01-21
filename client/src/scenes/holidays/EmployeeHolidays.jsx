@@ -161,7 +161,7 @@ const EmployeeHolidays = () => {
       )}
 
 <Typography variant="h6" fontWeight="bold" sx={{ mt: 4, mb: 2 }}>
-  Leave Requests
+  LEAVE REQUESTS
 </Typography>
 
 {leaveBalance?.LeaveRequests?.length === 0 ? (

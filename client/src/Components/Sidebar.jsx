@@ -27,6 +27,7 @@ import ExpandMore from "@mui/icons-material/ExpandMore";
 import DateRangeIcon from "@mui/icons-material/DateRange";
 import PolicyIcon from '@mui/icons-material/Policy';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+import ConfirmationNumberIcon from '@mui/icons-material/ConfirmationNumber';
 import PowerSettingsNewRoundedIcon from "@mui/icons-material/PowerSettingsNewRounded";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -183,6 +184,15 @@ const Sidebar = ({ onToggle }) => {
               <ListItemText primary="Events" />
             </ListItemButton>
           </ListItem>
+
+          <ListItem disablePadding>
+            <ListItemButton component={Link} to="/tickets">
+              <ListItemIcon>
+                <ConfirmationNumberIcon sx={{ color: "#fff" }} />
+              </ListItemIcon>
+              <ListItemText primary="Tickets" />
+            </ListItemButton>
+          </ListItem>
         </List>
       )}
 
@@ -311,6 +321,15 @@ const Sidebar = ({ onToggle }) => {
                 <ManageAccountsIcon sx={{ color: "#fff" }} />
               </ListItemIcon>
               <ListItemText primary="Manage" />
+            </ListItemButton>
+          </ListItem>
+
+          <ListItem disablePadding>
+            <ListItemButton component={Link} to="/tickets">
+              <ListItemIcon>
+                <ConfirmationNumberIcon sx={{ color: "#fff" }} />
+              </ListItemIcon>
+              <ListItemText primary="Tickets" />
             </ListItemButton>
           </ListItem>
         </List>

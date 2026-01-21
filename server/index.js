@@ -17,6 +17,7 @@ import { EmployeeDocumentRouter } from "./routes/employeeDocument.js";
 import multer from "multer";
 import path from "path";
 import { TaskRouter} from "./routes/task.js";
+import { NotificationRouter } from "./routes/notification.js";
 
 
 dotenv.config();
@@ -46,6 +47,7 @@ app.use("/api/policy", PolicyRouter)
 app.use("/api/document", EmployeeDocumentRouter)
 app.use("/api/names", NamesRouter)
 app.use("/api/tasks", TaskRouter)
+app.use("/api/notifications", NotificationRouter)
 app.get("/", (req, res) => {
   res.send("HRMS Backend is running ✅");
 });

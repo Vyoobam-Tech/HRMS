@@ -28,6 +28,7 @@ import HolidayVillageIcon from '@mui/icons-material/HolidayVillage';
 import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
 import DateRangeIcon from "@mui/icons-material/DateRange";
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+import ConfirmationNumberIcon from '@mui/icons-material/ConfirmationNumber';
 import PolicyIcon from '@mui/icons-material/Policy';
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -146,6 +147,14 @@ const Smallsidebar = ({ onToggle}) => {
                 </ListItemIcon>
               </ListItemButton>
             </ListItem>
+
+            <ListItem>
+              <ListItemButton component={Link} to="/tickets">
+                <ListItemIcon>
+                  <ConfirmationNumberIcon sx={{ color: "#fff" }} />
+                </ListItemIcon>
+              </ListItemButton>
+            </ListItem>
           </>
         )}
 
@@ -261,6 +270,14 @@ const Smallsidebar = ({ onToggle}) => {
               <ListItemButton component={Link} to="/adding-names">
                 <ListItemIcon>
                   <ManageAccountsIcon sx={{ color: "#fff" }} />
+                </ListItemIcon>
+              </ListItemButton>
+            </ListItem>
+
+            <ListItem>
+              <ListItemButton component={Link} to="/tickets">
+                <ListItemIcon>
+                  <ConfirmationNumberIcon sx={{ color: "#fff" }} />
                 </ListItemIcon>
               </ListItemButton>
             </ListItem>

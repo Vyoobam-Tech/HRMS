@@ -12,6 +12,7 @@ import attendanceSummaryReducer from '../features/attendanceSummarySlice'
 import leaveSliceReducer from '../features/leaveSlice'
 import leaveApplyReducer from '../features/leaveApplySlice'
 import taskReducer from '../features/taskSlice'
+import notificationReducer from '../features/notificationSlice'
 
 export const store = configureStore({
     reducer: {
@@ -27,6 +28,7 @@ export const store = configureStore({
         attendanceSummary:  attendanceSummaryReducer,
         leave: leaveSliceReducer,
         leaveApply: leaveApplyReducer,
-        task: taskReducer
+        task: taskReducer,
+        notification: notificationReducer
     }
 })

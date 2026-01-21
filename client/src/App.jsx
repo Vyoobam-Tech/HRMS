@@ -23,6 +23,7 @@ import Policy from "./scenes/policy/index";
 import Events from "./scenes/events/index";
 import Payroll from "./scenes/payroll/index";
 import Accounts from "./scenes/accounts/index";
+import Tickets from "./scenes/tickets/index";
 import EachEmployeeTimeTracker from "./scenes/reports/EachEmployeeTimeTracker";
 import AllEmployeeTimeTraker from "./scenes/reports/AllEmployeeTimeTraker";
 import AttendanceSummary from "./scenes/reports/AttendanceSummary";
@@ -140,6 +141,7 @@ function App() {
               <Route path="attendance-report" element={<AllEmployeeTimeTraker />} />
               <Route path="attendance-summary" element={<AttendanceSummary />} />
               <Route path="adding-names" element={<AddingNames />} />
+              <Route path="tickets" element={<Tickets />} />
               {/* {role === "admin" || role === "superadmin" ? (
                 <>
                   <Route path="department" element={<Department />} />

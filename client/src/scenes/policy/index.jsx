@@ -104,11 +104,11 @@ const index = () => {
                 >
                 Add Policy
                 </Button>
+                <Typography variant="h6" gutterBottom>
+                    Policies
+                </Typography>
             </>
         )}
-          <Typography variant="h6" gutterBottom>
-              Policies
-          </Typography>
         <Box
           sx={{
             display: "grid",
@@ -118,6 +118,7 @@ const index = () => {
           }}
         >
           {policies.map((policy) => (
+            <>
             <Paper
               key={policy.id}
               elevation={3}
@@ -146,6 +147,7 @@ const index = () => {
                 </IconButton>
               )}
             </Paper>
+            </>
           ))}
         </Box>
 
@@ -161,12 +163,13 @@ const index = () => {
 
         {documents && (
           <Box>
-            <Typography variant="h6" gutterBottom>
-              My Documents
-            </Typography>
 
             <Stack spacing={1}>
               {documents.photo && (
+                <>
+                <Typography variant="h6" gutterBottom>
+                  My Documents
+                </Typography>
                 <Stack direction="row" spacing={2} alignItems="center">
                   <Typography sx={{ width: 100 }}>Photo :</Typography>
                   <Button
@@ -193,6 +196,7 @@ const index = () => {
                     <DeleteIcon />
                   </IconButton>
                 </Stack>
+                </>
               )}
 
               {documents.aadhar && (

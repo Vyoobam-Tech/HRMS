@@ -12,10 +12,12 @@ import { useNavigate } from "react-router-dom";
 import { AgCharts } from "ag-charts-community";
 import { border } from "@mui/system";
 import Post from "./Post";
+import Notification from "./Notification";
 import API from "../../api/axiosInstance";
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchProfile } from "../../features/auth/authSlice";
 import { fetchDashboardStats } from "../../features/dashboardSlice";
+import { fetchNotifications } from "../../features/notificationSlice";
 
 
 const Dashpage = () => {
@@ -30,6 +32,12 @@ const Dashpage = () => {
   )
 
   const { stats, loading} = useSelector((state) => state.dashboard)
+
+  const notifications = useSelector((state) => state.notification.list);
+  
+  useEffect(() => {
+    dispatch(fetchNotifications());
+  }, [dispatch]);
 
   useEffect(() => {
     dispatch(fetchProfile())
@@ -139,6 +147,10 @@ const Dashpage = () => {
       }}
     >
     <Box display="flex" flexDirection="column" >
+
+      {notifications.length > 0 && (
+        <Notification />
+      )}
       <Post user={user}/>
       <Grid container spacing={2}>
         {cards.map(({ title, icon, path, subtitle, value }) => (

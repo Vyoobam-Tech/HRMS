@@ -89,20 +89,6 @@ const taskSlice = createSlice({
             state.assignError = action.payload.message;
         })
 
-    //   // Fetch all tasks
-    //   .addCase(fetchAllTasks.pending, (state) => {
-    //     state.status = "loading";
-    //     state.error = null;
-    //   })
-    //   .addCase(fetchAllTasks.fulfilled, (state, action) => {
-    //     state.status = "succeeded";
-    //     state.all = action.payload;
-    //   })
-    //   .addCase(fetchAllTasks.rejected, (state, action) => {
-    //     state.status = "failed";
-    //     state.error = action.payload.message;
-    //   });
-
         .addCase(fetchTasksByEmpId.pending, (state) => {
         state.loading = true;
         })
