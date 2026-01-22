@@ -18,6 +18,7 @@ import multer from "multer";
 import path from "path";
 import { TaskRouter} from "./routes/task.js";
 import { NotificationRouter } from "./routes/notification.js";
+import { TicketRouter } from "./routes/ticket.js";
 
 
 dotenv.config();
@@ -28,7 +29,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
     origin: [process.env.FRONTEND_URL],
-    methods: ['GET', 'PUT', 'POST', 'DELETE'],
+    methods: ['GET', 'PUT', 'POST', 'PATCH', 'DELETE'],
     credentials: true,
   })
 );
@@ -48,6 +49,7 @@ app.use("/api/document", EmployeeDocumentRouter)
 app.use("/api/names", NamesRouter)
 app.use("/api/tasks", TaskRouter)
 app.use("/api/notifications", NotificationRouter)
+app.use("/api/ticket", TicketRouter)
 app.get("/", (req, res) => {
   res.send("HRMS Backend is running ✅");
 });

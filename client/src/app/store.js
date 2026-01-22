@@ -13,6 +13,7 @@ import leaveSliceReducer from '../features/leaveSlice'
 import leaveApplyReducer from '../features/leaveApplySlice'
 import taskReducer from '../features/taskSlice'
 import notificationReducer from '../features/notificationSlice'
+import ticketReducer from '../features/ticketSlice'
 
 export const store = configureStore({
     reducer: {
@@ -29,6 +30,7 @@ export const store = configureStore({
         leave: leaveSliceReducer,
         leaveApply: leaveApplyReducer,
         task: taskReducer,
-        notification: notificationReducer
+        notification: notificationReducer,
+        ticket: ticketReducer
     }
 })
