@@ -1,9 +1,12 @@
 import express from "express";
 import Ticket from "../models/Ticket.js";
+import { uploadTicketImg } from "../middleware/uploadTicketImg.js";
+import path from "path";
+import fs from "fs";
 
 const router = express.Router()
 
-router.post("/", async (req, res) => {
+router.post("/", uploadTicketImg.single("attachment"), async (req, res) => {
     try{
         const { empId, empName, category, subject, description, priority} = req.body
 
@@ -19,6 +22,7 @@ router.post("/", async (req, res) => {
             description,
             priority,
             status: "Open",
+            attachment: req.file ? req.file.filename : null,
         })
 
         res.status(201).json({
@@ -30,6 +34,23 @@ router.post("/", async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 })
+
+router.get("/attachment/:filename", (req, res) => {
+    try {
+        const { filename } = req.params;
+
+        const filePath = path.join(process.cwd(), "uploads", "tickets", filename);
+
+        if (!fs.existsSync(filePath)) {
+        return res.status(404).json({ message: "File not found" });
+        }
+
+        res.setHeader("Content-Disposition", "inline")
+        return res.sendFile(filePath);
+    } catch (err) {
+        res.status(500).json({ message: "Error fetching attachment" });
+    }
+});
 
 router.get("/:empid", async (req, res) => {
     try {
@@ -75,6 +96,12 @@ router.patch("/:id/status", async (req, res) => {
         }
 
         ticket.status = status
+
+        if (status === "Closed") {
+            ticket.closedAt = new Date()
+        } else {
+            ticket.closedAt = null
+        }
         await ticket.save()
 
         res.json(ticket)
@@ -98,5 +125,6 @@ router.delete("/:id", async (req, res) => {
 
     }
 })
+
 
 export { router as TicketRouter}

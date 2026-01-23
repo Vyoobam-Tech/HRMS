@@ -695,6 +695,7 @@ const tasks = useSelector((state) => state.task?.list || []);
           variant="outlined"
           color="primary"
           size="small"
+          sx={{ height: 34, borderRadius: 0 }}
         />
 
         {task.assignedBy && (

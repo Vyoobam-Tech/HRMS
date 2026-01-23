@@ -10,14 +10,18 @@ import DeleteIcon from "@mui/icons-material/Delete";
 
 const index = () => {
 
+    const BASE_URL = "http://localhost:3000"
+
     const [open, setOpen] = useState(false)
+    const [searchEmpId, setSearchEmpId] = useState("");
+
     const dispatch = useDispatch()
 
     const { user } = useSelector((state) => state.auth);
 
-    const { list, all } = useSelector((state) => state.ticket)
+    const { list, all, loading } = useSelector((state) => state.ticket)
 
-    const tickets = user?.role === "employee" ? list : all;
+    const tickets = user?.role === "employee" ? list  : searchEmpId.trim() !== "" ? list : all
 
     useEffect(() => {
         dispatch(resetTicketState())
@@ -35,6 +39,19 @@ const index = () => {
     const handleDeleteTicket = (ticketId) => {
         dispatch(deleteTicket(ticketId));
     };
+
+    const handleSearch = () => {
+        if (!searchEmpId.trim()) return
+
+        dispatch(resetTicketState())
+        dispatch(fetchTicketByEmpId(searchEmpId))
+    }
+
+    const handleReset = () => {
+        setSearchEmpId("")
+
+        dispatch(fetchAllTicket())
+    }
   return (
     <div
         style={{
@@ -63,7 +80,38 @@ const index = () => {
             TICKET REQUESTS
         </Typography>
 
-        {tickets.length === 0 && <Typography>No tickets raised</Typography>}
+        {(user?.role === "admin" || user?.role === "superadmin") && (
+        <Stack direction="row" spacing={2} mb={2} alignItems="center">
+            <TextField
+            size="small"
+            label="Search by Employee ID"
+            value={searchEmpId}
+            onChange={(e) => setSearchEmpId(e.target.value)}
+            />
+            <Button
+            variant="contained"
+            color="primary"
+            onClick={handleSearch}
+            >
+            Search
+            </Button>
+            <Button
+            variant="contained"
+            color="secondary"
+            onClick={handleReset}
+            >
+            Reset
+            </Button>
+        </Stack>
+        )}
+
+
+        {loading ? (
+            <Typography>Loading...</Typography>
+            ) : tickets.length === 0 ? (
+            <Typography>No tickets found</Typography>
+            ) : null}
+
 
         {tickets.map((ticket) => (
         <Card
@@ -122,7 +170,41 @@ const index = () => {
             >
             {/* LEFT SIDE */}
             <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
+
+                <Chip label={ticket.category} variant="outlined" sx={{ borderRadius: 0 }} />
+
+                {ticket.attachment && (
+                    <Button
+                    variant="contained"
+                    onClick={() =>
+                        window.open(
+                        `${BASE_URL}/api/ticket/attachment/${ticket.attachment}`,
+                        "_blank"
+                        )
+                    }
+                    >
+                    View
+                    </Button>
+                )}
+
+                <Stack direction="row" spacing={1} alignItems="center">
+                <Chip
+                    label={`Created: ${new Date(ticket.createdAt).toLocaleDateString()}`}
+                    variant="outlined"
+                    sx={{ height: 34, borderRadius: 0 }}
+                />
+
+                {ticket.closedAt && (
+                    <Chip
+                    label={`Closed: ${new Date(ticket.closedAt).toLocaleDateString()}`}
+                    variant="outlined"
+                    sx={{ height: 34, borderRadius: 0 }}
+                    />
+                )}
+                </Stack>
+
                 {(user?.role === "admin" || user?.role === "superadmin") ? (
+                <>
                 <TextField
                     select
                     size="small"
@@ -135,7 +217,7 @@ const index = () => {
                         })
                     )
                     }
-                    sx={{ minWidth: 120 }}
+                    sx={{ minWidth: 120, height: 34 }}
                 >
                     {["Open", "In Progress", "Closed"].map((status) => (
                     <MenuItem key={status} value={status}>
@@ -143,6 +225,10 @@ const index = () => {
                     </MenuItem>
                     ))}
                 </TextField>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                    Created by: <strong>{ticket.empId}</strong>
+                </Typography>
+                </>
                 ) : (
                 <Chip
                     label={ticket.status}
@@ -153,16 +239,10 @@ const index = () => {
                         ? "warning"
                         : "success"
                     }
+                    sx={{ borderRadius: 0, height: 34 }}
                 />
                 )}
 
-                <Chip label={ticket.category} variant="outlined" />
-
-                <Chip
-                label={new Date(ticket.createdAt).toLocaleDateString()}
-                size="small"
-                variant="outlined"
-                />
             </Stack>
 
             {/* RIGHT SIDE */}

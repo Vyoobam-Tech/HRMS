@@ -29,8 +29,12 @@ export const Ticket = sequelize.define(
             type: DataTypes.TEXT,
             allowNull: false,
         },
+        attachment: {
+            type: DataTypes.STRING,
+            allowNull: true,
+        },
         priority: {
-            type: DataTypes.ENUM("Low", "Medium", "High"),
+            type: DataTypes.ENUM("Low", "Medium", "High", "Critical"),
             defaultValue: "Low",
         },
         status: {
@@ -41,6 +45,11 @@ export const Ticket = sequelize.define(
             ),
             defaultValue: "Open",
         },
+        closedAt: {
+            type: DataTypes.DATE,
+            allowNull: true,
+        },
+
     },
         {
             tableName: "tickets",

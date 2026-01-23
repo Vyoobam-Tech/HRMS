@@ -110,7 +110,7 @@ const Navbar = ({ sidebarWidth }) => {
           setAnchorEl(null)
         }
 
-     if (authLoading) return null;
+    //  if (authLoading) return null;
 
 
   const handleLogout = () => {

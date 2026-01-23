@@ -125,29 +125,36 @@ function App() {
               }
             >
               <Route path="dashpage" element={<Dashpage />} />
-              <Route path="department" element={<Department />} />
+              {/* <Route path="department" element={<Department />} /> */}
               <Route path="employee-details" element={<EmpDetails />} />
-              <Route path="employee" element={<Employee />} />
+              {/* <Route path="employee" element={<Employee />} /> */}
               <Route path="activities" element={<Activities />} />
-              <Route path="allactivities" element={<AllActivities />} />
+              {/* <Route path="allactivities" element={<AllActivities />} /> */}
               <Route path="holidays" element={<Holidays />} />
               <Route path="policy" element={<Policy />} />
               <Route path="emp-holidays" element={
                 user? (<EmployeeHolidays empId={user.empId}/> ) : (<p>Loading...</p>)} />
               <Route path="events" element={<Events />} />
-              <Route path="payroll" element={<Payroll />} />
-              <Route path="accounts" element={<Accounts />} />
+              {/* <Route path="payroll" element={<Payroll />} />
+              <Route path="accounts" element={<Accounts />} /> */}
               <Route path="attendance" element={<EachEmployeeTimeTracker />} />
-              <Route path="attendance-report" element={<AllEmployeeTimeTraker />} />
+              {/* <Route path="attendance-report" element={<AllEmployeeTimeTraker />} />
               <Route path="attendance-summary" element={<AttendanceSummary />} />
-              <Route path="adding-names" element={<AddingNames />} />
+              <Route path="adding-names" element={<AddingNames />} /> */}
               <Route path="tickets" element={<Tickets />} />
-              {/* {role === "admin" || role === "superadmin" ? (
+              {role === "admin" || role === "superadmin" ? (
                 <>
                   <Route path="department" element={<Department />} />
                   <Route path="create-user" element={<Users />} />
+                  <Route path="employee" element={<Employee />} />
+                  <Route path="allactivities" element={<AllActivities />} />
+                  <Route path="payroll" element={<Payroll />} />
+                  <Route path="accounts" element={<Accounts />} />
+                  <Route path="attendance-report" element={<AllEmployeeTimeTraker />} />
+                  <Route path="attendance-summary" element={<AttendanceSummary />} />
+                  <Route path="adding-names" element={<AddingNames />} />
                 </>
-              ) : null} */}
+              ) : null}
             </Route>
           )}
         </Routes>

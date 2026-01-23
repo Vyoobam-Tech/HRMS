@@ -298,11 +298,12 @@ const AllActivities = () => {
               justifyContent="space-between"
             >
               <Stack direction="row" spacing={1}>
-                <Chip label={task.priority} color="primary" size="small" />
-                <Chip label={task.status} color="success" size="small" />
+                <Chip label={task.priority} color="primary" size="small" sx={{ height: 34, borderRadius: 0 }} />
+                <Chip label={task.status} color="success" size="small" sx={{ height: 34, borderRadius: 0 }}/>
                 <Chip
                   label={`Due: ${new Date(task.dueDate).toLocaleDateString()}`}
                   size="small"
+                  sx={{ height: 34, borderRadius: 0 }}
                 />
               </Stack>
 

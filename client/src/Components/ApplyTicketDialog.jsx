@@ -22,6 +22,8 @@ const ApplyTicketDialog = ({open, handleClose}) => {
       status: "Open",
   })
 
+  const [attachment, setAttachment] = useState(null)
+
   const handleChange = (e) => {
         setForm({
             ...form,
@@ -30,20 +32,28 @@ const ApplyTicketDialog = ({open, handleClose}) => {
     }
 
     const handleSubmit = async () => {
+      setError("");
 
-      setError("")
+      // ✅ validation
+      if (!form.category || !form.subject || !form.description) {
+        setError("All fields are required");
+        return;
+      }
 
       try {
-        const payload = {
-          empId: user.empid,
-          empName: user.username,
-          category: form.category,
-          subject: form.subject,
-          description: form.description,
-          priority: form.priority,
-        };
+        const formData = new FormData();
+        formData.append("empId", user.empid);
+        formData.append("empName", user.username);
+        formData.append("category", form.category);
+        formData.append("subject", form.subject);
+        formData.append("description", form.description);
+        formData.append("priority", form.priority);
 
-        await dispatch(raiseTicket(payload)).unwrap()
+        if (attachment) {
+          formData.append("attachment", attachment);
+        }
+
+        await dispatch(raiseTicket(formData)).unwrap();
 
         toast.success("Ticket raised successfully");
 
@@ -52,18 +62,16 @@ const ApplyTicketDialog = ({open, handleClose}) => {
           subject: "",
           description: "",
           priority: "Medium",
-        })
+        });
 
+        setAttachment(null)
         handleClose();
       } catch (err) {
-        const errorMessage =
-            err?.message ||
-            err ||
-            "Failed to raise ticket"
+        const errorMessage = err?.message || err || "Failed to raise ticket";
         setError(errorMessage);
-        // toast.error(errorMessage || "Failed to raise ticket")
       }
-    }
+};
+
 
   return (
     <div>
@@ -135,6 +143,9 @@ const ApplyTicketDialog = ({open, handleClose}) => {
                   required
                 />
 
+                <Typography>Screenshot</Typography>
+                <input type="file" name="screenshot" onChange={(e) => setAttachment(e.target.files[0])} accept=".pdf,.jpg,.jpeg,.png"/>
+
                 <TextField
                   select
                   name="priority"
@@ -143,10 +154,12 @@ const ApplyTicketDialog = ({open, handleClose}) => {
                   onChange={handleChange}
                   fullWidth
                   margin="dense"
+                  sx={{ mt: 2 }}
                 >
                   <MenuItem value="Low">Low</MenuItem>
                   <MenuItem value="Medium">Medium</MenuItem>
                   <MenuItem value="High">High</MenuItem>
+                  <MenuItem value="Critical">Critical</MenuItem>
                 </TextField>
                     </form>
                   </DialogContent>

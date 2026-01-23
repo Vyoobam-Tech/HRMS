@@ -6,7 +6,11 @@ export const raiseTicket = createAsyncThunk(
     "ticket/raiseTicket",
     async (ticketData, { rejectWithValue }) => {
         try {
-        const res = await API.post("/api/ticket", ticketData);
+        const res = await API.post("/api/ticket", ticketData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        });
         return res.data;
         } catch (err) {
         return rejectWithValue(err.response?.data || err.message);
