@@ -50,7 +50,7 @@ const AddNamesDialog = ({ open, onClose, title = "Add Name", label = "Name", ite
           helperText={error}
           onChange={(e) => {
             const value = e.target.value;
-            if (/^[A-Za-z\s]*$/.test(value)) {
+            if (/^[A-Za-z\s\W]*$/.test(value)) {
               setName(value);
               setError("");
             } else {

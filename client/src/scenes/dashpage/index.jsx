@@ -50,7 +50,7 @@ const Dashpage = () => {
 
   const cards = [
     {
-      title: "Department",
+      title: "Departments",
       icon: <BusinessRoundedIcon fontSize="large" />,
       value: stats?.departments ?? 0,
       subtitle: "Totally",
@@ -72,7 +72,7 @@ const Dashpage = () => {
     },
     ...(user?.role === "employee" ? [
       {
-      title: "My Report",
+      title: "My Reports",
       icon: <DataUsageOutlinedIcon fontSize="large" />,
       value: stats?.myactivity ?? 0,
       subtitle: "Activities Logged",
@@ -80,7 +80,7 @@ const Dashpage = () => {
     },
   ] : [
     {
-      title: "Report",
+      title: "Reports",
       icon: <DataUsageOutlinedIcon fontSize="large" />,
       value: stats?.allactivitities ?? 0,
       subtitle: "Activities Logged",
@@ -179,8 +179,11 @@ const Dashpage = () => {
                   height: "100px",
                 }}
               >
-                <Box>{icon}</Box>
-                <Typography variant="h6">{title}</Typography>
+                <Box display="flex" alignItems="center" gap={1}>
+                  <Box>{icon}</Box>
+                  <Typography variant="h6">{title}</Typography>
+                </Box>
+
                 <Typography variant="h5" fontWeight="bold">
                   {value}
                 </Typography>
@@ -214,7 +217,7 @@ const Dashpage = () => {
           }}
         >
           <CardContent sx={{ color: "#34495e" }}>
-            <Typography variant="h6">No. of Employees</Typography>
+            <Typography variant="h6">Total No of Employees</Typography>
             <Box sx={{ paddingTop: "30px", marginLeft: "15px" }}>
               <PeopleAltRoundedIcon fontSize="large" />
               <Typography variant="h6">{stats?.employees??0}</Typography>

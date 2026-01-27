@@ -6,21 +6,21 @@ const API = axios.create({
 });
 
 // Attach token to every request
-API.interceptors.request.use((config) => {
-    const token = localStorage.getItem("token");
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-});
+// API.interceptors.request.use((config) => {
+//     const token = localStorage.getItem("token");
+//     if (token) {
+//         config.headers.Authorization = `Bearer ${token}`;
+//     }
+//     return config;
+// });
 
 // Optional: handle 401 globally
 API.interceptors.response.use(
     (response) => response,
     (error) => {
         if (error.response?.status === 401) {
-        localStorage.removeItem("token");
-        localStorage.removeItem("isLoggedIn");
+        // localStorage.removeItem("token");
+        // localStorage.removeItem("isLoggedIn");
         window.location.href = "/login"; // redirect to login
         }
         return Promise.reject(error);

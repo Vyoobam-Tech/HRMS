@@ -271,7 +271,7 @@ const Employees = () => {
         boxSizing: "border-box",
       }}
     >
-      <Header title="EMPLOYEES" subtitle="Organisation Employee Details" />
+      <Header title="EMPLOYEES" />
 
     <Box sx={{ display: "flex", justifyContent: "flex-start", mb: 2, gap: 2 }}>
       {/* <Button variant='contained' onClick={() => setOpen(true)} color='primary' sx={{ mb: 2 }}>

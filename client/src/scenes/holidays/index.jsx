@@ -125,7 +125,7 @@ const Holidays = () => {
         boxSizing: "border-box",
       }}
     >
-      <Header title="HOLIDAYS" subtitle="Organisation Holidays Details" />
+      <Header title="HOLIDAYS" />
 
       {(role === "admin") || (role === "superadmin") && (
       <Box

@@ -215,7 +215,7 @@ const AllActivities = () => {
         boxSizing: "border-box",
     }}
     >
-    <Header title="ACTIVITIES" subtitle="Employee Activity Tracking" />
+    <Header title="ACTIVITIES" />
 
     <Box sx={{ display: "flex", justifyContent: "flex-start", mb: 2, gap: 2 }}>
       <Button
@@ -275,7 +275,7 @@ const AllActivities = () => {
     />
 
     <Box sx={{ mt: 4 }}>
-            <Header title="Tasks" />
+            <Header title="TASKS" />
           </Box>
           {tasks.length === 0 && <p>No tasks assigned</p>}
     

@@ -203,7 +203,7 @@ const Signup = () => {
             />
           </FormGroup>
 
-           {!hasSuperAdmin && (
+          {!hasSuperAdmin && (
             <FormGroup>
               <FormControlLabel
                 control={

@@ -90,9 +90,9 @@ const EmployeeHolidays = () => {
     }
   ]
 
-  if (loading) {
-    return <Typography sx={{ p: 4 }}>Loading...</Typography>;
-  }
+  // if (loading || !user || !leaveBalance) {
+  //   return <Typography sx={{ p: 4 }}>Loading...</Typography>;
+  // }
 
 
   return (

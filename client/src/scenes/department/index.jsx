@@ -206,7 +206,7 @@ const Department = () => {
         boxSizing: "border-box",
       }}
     >
-      <Header title="DEPARTMENT" subtitle="Organisation Departments Details" />{" "}
+      <Header title="DEPARTMENTS" />{" "}
       <Button
         variant="contained"
         color="primary"

@@ -22,7 +22,7 @@ const Index = () => {
 
   return (
     <Box sx={{ minHeight: "100vh", width: "100%", padding: "120px 40px 20px 40px" }}>
-      <Header title="MANAGE" subtitle="Organisation Departments Manage" />{" "}
+      <Header title="MANAGE" />{" "}
       <Button
         variant="contained"
         color="secondary"

@@ -639,7 +639,7 @@ const tasks = useSelector((state) => state.task?.list || []);
       </Dialog>
 
       <Box sx={{ mt: 4 }}>
-        <Header title="My Tasks" />
+        <Header title="MY TASKS" />
       </Box>
       {tasks.length === 0 && <p>No tasks assigned</p>}
 
