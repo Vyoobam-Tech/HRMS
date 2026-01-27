@@ -1,5 +1,6 @@
 import express from "express";
 import { Employee } from "../models/Employee.js";
+import { employeeImportValidation } from "../middleware/validator.js";
 
 const router = express.Router();
 
@@ -125,7 +126,8 @@ router.get("/by-user/:email", async (req, res) => {
 })
 
 
-router.post("/import", async (req, res) => {
+
+router.post("/import", employeeImportValidation, async (req, res) => {
   try {
     await Employee.bulkCreate(req.body);
     res.json({ message: "Employees imported" });

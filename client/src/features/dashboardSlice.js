@@ -5,11 +5,12 @@ export const fetchDashboardStats = createAsyncThunk(
     "dashboard/fetchStats",
     async (empid, { rejectWithValue }) => {
         try {
-        const [dep, myact, allact, emp] = await Promise.all([
+        const [dep, myact, allact, emp, pay] = await Promise.all([
             API.get("/api/departments/all"),
             API.get(`/api/activities/by-user/${empid}`),
             API.get("/api/activities/all"),
             API.get("/api/employees/all"),
+            API.get("/api/payroll/stats"), // New Payroll Stats
         ]);
 
         return {
@@ -17,6 +18,7 @@ export const fetchDashboardStats = createAsyncThunk(
             myactivity: myact.data.data.length,
             allactivitities: allact.data.data.length,
             employees: emp.data.data.length,
+            payroll: pay.data.data // { totalNetPay, totalEarnings, totalDeductions ... }
         };
         } catch (err) {
         return rejectWithValue(err.response?.data || "Failed to fetch stats");

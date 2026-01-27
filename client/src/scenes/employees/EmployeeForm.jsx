@@ -65,7 +65,8 @@ const EmployeeForm = ({setOpen}) => {
         bankName: "",
         accountNumber: "",
         ifscCode: "",
-        branch: ""
+        branch: "",
+        isOvertimeEnabled: false
         })
 
         const { user, loading: authLoading, error: authError } = useSelector(
@@ -279,7 +280,8 @@ const EmployeeForm = ({setOpen}) => {
                 bankName: "",
                 accountNumber: "",
                 ifscCode: "",
-                branch: ""
+                branch: "",
+                isOvertimeEnabled: false
             };
 
 
@@ -596,6 +598,18 @@ const EmployeeForm = ({setOpen}) => {
                             onChange={handleChange}
                             error={!!errors.pan}
                             helperText={errors.pan}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <FormControlLabel
+                                control={
+                                    <Checkbox
+                                        checked={formData.isOvertimeEnabled || false}
+                                        onChange={(e) => setFormData({...formData, isOvertimeEnabled: e.target.checked})} 
+                                        name="isOvertimeEnabled"
+                                    />
+                                }
+                                label="Enable Overtime Calculation"
                             />
                         </Grid>
                     </Grid>

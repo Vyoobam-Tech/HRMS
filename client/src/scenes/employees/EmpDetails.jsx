@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Box } from '@mui/system'
 import CloseIcon from "@mui/icons-material/Close";
-import { Card, CardContent, Divider, Typography, Grid, Button, Dialog, DialogContent, DialogTitle, IconButton, DialogActions, TextField} from '@mui/material'
+import { Card, CardContent, Divider, Typography, Grid, Button, Dialog, DialogContent, DialogTitle, IconButton, DialogActions, TextField, Checkbox, FormControlLabel} from '@mui/material'
 import EmployeeForm from './EmployeeForm'
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchEmployeeByEmail, updateEmployee } from '../../features/employeeSlice';
@@ -341,6 +341,15 @@ const EmpDetails = () => {
                   margin="dense"
                   value={selectedRow.pan || ""}
                   onChange={(e) => setSelectedRow({ ...selectedRow, pan: e.target.value })}
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={selectedRow.isOvertimeEnabled || false}
+                      onChange={(e) => setSelectedRow({ ...selectedRow, isOvertimeEnabled: e.target.checked })}
+                    />
+                  }
+                  label="Enable Overtime Calculation"
                 />
 
                 <TextField

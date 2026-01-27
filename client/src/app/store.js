@@ -14,6 +14,7 @@ import leaveApplyReducer from '../features/leaveApplySlice'
 import taskReducer from '../features/taskSlice'
 import notificationReducer from '../features/notificationSlice'
 import ticketReducer from '../features/ticketSlice'
+import payrollReducer from '../features/payrollSlice'
 
 export const store = configureStore({
     reducer: {
@@ -31,6 +32,7 @@ export const store = configureStore({
         leaveApply: leaveApplyReducer,
         task: taskReducer,
         notification: notificationReducer,
-        ticket: ticketReducer
+        ticket: ticketReducer,
+        payroll: payrollReducer
     }
 })

@@ -52,44 +52,9 @@ function App() {
     }
   }, [dispatch]);
 
-  // useEffect(() => {
-  //   const loggedIn = localStorage.getItem("isLoggedIn");
-  //   if (loggedIn === "true") {
-  //     setIsAuthenticated(true);
-  //   } else {
-  //     API.get("/auth/checkSession")
-  // .then((response) => {
-  //   if (response.data.status) {   // 🔴 FIX HERE
-  //     setIsAuthenticated(true);
-  //     localStorage.setItem("isLoggedIn", "true");
-  //   } else {
-  //     setIsAuthenticated(false);
-  //     localStorage.removeItem("isLoggedIn");
-  //   }
-  // })
-  // .catch(() => {
-  //   setIsAuthenticated(false);
-  //   localStorage.removeItem("isLoggedIn");
-  // });
 
-  //   }
-  // }, []);
+  // Dead code removed
 
-//   useEffect(() => {
-//   if (isAuthenticated) { // only fetch if logged in
-//     const fetchUser = async () => {
-//       try {
-//         const response = await API.get("/auth/profile");
-//         if (response.data.status) {
-//           setUser(response.data.user);
-//         }
-//       } catch (err) {
-//         console.log(err);
-//       }
-//     };
-//     fetchUser();
-//   }
-// }, [isAuthenticated]);
 
 
   const handleToggleSidebar = () => setIsSidebarOpen((prev) => !prev);

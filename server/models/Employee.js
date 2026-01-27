@@ -113,6 +113,10 @@ export const Employee = sequelize.define(
     experiences: {
       type: DataTypes.JSONB
     },
+    isOvertimeEnabled: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
     bankName: {
       type: DataTypes.STRING
     },

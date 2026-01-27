@@ -5,12 +5,13 @@ import { User } from "../models/User.js";
 import crypto from "crypto";
 import nodemailer from "nodemailer";
 import { Op, where } from "sequelize";
+import { loginValidation, registerValidation } from "../middleware/validator.js";
 
 
 const router = express.Router();
 
 // ---------------------- Signup Route ----------------------
-router.post("/signup", async (req, res) => {
+router.post("/signup", registerValidation, async (req, res) => {
   try {
     const { role, username, empid, department, email, password } = req.body;
 
@@ -32,7 +33,7 @@ router.post("/signup", async (req, res) => {
 });
 
 // ---------------------- Login Route ----------------------
-router.post("/login", async (req, res) => {
+router.post("/login", loginValidation, async (req, res) => {
   const { email, password } = req.body;
   try {
     const emailNormalized = email.trim().toLowerCase(); // normalize email

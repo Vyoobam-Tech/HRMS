@@ -1,271 +1,172 @@
-import { Box, Card, CardContent, Grid, Typography } from "@mui/material";
+import { Box, Grid, Skeleton } from "@mui/material";
 import BusinessRoundedIcon from "@mui/icons-material/BusinessRounded";
 import PaymentOutlinedIcon from "@mui/icons-material/PaymentOutlined";
 import ExposureOutlinedIcon from "@mui/icons-material/ExposureOutlined";
 import DataUsageOutlinedIcon from "@mui/icons-material/DataUsageOutlined";
-import PeopleAltRoundedIcon from "@mui/icons-material/PeopleAltRounded";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import "../../App.css";
-import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { AgCharts } from "ag-charts-community";
-import { border } from "@mui/system";
-import Post from "./Post";
-import Notification from "./Notification";
-import API from "../../api/axiosInstance";
+import "../../App.css"; // Ensure this import is correct relative to the new structure if changed, but scenes/dashpage/index.jsx to App.css is ../../App.css
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchProfile } from "../../features/auth/authSlice";
 import { fetchDashboardStats } from "../../features/dashboardSlice";
 import { fetchNotifications } from "../../features/notificationSlice";
 
+// Components
+import Post from "./Post";
+import Notification from "./Notification";
+import StatCard from "./StatCard";
+import PayrollChart from "./PayrollChart";
+import EmployeeStats from "./EmployeeStats";
+import QuickActions from "./QuickActions";
 
 const Dashpage = () => {
-  const [value, setValue] = useState(new Date());
-  const navigate = useNavigate();
-  const chartRef = useRef(null);
+    const [dateValue, setDateValue] = useState(new Date());
+    const dispatch = useDispatch();
 
-  const dispatch = useDispatch()
+    const { user } = useSelector((state) => state.auth);
+    const { stats } = useSelector((state) => state.dashboard);
+    const notifications = useSelector((state) => state.notification.list);
 
-  const { user, loading: authLoading, error: authError } = useSelector(
-    (state) => state.auth
-  )
+    useEffect(() => {
+        dispatch(fetchNotifications());
+        dispatch(fetchProfile());
+    }, [dispatch]);
 
-  const { stats, loading} = useSelector((state) => state.dashboard)
+    useEffect(() => {
+        if (!user) return;
+        dispatch(fetchDashboardStats(user.empid));
+    }, [user, dispatch]);
 
-  const notifications = useSelector((state) => state.notification.list);
-  
-  useEffect(() => {
-    dispatch(fetchNotifications());
-  }, [dispatch]);
-
-  useEffect(() => {
-    dispatch(fetchProfile())
-  }, [dispatch])
-
-  useEffect(() => {
-    if (!user) return;
-    dispatch(fetchDashboardStats(user.empid));
-  }, [user, dispatch]);
-
-  const cards = [
-    {
-      title: "Department",
-      icon: <BusinessRoundedIcon fontSize="large" />,
-      value: stats?.departments ?? 0,
-      subtitle: "Totally",
-      // path: "/department",
-    },
-    {
-      title: "Payroll",
-      icon: <PaymentOutlinedIcon fontSize="large" />,
-      value: "$12,000",
-      subtitle: "This Month",
-      path: "/payroll",
-    },
-    {
-      title: "Accounts",
-      icon: <ExposureOutlinedIcon fontSize="large" />,
-      value: "$42,562",
-      subtitle: "This Month",
-      path: "/accounts",
-    },
-    ...(user?.role === "employee" ? [
-      {
-      title: "My Report",
-      icon: <DataUsageOutlinedIcon fontSize="large" />,
-      value: stats?.myactivity ?? 0,
-      subtitle: "Activities Logged",
-      path: "/activities",
-    },
-  ] : [
-    {
-      title: "Report",
-      icon: <DataUsageOutlinedIcon fontSize="large" />,
-      value: stats?.allactivitities ?? 0,
-      subtitle: "Activities Logged",
-      path: "/allactivities",
-    }
-  ])
-  ]
-
-  function getData() {
-    return [
-      { label: "Payroll", value: 50000 },
-      { label: "Gross Salary", value: 17000 },
-    ];
-  }
-
-  useEffect(() => {
-    const data = getData();
-
-    if (chartRef.current && chartRef.current.firstChild) {
-      chartRef.current.innerHTML = "";
-    }
-
-    const usdShortFormatter = new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      notation: "compact",
-    });
-
-    const options = {
-      container: chartRef.current,
-      series: [
+    // Construct Stats Data
+    const statCardsData = [
         {
-          data,
-          type: "pie",
-          calloutLabelKey: "label",
-          angleKey: "value",
-          fills: ["#34495e", "#94B4C1"],
-          sectorLabel: {
-            formatter: ({ datum }) => usdShortFormatter.format(datum.value),
-          },
-          tooltip: {
-            renderer: ({ datum }) => ({
-              title: datum.label,
-              content: `Value: ${usdShortFormatter.format(datum.value)}`,
-            }),
-          },
+            title: "Department",
+            icon: <BusinessRoundedIcon fontSize="large" />,
+            value: stats?.departments ?? 0,
+            subtitle: "Total Departments",
+            color: "#3498db"
+            // path: "/department",
         },
-      ],
-      legend: {
-        enabled: false,
-      },
-    };
+        {
+            title: "Payroll",
+            icon: <PaymentOutlinedIcon fontSize="large" />,
+            value: stats?.payroll?.totalNetPay ? `$${stats.payroll.totalNetPay.toLocaleString()}` : "$0",
+            subtitle: "This Month (Estimated)",
+            path: "/payroll",
+            color: "#9b59b6"
+        },
+        {
+            title: "Accounts",
+            icon: <ExposureOutlinedIcon fontSize="large" />,
+            value: "$42,562",
+            subtitle: "Revenue",
+            path: "/accounts",
+            color: "#1abc9c"
+        },
+        ...(user?.role === "employee" ? [
+            {
+                title: "My Report",
+                icon: <DataUsageOutlinedIcon fontSize="large" />,
+                value: stats?.myactivity ?? 0,
+                subtitle: "Activities Logged",
+                path: "/activities",
+                color: "#e67e22"
+            },
+        ] : [
+            {
+                title: "Overall Report",
+                icon: <DataUsageOutlinedIcon fontSize="large" />,
+                value: stats?.allactivitities ?? 0,
+                subtitle: "Total Activities",
+                path: "/allactivities",
+                color: "#f1c40f"
+            }
+        ])
+    ];
 
-    AgCharts.create(options);
-  }, []);
-
-  return (
-    <div
-      style={{
-        minHeight: "100vh",
-        width: "100%",
-        padding: "120px 40px 20px 40px",
-        boxSizing: "border-box",
-      }}
-    >
-    <Box display="flex" flexDirection="column" >
-
-      {notifications.length > 0 && (
-        <Notification />
-      )}
-      <Post user={user}/>
-      <Grid container spacing={2}>
-        {cards.map(({ title, icon, path, subtitle, value }) => (
-          <Grid item key={title} xs={12} sm={6} md={3}>
-            <Card
-              onClick={() => navigate(path)}
-              sx={{
-                height: 145,
-                borderRadius: 3,
-                p: 2,
-                cursor: "pointer",
-                color: "#34495e",
-                transition: "transform 0.2s",
-                "&:hover": {
-                  transform: "scale(1.05)",
-                },
-              }}
-            >
-
-              <CardContent
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                  alignItems: "flex-start",
-                  height: "100px",
-                }}
-              >
-                <Box>{icon}</Box>
-                <Typography variant="h6">{title}</Typography>
-                <Typography variant="h5" fontWeight="bold">
-                  {value}
-                </Typography>
-                <Typography variant="caption" sx={{ opacity: 0.9 }}>
-                  {subtitle}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
-
-      <Box
-        display="flex"
-        justifyContent="space-between"
-        alignItems="stretch"
-        flexWrap="wrap"
-        gap={2}
-        my={3}
-      >
-        <Card
-          sx={{
-            flex: "1 1 20%",
-            minWidth: "200px",
-            height: "304px",
-            borderRadius: 1,
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-            p: 1,
-          }}
+    return (
+        <Box
+            sx={{
+                minHeight: "100vh",
+                width: "100%",
+                padding: { xs: "20px", md: "40px" },
+                paddingTop: "100px !important", // push down for navbar
+                boxSizing: "border-box",
+                backgroundColor: "#f4f6f8" // Subtle background color
+            }}
         >
-          <CardContent sx={{ color: "#34495e" }}>
-            <Typography variant="h6">No. of Employees</Typography>
-            <Box sx={{ paddingTop: "30px", marginLeft: "15px" }}>
-              <PeopleAltRoundedIcon fontSize="large" />
-              <Typography variant="h6">{stats?.employees??0}</Typography>
-              <Typography variant="h6">Total Employees</Typography>
+            <Box display="flex" flexDirection="column" gap={3}>
+                
+                {/* 1. Header & Notifications */}
+                {notifications.length > 0 && <Notification />}
+                
+                {/* 2. Welcome/Post Section */}
+                <Post user={user} />
+
+                {/* 3. Quick Actions Bar (New Feature) */}
+                <QuickActions />
+
+                {/* 4. Key Metrics Grid */}
+                <Grid container spacing={3}>
+                    {
+                        !stats ? (
+                             Array.from(new Array(4)).map((_, index) => (
+                                <Grid item key={index} xs={12} sm={6} md={3}>
+                                    <Skeleton variant="rectangular" height={145} sx={{ borderRadius: 3 }} />
+                                </Grid>
+                            ))
+                        ) : (
+                        statCardsData.map((card, index) => (
+                        <Grid item key={index} xs={12} sm={6} md={3}>
+                            <StatCard {...card} />
+                        </Grid>
+                    )))}
+                </Grid>
+
+                {/* 5. Detailed Visualizations Grid */}
+                <Grid container spacing={3} alignItems="stretch">
+                    {/* Employee Count */}
+                    <Grid item xs={12} md={3}>
+                         {!stats ? (
+                           <Skeleton variant="rectangular" height={340} sx={{ borderRadius: 3 }} />
+                        ) : (
+                         <EmployeeStats count={stats?.employees} />
+                        )}
+                    </Grid>
+
+                    {/* Payroll Chart */}
+                    <Grid item xs={12} md={5}>
+                        {!stats ? (
+                           <Skeleton variant="rectangular" height={340} sx={{ borderRadius: 3 }} />
+                        ) : (
+                            <PayrollChart data={stats?.payroll || { totalNetPay: 0, totalDeductions: 0 }} />
+                        )}
+                    </Grid>
+
+                    {/* Calendar */}
+                    <Grid item xs={12} md={4}>
+                        <Box
+                            sx={{
+                                bgcolor: "white",
+                                borderRadius: 3,
+                                boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+                                p: 2,
+                                height: "100%",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                minHeight: "340px"
+                            }}
+                        >
+                            <Calendar onChange={setDateValue} value={dateValue} />
+                        </Box>
+                    </Grid>
+                </Grid>
             </Box>
-          </CardContent>
-        </Card>
-        <Card
-          sx={{
-            flex: "2 1 50%",
-            minWidth: "300px",
-            height: "304px",
-            borderRadius: 1,
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-            p: 1,
-          }}
-        >
-          <CardContent sx={{ color: "#34495e" }}>
-            <Typography variant="h6">Payroll Details</Typography>
-            <Box
-              ref={chartRef}
-              id="myChart"
-              sx={{
-                width: "95%",
-                height: "250px",
-              }}
-            />
-          </CardContent>
-        </Card>
-
-        <Card
-          sx={{
-            flex: "1 1 25%",
-            minWidth: "300px",
-            maxWidth: "350px",
-            height: "290px",
-            borderRadius: 1,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            p: 2,
-          }}
-        >
-          <Calendar onChange={setValue} value={value}/>
-        </Card>
-      </Box>
-    </Box>
-    </div>
-  );
+        </Box>
+    );
 };
 
 export default Dashpage;
+

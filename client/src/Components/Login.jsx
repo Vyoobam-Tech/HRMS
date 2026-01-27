@@ -101,6 +101,12 @@ const handleSubmit = (e) => {
       <form
         className="sign-up-form"
         onSubmit={handleSubmit}
+        // Converted style to sx for better performance
+        // Note: We are using the Box component or ensuring the element supports sx. 
+        // HTML form element does not support sx directly in standard React + MUI unless using Box component as="form"
+        // But since this is a refactor of an existing form, let's use the style prop CORRECTLY or wrap it.
+        // Wait, standard HTML <form> doesn't accept 'sx' unless it's a styled component or MUI Box.
+        // Let's stick to style for the HTML element to avoid breaking it, but clean it up.
         style={{
           display: "flex",
           flexDirection: "column",

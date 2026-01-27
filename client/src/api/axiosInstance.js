@@ -5,14 +5,14 @@ const API = axios.create({
     withCredentials: true,
 });
 
-// Attach token to every request
-API.interceptors.request.use((config) => {
-    const token = localStorage.getItem("token");
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-});
+// Attach token to every request (REMOVED: Using Cookies instead)
+// API.interceptors.request.use((config) => {
+//     const token = localStorage.getItem("token");
+//     if (token) {
+//         config.headers.Authorization = `Bearer ${token}`;
+//     }
+//     return config;
+// });
 
 // Optional: handle 401 globally
 API.interceptors.response.use(
