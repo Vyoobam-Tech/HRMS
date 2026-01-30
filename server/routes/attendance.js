@@ -5,22 +5,76 @@ import { Op } from "sequelize";
 
 const router = express.Router()
 
+const calculateOvertime = (
+    login,
+    logout,
+    breakMinutes = 0,
+    lunchMinutes = 0
+    ) => {
+    if (!login || !logout) return 0;
+
+    const today = new Date().toISOString().split("T")[0];
+
+    const loginTime = new Date(`${today}T${login}`);
+    const logoutTime = new Date(`${today}T${logout}`);
+
+    let workedMinutes = Math.floor((logoutTime - loginTime) / 60000);
+
+    workedMinutes -= (Number(breakMinutes) + Number(lunchMinutes));
+
+    const REQUIRED_MINUTES = 9 * 60;
+
+    if (workedMinutes <= REQUIRED_MINUTES) return 0;
+
+    let otMinutes = workedMinutes - REQUIRED_MINUTES;
+
+    // Minimum 30 mins OT
+    if (otMinutes < 30) return 0;
+
+    // Round DOWN to 30 min blocks
+    return Math.floor(otMinutes / 30) * 30;
+};
+
+const toNumber = (v) => {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : 0;
+};
+
+const formatHours = (totalMinutes) => {
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = Math.round(totalMinutes % 60);
+  return `${hours}h ${minutes}m`;
+};
+
+
+
 router.post("/", async (req, res) => {
     try{
         const {empid, name, attendancedate, login, breakminutes, lunchminutes, logout, totalminutes, totalhours, status} = req.body
 
-        const attendance = await Attendance.create({
-            empid,
-            name,
-            attendancedate,
+        const otMinutes = calculateOvertime(
             login,
-            breakminutes,
-            lunchminutes,
             logout,
-            totalminutes,
-            totalhours,
-            status
+            breakminutes,
+            lunchminutes
+            );
+
+
+        const attendance = await Attendance.create({
+          empid,
+          name,
+          attendancedate,
+          login,
+          breakminutes: Math.floor(toNumber(breakminutes)),
+          lunchminutes: Math.floor(toNumber(lunchminutes)),
+          logout,
+          totalminutes: Math.floor(toNumber(totalminutes)),
+          totalhours: formatHours(toNumber(totalminutes)),
+          overtimeminutes: Math.floor(otMinutes),
+          overtime: `${Math.floor(otMinutes / 60)}h ${otMinutes % 60}m`,
+          status
         })
+
         res.status(201).json({
             success: true,
             message: "Attendance Created",
@@ -51,12 +105,21 @@ router.put("/:id", async (req, res) => {
             return res.status(404).json({success: false, message: "Attendance not found"})
         }
 
+        const otMinutes = calculateOvertime(
+            login,
+            logout,
+            breakminutes,
+            lunchminutes
+            );
+
         attendance.login = login
-        attendance.breakminutes = breakminutes
-        attendance.lunchminutes = lunchminutes
+        attendance.breakminutes = toNumber(breakminutes);
+        attendance.lunchminutes = toNumber(lunchminutes);
         attendance.logout = logout
-        attendance.totalminutes = totalminutes
+        attendance.totalminutes = toNumber(totalminutes);
         attendance.totalhours = totalhours
+        attendance.overtimeminutes = otMinutes;
+        attendance.overtime = `${Math.floor(otMinutes / 60)}h ${otMinutes % 60}m`;
         attendance.status = status
 
         await attendance.save()
@@ -81,62 +144,148 @@ router.get("/by-user/:empid", async (req, res) => {
 
 
 router.get("/summary", async (req, res) => {
-    try{
-        const { empid, month, year } = req.query
+  try {
+    const { empid, type, month, year } = req.query;
 
-        const startDate = new Date(year, month - 1, 1)
-        const endDate = new Date(year, month, 0)
-
-        const attendance = await Attendance.findAll({
-            where: {
-                empid,
-                attendancedate: {
-                    [Op.between]: [startDate, endDate]
-                }
-            }
-        })
-
-        const holiday = await Holiday.findAll({
-            where: {
-                date: {
-                    [Op.between]: [startDate, endDate]
-                }
-            }
-        })
-
-        const present = attendance.filter((a) => a.status === "Present").length
-        // const absent = attendance.filter((a) => a.status === "Absent").length
-        const halfday = attendance.filter((a) => a.status === "Half-day").length
-
-        const holidayDates = holiday.map(h => new Date(h.date).toDateString())
-
-        let workingDays = 0
-        for (let day=1; day<=endDate.getDate(); day++){
-            const date = new Date(year, month - 1, day)
-            if(!holidayDates.includes(date.toDateString())){
-                workingDays++
-            }
-        }
-
-        const presentHalfday = present + halfday * 0.5
-
-        const absent = Math.round((workingDays - presentHalfday) * 10) /10
-
-        res.json({
-            empid,
-            period: `${month}/${year}`,
-            workingDays,
-            present,
-            halfday,
-            absent,
-            total: present + (halfday * 0.5)
-        })
-
-
-    }catch(err){
-        res.status(500).json({message: "Error checking data"})
+    if (!empid || !type || !year) {
+      return res.status(400).json({ message: "Missing required params" });
     }
-})
+
+    let startDate, endDate, period;
+
+    // 🔥 MONTHLY
+    if (type === "Monthly") {
+      if (!month) {
+        return res.status(400).json({ message: "Month required for Monthly" });
+      }
+
+      startDate = new Date(year, month - 1, 1);
+      endDate = new Date(year, month, 0);
+      period = `${month}/${year}`;
+    }
+
+    // 🔥 YEARLY
+    if (type === "Yearly") {
+      startDate = new Date(year, 0, 1);   // Jan 1
+      endDate = new Date(year, 11, 31);   // Dec 31
+      period = `${year}`;
+    }
+
+    const attendance = await Attendance.findAll({
+      where: {
+        empid,
+        attendancedate: {
+          [Op.between]: [startDate, endDate],
+        },
+      },
+    });
+
+    const holidays = await Holiday.findAll({
+      where: {
+        date: {
+          [Op.between]: [startDate, endDate],
+        },
+      },
+    });
+
+    const present = attendance.filter(a => a.status === "Present").length;
+    const halfday = attendance.filter(a => a.status === "Half-day").length;
+
+    const holidayDates = holidays.map(h =>
+      new Date(h.date).toDateString()
+    );
+
+    let workingDays = 0;
+    let current = new Date(startDate);
+
+    while (current <= endDate) {
+      if (!holidayDates.includes(current.toDateString())) {
+        workingDays++;
+      }
+      current.setDate(current.getDate() + 1);
+    }
+
+    const presentHalfday = present + halfday * 0.5;
+    const absent = Math.round((workingDays - presentHalfday) * 10) / 10;
+
+    res.json({
+      empid,
+      period,
+      workingDays,
+      present,
+      halfday,
+      absent,
+      total: presentHalfday,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error checking data" });
+  }
+});
+
+router.get("/ot-summary", async (req, res) => {
+  try {
+    const { empid, type, month, year, startDate, endDate } = req.query;
+
+    if (!empid || !type) {
+      return res.status(400).json({ message: "empid and type required" });
+    }
+
+    let fromDate, toDate, period;
+
+    // ✅ WEEKLY (Frontend sends startDate & endDate)
+    if (type === "Weekly") {
+      if (!startDate || !endDate) {
+        return res.status(400).json({ message: "Week dates required" });
+      }
+
+      fromDate = new Date(startDate);
+      toDate = new Date(endDate);
+      period = "Weekly";
+    }
+
+    // ✅ MONTHLY
+    if (type === "Monthly") {
+      if (!month || !year) {
+        return res.status(400).json({ message: "Month & Year required" });
+      }
+
+      fromDate = new Date(year, month - 1, 1);
+      toDate = new Date(year, month, 0);
+      period = `${month}/${year}`;
+    }
+
+    const attendance = await Attendance.findAll({
+      where: {
+        empid,
+        attendancedate: {
+          [Op.between]: [fromDate, toDate],
+        },
+      },
+    });
+
+    const validOT = attendance.filter(a => a.overtimeminutes >= 30);
+
+    const totalOTMinutes = validOT.reduce((sum, a) => sum + Number(a.overtimeminutes), 0);
+    const daysWithOT = validOT.length;
+
+    const otHours = Math.floor(totalOTMinutes / 60);
+    const otMinutes = totalOTMinutes % 60;
+
+    res.json({
+      empid,
+      period,
+      daysWithOT,
+      totalOTMinutes,
+      overtime: `${otHours}h ${otMinutes}m`
+    });
+
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error fetching OT summary" });
+  }
+});
 
 
 router.delete('/:id', async (req, res) => {

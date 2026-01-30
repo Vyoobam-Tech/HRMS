@@ -16,6 +16,10 @@ import { fetchTodayHoliday } from "../features/holidaySlice";
 import { fetchLeaveToday } from "../features/leaveSlice";
 import { submitAttendance } from "../features/attendanceSlice";
 
+const getTime = () =>
+  new Date().toLocaleTimeString("en-GB", { hour12: false });
+
+
 const Navbar = ({ sidebarWidth }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl)
@@ -113,11 +117,11 @@ const Navbar = ({ sidebarWidth }) => {
     //  if (authLoading) return null;
 
 
-  const handleLogout = () => {
+const handleLogout = async () => {
   if (!user || !loginTime) return;
 
-  const logout = new Date().toLocaleTimeString("en-GB", { hour12: false });
   const date = new Date().toISOString().split("T")[0];
+  const logout = getTime();
 
   const workedMinutes =
     (new Date(`${date}T${logout}`) -
@@ -134,37 +138,35 @@ const Navbar = ({ sidebarWidth }) => {
   const hours = Math.floor(totalMinutes / 60);
   const minutes = totalMinutes % 60;
 
-  dispatch(
-    submitAttendance({
-      empid: user.empid,
-      name: user.username,
-      attendancedate: date,
+  try {
+    // 🔥 VERY IMPORTANT
+    const result = await dispatch(
+      submitAttendance({
+        empid: user.empid,
+        name: user.username,
+        attendancedate: date,
+        login: loginTime,
+        logout,
+        breakminutes: breakMinutes,
+        lunchminutes: lunchMinutes,
+        totalminutes: totalMinutes,
+        totalhours: `${hours}h ${minutes}m`,
+        status: hours >= 8 ? "Present" : hours >= 4 ? "Half-day" : "Absent",
+      })
+    ).unwrap(); // 👈 THIS WAITS FOR API SUCCESS
 
-      login: loginTime,
-      logout,
+    console.log("Attendance saved:", result);
 
-      breakIn,
-      breakOut,
-      lunchIn,
-      lunchOut,
-
-      breakminutes: `${breakMinutes}m`,
-      lunchminutes: `${lunchMinutes}m`,
-
-      totalMinutes,
-      totalhours: `${hours}h ${minutes}m`,
-      status: hours >= 8 ? "Present" : hours >= 4 ? "Half-day" : "Absent",
-    })
-  );
-
-  localStorage.removeItem("loginTime");
-  localStorage.removeItem("breakIn");
-  localStorage.removeItem("breakOut");
-  localStorage.removeItem("lunchIn");
-  localStorage.removeItem("lunchOut");
-
-  window.location.href = "/";
+    // ✅ NOW SAFE
+    localStorage.clear();
+    window.location.replace("/"); // safer than href
+  } catch (err) {
+    console.error("Attendance save failed:", err);
+    alert("Attendance not saved. Please try again.");
+  }
 };
+
+
 
 
   return (
@@ -223,9 +225,10 @@ const Navbar = ({ sidebarWidth }) => {
                   fullWidth
                   onClick={() => {
                     if(hasLeaveToday || todayHoliday) return
-                    const time = new Date().toLocaleTimeString("en-GB", { hour12: false})
-                    localStorage.setItem("loginTime", time)
-                    setLoginTime(time)
+                    const time = getTime();
+                    localStorage.setItem("loginTime", time);
+                    setLoginTime(time);
+
                   }}
                   disabled={!!loginTime || hasLeaveToday || todayHoliday}
                 >
@@ -241,9 +244,10 @@ const Navbar = ({ sidebarWidth }) => {
                     variant="contained"
                     color="primary"
                     onClick={() => {
-                      const time = new Date().toLocaleTimeString("en-GB", { hour12: false })
-                      localStorage.setItem("breakIn", time)
-                      setBreakIn(time)
+                      const time = getTime();
+                      localStorage.setItem("breakIn", time);
+                      setBreakIn(time);
+
                     }}
                     disabled={!loginTime || !!breakIn}
                   >
@@ -255,7 +259,7 @@ const Navbar = ({ sidebarWidth }) => {
                     variant="contained"
                     color="primary"
                     onClick={() => {
-                      const time = new Date().toLocaleTimeString("en-GB", { hour12: false })
+                      const time = getTime()
                       localStorage.setItem("breakOut", time)
                       setBreakOut(time)
                     }}
@@ -273,7 +277,7 @@ const Navbar = ({ sidebarWidth }) => {
                     variant="contained"
                     color="primary"
                     onClick={() => {
-                      const time = new Date().toLocaleTimeString("en-GB", { hour12: false})
+                      const time = getTime()
                       localStorage.setItem("lunchIn", time)
                       setLunchIn(time)
                     }}
@@ -286,7 +290,7 @@ const Navbar = ({ sidebarWidth }) => {
                     variant="contained"
                     color="primary"
                     onClick={() => {
-                      const time = new Date().toLocaleTimeString("en-GB", { hour12: false})
+                      const time =getTime()
                       localStorage.setItem("lunchOut", time)
                       setLunchOut(time)
                     }}
@@ -304,6 +308,7 @@ const Navbar = ({ sidebarWidth }) => {
                   color="error"
                   fullWidth
                   onClick={handleLogout}
+                  disabled={!loginTime || hasLeaveToday || todayHoliday}
                 >
                   Logout
                 </Button>

@@ -1,138 +1,140 @@
-import React, { useEffect, useState } from 'react'
-import Header from '../../Components/Header'
-import { Button, Typography, Stack, IconButton, Paper } from '@mui/material'
-import API, { BASE_URL } from '../../api/axiosInstance';
-import ApplyPolicyForm from '../../Components/ApplyPolicyForm';
-import DownloadIcon from '@mui/icons-material/Download'
+import React, { useEffect, useState } from "react";
+import Header from "../../Components/Header";
+import {
+  Button,
+  Typography,
+  Stack,
+  IconButton,
+  Paper,   
+  Tabs,
+  Tab,
+  Box,
+} from "@mui/material";
+import DownloadIcon from "@mui/icons-material/Download";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { Box } from '@mui/system';
-import MyDocumentsDialog from '../../Components/MyDocumentDialog';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchProfile } from '../../features/auth/authSlice';
-import { deleteDocument, deletePolicy, fetchDocuments, fetchPolicies } from '../../features/policySlice';
 
-const index = () => {
-    const [open, setOpen] = useState(false)
-    const [docOpen, setDocOpen] = useState(false);
+import API, { BASE_URL } from "../../api/axiosInstance";
+import ApplyPolicyForm from "../../Components/ApplyPolicyForm";
+import MyDocumentsDialog from "../../Components/MyDocumentDialog";
+import PolicyOutlinedIcon from '@mui/icons-material/PolicyOutlined';
+import PlagiarismOutlinedIcon from '@mui/icons-material/PlagiarismOutlined';
+import { useDispatch, useSelector } from "react-redux";
+import { fetchProfile } from "../../features/auth/authSlice";
+import {
+  deleteDocument,
+  deletePolicy,
+  fetchDocuments,
+  fetchPolicies,
+} from "../../features/policySlice";
 
-    const dispatch = useDispatch()
+const Index = () => {
+  const [open, setOpen] = useState(false);
+  const [docOpen, setDocOpen] = useState(false);
+  const [tab, setTab] = useState(0);
 
-    const { user, loading: authLoading, error: authError } = useSelector(
-      (state) => state.auth
-    )
+  const dispatch = useDispatch();
 
-    const {policies, documents, loading} = useSelector((state) => state.policy)
+  const { user } = useSelector((state) => state.auth);
+  const { policies, documents } = useSelector((state) => state.policy);
 
-    useEffect(() => {
-        dispatch(fetchProfile());
-      }, [dispatch]);
+  /* -------------------- FETCH DATA -------------------- */
+  useEffect(() => {
+    dispatch(fetchProfile());
+    dispatch(fetchPolicies());
+  }, [dispatch]);
 
-      useEffect(() => {
-        dispatch(fetchPolicies())
-      }, [dispatch]);
-
-      useEffect(() => {
-        if (user?.empid) {
-          dispatch(fetchDocuments(user.empid))
-        }
-      }, [user]);
-
-
-    const handleDownload = async (fileName) => {
-      try{
-        const res = await API.get(`/api/policy/download/${fileName}`,
-          {responseType: "blob"}
-        )
-
-        const url = window.URL.createObjectURL(new Blob([res.data]));
-        const link = document.createElement("a");
-        link.href = url;
-        link.setAttribute("download", fileName);
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-      } catch (error) {
-        console.error("Download failed", error);
-      }
+  useEffect(() => {
+    if (user?.empid) {
+      dispatch(fetchDocuments(user.empid));
     }
+  }, [user, dispatch]);
 
-    const handleDocumentDownload = async (fileName) => {
-      try {
-        const res = await API.get(
-          `/uploads/employee-docs/${fileName}`,
-          { responseType: "blob" }
-        );
+  /* -------------------- HELPERS -------------------- */
+  const documentFields = [
+    { key: "photo", label: "Photo" },
+    { key: "aadhar", label: "Aadhar" },
+    { key: "pan", label: "PAN" },
+    { key: "license", label: "License" },
+  ];
 
-        const url = window.URL.createObjectURL(new Blob([res.data]));
-        const link = document.createElement("a");
-        link.href = url;
-        link.setAttribute("download", fileName);
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-      } catch (err) {
-        console.log("Download failed", err);
-      }
-    };
+  const TabPanel = ({ value, index, children }) => (
+    <div hidden={value !== index}>
+      {value === index && <Box sx={{ mt: 2 }}>{children}</Box>}
+    </div>
+  );
 
+  /* -------------------- ACTIONS -------------------- */
+  const handleDownload = async (fileName) => {
+    const res = await API.get(`/api/policy/download/${fileName}`, {
+      responseType: "blob",
+    });
+    const url = window.URL.createObjectURL(new Blob([res.data]));
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = fileName;
+    link.click();
+  };
 
-    const handleDelete = async (id) => {
-      dispatch(deletePolicy(id))
-    }
+  const handleDocumentDownload = async (fileName) => {
+    const res = await API.get(`/uploads/employee-docs/${fileName}`, {
+      responseType: "blob",
+    });
+    const url = window.URL.createObjectURL(new Blob([res.data]));
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = fileName;
+    link.click();
+  };
 
-    const handleDocumentDelete = async (field) => {
-      dispatch(deleteDocument({ empid: user.empid, field }))
-    }
+  const handleDelete = (id) => dispatch(deletePolicy(id));
+  const handleDocumentDelete = (field) =>
+    dispatch(deleteDocument({ empid: user.empid, field }));
 
+  /* -------------------- UI -------------------- */
   return (
     <div
-        style={{
+      style={{
         minHeight: "100vh",
-        width: "100%",
-        padding: "120px 40px 20px 40px",
+        padding: "120px 40px 20px",
         boxSizing: "border-box",
-        }}
+      }}
     >
-        <Header title="WORKPLACE ETHICS"/>
+      <Header title="WORKPLACE ETHICS" />
+
+      {/* ---------- TABS ---------- */}
+      <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+      <Tabs
+        value={tab}
+        onChange={(e, newValue) => setTab(newValue)}
+      >
+        <Tab icon={<PolicyOutlinedIcon />} label="Policies" />
+        <Tab icon={<PlagiarismOutlinedIcon />} label="My Documents" />
+      </Tabs>
+      </Box>
+
+      {/* ================= POLICIES TAB ================= */}
+      <TabPanel value={tab} index={0}>
         {user?.role === "superadmin" && (
-            <>
-                <Button
-                variant='contained'
-                color='primary'
-                onClick={() => setOpen(true)}
-                sx={{ mb: 2 }}
-                >
-                Add Policy
-                </Button>
-                <Typography variant="h6" gutterBottom>
-                    Policies
-                </Typography>
-            </>
+          <Button
+            variant="contained"
+            onClick={() => setOpen(true)}
+            sx={{ mb: 2 }}
+          >
+            Add Policy
+          </Button>
         )}
+
         <Box
           sx={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+            gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
             gap: 2,
-            mt: 2
           }}
         >
-          {policies.map((policy) => (
-            <>
-            <Paper
-              key={policy.id}
-              elevation={3}
-              sx={{
-              p: 2,
-              width: 220,
-              bgcolor: '#f5f5f5',
-              borderRadius: 2,
-              cursor: "pointer",
-              position: "relative",
-            }}>
-              <Typography sx={{ mb: 2 }}>
-                {policy.title}
-              </Typography>
+          {policies?.map((policy) => (
+            <Paper key={policy.id} sx={{ p: 2, borderRadius: 2 }}>
+              <Typography sx={{ mb: 2 }}>{policy.title}</Typography>
+
               <Button
                 variant="outlined"
                 startIcon={<DownloadIcon />}
@@ -142,155 +144,90 @@ const index = () => {
               </Button>
 
               {user?.role === "superadmin" && (
-                <IconButton color="error" aria-label="delete" onClick={() => handleDelete(policy.id)}>
+                <IconButton
+                  color="error"
+                  onClick={() => handleDelete(policy.id)}
+                >
                   <DeleteIcon />
                 </IconButton>
               )}
             </Paper>
-            </>
           ))}
         </Box>
+      </TabPanel>
 
+      {/* ================= DOCUMENTS TAB ================= */}
+      <TabPanel value={tab} index={1}>
         <Button
-                variant='contained'
-                color='primary'
-                onClick={() => setDocOpen(true)}
-                sx={{ mt: 4, mb: 2 }}
-          >
-            Add My document
+          variant="contained"
+          onClick={() => setDocOpen(true)}
+          sx={{ mb: 2 }}
+        >
+          Add My Document
         </Button>
 
+        {!documents ? (
+          <Typography>No documents uploaded</Typography>
+        ) : (
+          <Stack spacing={2}>
+            {documentFields.some((d) => documents[d.key]) ? (
+              documentFields.map(
+                ({ key, label }) =>
+                  documents[key] && (
+                    <Stack
+                      key={key}
+                      direction="row"
+                      spacing={2}
+                      alignItems="center"
+                    >
+                      <Typography sx={{ width: 100 }}>
+                        {label} :
+                      </Typography>
 
-        {documents && (
-          <Box>
+                      <Button
+                        variant="contained"
+                        component="a"
+                        href={`${BASE_URL}/uploads/employee-docs/${documents[key]}`}
+                        target="_blank"
+                      >
+                        View
+                      </Button>
 
-            <Stack spacing={1}>
-              {documents.photo && (
-                <>
-                <Typography variant="h6" gutterBottom>
-                  My Documents
-                </Typography>
-                <Stack direction="row" spacing={2} alignItems="center">
-                  <Typography sx={{ width: 100 }}>Photo :</Typography>
-                  <Button
-                    variant="contained"
-                    component="a"
-                    href={`${BASE_URL}/uploads/employee-docs/${documents.photo}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    sx={{
-                      textTransform: "none",
-                      color: "#fff",
-                      textDecoration: "none",
-                    }}
-                  >
-                    View
-                  </Button>
+                      <IconButton
+                        onClick={() =>
+                          handleDocumentDownload(documents[key])
+                        }
+                      >
+                        <DownloadIcon />
+                      </IconButton>
 
-                  <Button
-                    onClick={() => handleDocumentDownload(documents.photo)}
-                  >
-                    <DownloadIcon />
-                  </Button>
-                  <IconButton color="error" aria-label="delete" onClick={() => handleDocumentDelete("photo")}>
-                    <DeleteIcon />
-                  </IconButton>
-                </Stack>
-                </>
-              )}
-
-              {documents.aadhar && (
-                <Stack direction="row" spacing={2} alignItems="center">
-                  <Typography sx={{ width: 100 }}>Aadhar :</Typography>
-                  <Button
-                    variant="contained"
-                    component="a"
-                    href={`${BASE_URL}/uploads/employee-docs/${documents.aadhar}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    sx={{
-                      textTransform: "none",
-                      color: "#fff",
-                      textDecoration: "none",
-                    }}
-                  >
-                    View
-                  </Button>
-                  <Button
-                    onClick={() => handleDocumentDownload(documents.aadhar)}
-                  >
-                    <DownloadIcon />
-                  </Button>
-                  <IconButton color="error" aria-label="delete" onClick={() => handleDocumentDelete("aadhar")}>
-                    <DeleteIcon />
-                  </IconButton>
-                </Stack>
-              )}
-
-              {documents.pan && (
-                <Stack direction="row" spacing={2} alignItems="center">
-                  <Typography sx={{ width: 100 }}>PAN :</Typography>
-                  <Button
-                    variant="contained"
-                    component="a"
-                    href={`${BASE_URL}/uploads/employee-docs/${documents.pan}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    sx={{
-                      textTransform: "none",
-                      color: "#fff",
-                      textDecoration: "none",
-                    }}
-                  >
-                    View
-                  </Button>
-                  <Button
-                    onClick={() => handleDocumentDownload(documents.pan)}
-                  >
-                    <DownloadIcon />
-                  </Button>
-                  <IconButton color="error" aria-label="delete" onClick={() => handleDocumentDelete("pan")}>
-                    <DeleteIcon />
-                  </IconButton>
-                </Stack>
-              )}
-
-              {documents.license && (
-                <Stack direction="row" spacing={2} alignItems="center">
-                  <Typography sx={{ width: 100 }}>License :</Typography>
-                  <Button
-                    variant="contained"
-                    component="a"
-                    href={`${BASE_URL}/uploads/employee-docs/${documents.license}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    sx={{
-                      textTransform: "none",
-                      color: "#fff",
-                      textDecoration: "none",
-                    }}
-                  >
-                    View
-                  </Button>
-                  <Button
-                    onClick={() => handleDocumentDownload(documents.license)}
-                  >
-                    <DownloadIcon />
-                  </Button>
-                  <IconButton color="error" aria-label="delete" onClick={() => handleDocumentDelete("license")}>
-                    <DeleteIcon />
-                  </IconButton>
-                </Stack>
-              )}
-            </Stack>
-          </Box>
+                      <IconButton
+                        color="error"
+                        onClick={() => handleDocumentDelete(key)}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </Stack>
+                  )
+              )
+            ) : (
+              <Typography color="text.secondary">
+                No documents uploaded yet
+              </Typography>
+            )}
+          </Stack>
         )}
+      </TabPanel>
 
-        <ApplyPolicyForm  open={open} handleClose={() => setOpen(false)}/>
-        <MyDocumentsDialog user={user} open={docOpen}onClose={() => setDocOpen(false)}/>
-
+      {/* ---------- MODALS ---------- */}
+      <ApplyPolicyForm open={open} handleClose={() => setOpen(false)} />
+      <MyDocumentsDialog
+        user={user}
+        open={docOpen}
+        onClose={() => setDocOpen(false)}
+      />
     </div>
-  )
-}
+  );
+};
 
-export default index
+export default Index;

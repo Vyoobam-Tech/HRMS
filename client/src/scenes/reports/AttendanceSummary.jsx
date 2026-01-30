@@ -4,7 +4,24 @@ import { Box } from '@mui/system'
 import { Button, Divider, MenuItem, Paper, TextField, Typography } from '@mui/material'
 import { PieChart } from '@mui/x-charts'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchAttendanceSummary } from '../../features/attendanceSummarySlice'
+import { fetchAttendanceSummary, fetchOTSummary } from '../../features/attendanceSummarySlice'
+import { Tabs, Tab } from "@mui/material";
+
+
+const getCurrentWeekRange = () => {
+    const today = new Date();
+    const day = today.getDay(); // 0 = Sunday, 1 = Monday
+
+    const diffToMonday = day === 0 ? -6 : 1 - day;
+
+    const monday = new Date(today);
+    monday.setDate(today.getDate() + diffToMonday);
+
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+
+    return { monday, sunday };
+  };
 
 const AttendanceSummary = () => {
 
@@ -12,12 +29,57 @@ const AttendanceSummary = () => {
   const [type, setType] = useState("")
   const [month, setMonth] = useState("")
   const [year, setYear] = useState("")
+  const [tab, setTab] = useState(0);
+
+  const [otType, setOtType] = useState("")
+  const [otMonth, setOtMonth] = useState("");
+  const [otYear, setOtYear] = useState("")
+
+  const handleTabChange = (event, newValue) => {
+    setTab(newValue);
+  };
+
 
   const dispatch = useDispatch();
 
-  const { data: summary, loading, error } = useSelector(
+  const { data: summary, ot: otSummary, loading, error } = useSelector(
     (state) => state.attendanceSummary
   );
+
+
+
+    const handleOTCheck = () => {
+      if (!empId || !otType) return;
+
+
+      if (otType === "Weekly") {
+        const { monday, sunday } = getCurrentWeekRange();
+
+        dispatch(
+          fetchOTSummary({
+            empid: empId,
+            type: "Weekly",
+            startDate: monday.toISOString().split("T")[0],
+            endDate: sunday.toISOString().split("T")[0],
+          })
+        );
+      }
+
+      if (otType === "Monthly") {
+        if (!otMonth || !otYear) return;
+
+        dispatch(
+          fetchOTSummary({
+            empid: empId,
+            type: "Monthly",
+            month: otMonth,
+            year: otYear,
+          })
+        );
+      }
+    };
+
+
 
   const months = [
     { num: 1, name: "January" },
@@ -51,6 +113,8 @@ const AttendanceSummary = () => {
       );
     }
 
+
+
   return (
     <div
       style={{
@@ -60,8 +124,22 @@ const AttendanceSummary = () => {
         boxSizing: "border-box",
       }}
     >
-      <Header title="ATTENDANCE SUMMARY "/>
+      <Header title="REPORTS"/>
 
+      <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+        <Tabs
+          value={tab}
+          onChange={handleTabChange}
+          textColor="primary"
+          indicatorColor="primary"
+        >
+          <Tab label="Attendance Summary" />
+          <Tab label="Overtime (OT)" />
+        </Tabs>
+      </Box>
+
+      {tab === 0 && (
+        <>
       <Box
         display="flex"
         alignItems="center"
@@ -72,6 +150,9 @@ const AttendanceSummary = () => {
           borderRadius: "10px"
         }}
       >
+        <Typography variant="h6" >
+          Attendance Summary
+        </Typography>
         <TextField
           label="Emp ID"
           value={empId}
@@ -82,7 +163,10 @@ const AttendanceSummary = () => {
           sx={{ width: 120 }}
           label="Type"
           value={type}
-          onChange={(e) => setType(e.target.value)}
+          onChange={(e) => {
+            setType(e.target.value)
+            setMonth("")
+          }}
         >
           <MenuItem value="Monthly">Monthly</MenuItem>
           <MenuItem value="Yearly">Yearly</MenuItem>
@@ -139,6 +223,7 @@ const AttendanceSummary = () => {
           variant='contained'
           color='primary'
           onClick={handleCheck}
+          disabled={!empId}
         >
           Check
         </Button>
@@ -188,7 +273,122 @@ const AttendanceSummary = () => {
               </Box>
             </Box>
         )}
+        </>
+      )}
 
+      {tab === 1 && (
+        <>
+        <Box
+          display="flex"
+          alignItems="center"
+          gap={2}
+          sx={{
+            background: "white",
+            p: 3,
+            borderRadius: 2,
+          }}
+        >
+          <Typography variant="h6" sx={{ mr: 2 }}>
+            Overtime (OT) Check
+          </Typography>
+
+          <TextField
+            label="Emp ID"
+            value={empId}
+            onChange={(e) => setEmpId(e.target.value)}
+            sx={{ width: 140 }}
+          />
+
+          <TextField
+            select
+            label="Type"
+            sx={{ width: 140 }}
+            value={otType}
+            onChange={(e) => {
+              setOtType(e.target.value);
+              setOtMonth(""); // reset month when switching
+            }}
+          >
+            <MenuItem value="Weekly">Weekly</MenuItem>
+            <MenuItem value="Monthly">Monthly</MenuItem>
+          </TextField>
+
+          {otType === "Weekly" && (
+            <Typography
+              sx={{
+                fontWeight: 500,
+                color: "gray",
+                ml: 1,
+              }}
+            >
+              Week:&nbsp;
+              {getCurrentWeekRange().monday.toLocaleDateString()} –{" "}
+              {getCurrentWeekRange().sunday.toLocaleDateString()}
+            </Typography>
+          )}
+
+
+          {otType === "Monthly" && (
+            <>
+              <TextField
+                select
+                label="Month"
+                sx={{ width: 150 }}
+                value={otMonth}
+                onChange={(e) => setOtMonth(e.target.value)}
+              >
+                {months.map((m) => (
+                  <MenuItem key={m.num} value={m.num}>
+                    {m.name}
+                  </MenuItem>
+                ))}
+              </TextField>
+
+              <TextField
+                select
+                label="Year"
+                sx={{ width: 120 }}
+                value={otYear}
+                onChange={(e) => setOtYear(e.target.value)}
+              >
+                {years.map((y) => (
+                  <MenuItem key={y} value={y}>
+                    {y}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </>
+          )}
+
+          <Button
+            variant="contained"
+            onClick={handleOTCheck}
+            disabled={
+              !empId
+            }
+          >
+            Check OT
+          </Button>
+        </Box>
+        {otSummary && (
+          <Box sx={{ mt: 3 }}>
+            <Typography>
+              <b>Emp ID:</b> {otSummary.empid}
+            </Typography>
+            <Typography>
+              <b>Period:</b> {otSummary.period}
+            </Typography>
+            <Typography>
+              <b>Total OT:</b> {otSummary.overtime}
+            </Typography>
+            <Typography>
+              <b>Days with OT:</b> {otSummary.daysWithOT}
+            </Typography>
+          </Box>
+        )}
+</>
+        
+      )}
     </div>
   )
 }

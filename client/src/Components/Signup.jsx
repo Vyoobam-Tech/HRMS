@@ -43,12 +43,55 @@ const Signup = () => {
   const [hasSuperAdmin, setHasSuperAdmin] = useState(false);
   const [departments, setDepartments] = useState([])
 
+  const [errors, setErrors] = useState({});
+
   const dispatch = useDispatch();
   const { loading, error } = useSelector((state) => state.auth);
+
+  const validate = () => {
+  const newErrors = {};
+
+  const empIdPattern = /^[A-Z]{3}\d{4}$/;
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const passwordPattern =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+  if (!username.trim()) {
+    newErrors.username = "Username is required";
+  }
+
+  if (!empid.trim()) {
+    newErrors.empid = "Emp ID is required";
+  } else if (!empIdPattern.test(empid.toUpperCase())) {
+    newErrors.empid =
+      "Emp ID must be 3 letters followed by 4 digits (e.g., ABC1234)";
+  }
+
+  if (!department) {
+    newErrors.department = "Please select a department";
+  }
+
+  if (!email.trim()) {
+    newErrors.email = "Email is required";
+  } else if (!emailPattern.test(email)) {
+    newErrors.email = "Invalid email format";
+  }
+
+  if (!password) {
+    newErrors.password = "Password is required";
+  } else if (!passwordPattern.test(password)) {
+    newErrors.password =
+      "Password must be 8+ chars, include uppercase, lowercase, number, and special character";
+  }
+
+  setErrors(newErrors);
+  return Object.keys(newErrors).length === 0;
+};
 
 
  const handleSubmit = async (e) => {
   e.preventDefault();
+  if (!validate()) return;
 
   try {
     await dispatch(signupUser({ role, username, empid, department, email, password })).unwrap();
@@ -222,8 +265,9 @@ const Signup = () => {
         <TextField
           type="text"
           placeholder="Username"
-          required
           onChange={(e) => setUsername(e.target.value)}
+          error={!!errors.username}
+          helperText={errors.username}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
@@ -243,8 +287,9 @@ const Signup = () => {
         <TextField
           type="text"
           placeholder="Emp ID"
-          required
           onChange={(e) => setEmpId(e.target.value)}
+          error={!!errors.empid}
+          helperText={errors.empid}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
@@ -263,10 +308,11 @@ const Signup = () => {
 
         <TextField
           select
-          required
           label="Department"
           onChange={(e) => setDepartment(e.target.value)}
           value={department}
+          error={!!errors.department}
+          helperText={errors.department}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
@@ -293,8 +339,9 @@ const Signup = () => {
           type="email"
           placeholder="Email"
           autoComplete="off"
-          required
           onChange={(e) => setEmail(e.target.value)}
+          error={!!errors.email}
+          helperText={errors.email}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
@@ -314,8 +361,9 @@ const Signup = () => {
         <TextField
           type={showPassword ? "text" : "password"}
           placeholder="Password"
-          required
           onChange={(e) => setPassword(e.target.value)}
+          error={!!errors.password}
+          helperText={errors.password}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">

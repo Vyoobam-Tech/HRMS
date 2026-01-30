@@ -53,8 +53,31 @@ const EmpDetails = () => {
     }catch(err){
       console.log("Update failed:", err);
     }
-
   }
+  
+
+  const InfoItem = ({ label, value }) => (
+    <Box
+      sx={{
+        p: 1.5,
+        borderRadius: 1,
+        bgcolor: 'grey.50',
+        border: '1px solid',
+        borderColor: 'grey.200',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 0.5,
+      }}
+    >
+      <Typography variant="caption" color="text.secondary">
+        {label}
+      </Typography>
+      <Typography variant="body2" fontWeight={600}>
+        {value || "-"}
+      </Typography>
+    </Box>
+  );
+
 
   return (
     <div
@@ -65,9 +88,9 @@ const EmpDetails = () => {
         boxSizing: "border-box",
       }}
     >
-      <Box>
+      <Box sx={{ display: "flex",  }}>
         <Button variant='contained' color='primary' sx={{ mb: 2 }} onClick={handleAdd} disabled={!!employee}>
-          Add Details
+          Add
         </Button>
 
         <Button
@@ -75,8 +98,9 @@ const EmpDetails = () => {
           color='secondary'
           sx={{ mb:2, ml: 2}}
           onClick={handleEdit}
+          disabled={!employee}
         >
-          Edit Details
+          Edit
         </Button>
 
       </Box>
@@ -120,13 +144,13 @@ const EmpDetails = () => {
               ["Spouse Name", employee?.spouseName],
               ["Aadhaar", employee?.aadhaar],
               ["PAN", employee?.pan],
-              ].map(([label, value]) => (
+            ].map(([label, value]) => (
               <Grid item xs={12} sm={6} md={4} key={label}>
-                  <Typography component="span" sx={{ fontWeight: 600 }}>{label} : {""}</Typography>
-                  <Typography component="span">{value || "-"}</Typography>
-                </Grid>
-              ))}
+                <InfoItem label={label} value={value} />
+              </Grid>
+            ))}
           </Grid>
+
         </CardContent>
       </Card>
 
@@ -152,10 +176,7 @@ const EmpDetails = () => {
                   ["Percentage", employee?.pgPercentage]
                 ].map(([label,value]) => (
                   <Grid item xs={12} sm={6} md={4} key={label}>
-                    <Box sx={{ mb: 1 }}>
-                      <Typography component="span" sx={{ fontWeight: 600 }}>{label} : {""}</Typography>
-                      <Typography component="span">{value || "-"}</Typography>
-                    </Box>
+                    <InfoItem label={label} value={value} />
                   </Grid>
                 ))}
               </Grid>
@@ -176,8 +197,7 @@ const EmpDetails = () => {
                   ["Branch", employee?.branch],
                 ].map(([label, value]) => (
                   <Grid item xs={12} sm={6} md={4} key={label}>
-                    <Typography component="span" sx={{ fontWeight: 600 }}>{label} : {""}</Typography>
-                    <Typography component="span">{value}</Typography>
+                    <InfoItem label={label} value={value} />
                   </Grid>
                 ))}
             </Grid>

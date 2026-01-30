@@ -25,8 +25,9 @@ const Dashpage = () => {
     const dispatch = useDispatch();
 
     const { user } = useSelector((state) => state.auth);
-    const { stats } = useSelector((state) => state.dashboard);
+    const { stats, loading } = useSelector((state) => state.dashboard);
     const notifications = useSelector((state) => state.notification.list);
+    
 
     useEffect(() => {
         dispatch(fetchNotifications());
@@ -34,7 +35,7 @@ const Dashpage = () => {
     }, [dispatch]);
 
     useEffect(() => {
-        if (!user) return;
+        if (!user?.empid) return;
         dispatch(fetchDashboardStats(user.empid));
     }, [user, dispatch]);
 
@@ -110,7 +111,7 @@ const Dashpage = () => {
                 {/* 4. Key Metrics Grid */}
                 <Grid container spacing={3}>
                     {
-                        !stats ? (
+                        loading ? (
                              Array.from(new Array(4)).map((_, index) => (
                                 <Grid item key={index} xs={12} sm={6} md={3}>
                                     <Skeleton variant="rectangular" height={145} sx={{ borderRadius: 3 }} />
@@ -128,7 +129,7 @@ const Dashpage = () => {
                 <Grid container spacing={3} alignItems="stretch">
                     {/* Employee Count */}
                     <Grid item xs={12} md={3}>
-                         {!stats ? (
+                         {loading ? (
                            <Skeleton variant="rectangular" height={340} sx={{ borderRadius: 3 }} />
                         ) : (
                          <EmployeeStats count={stats?.employees} />
@@ -137,7 +138,7 @@ const Dashpage = () => {
 
                     {/* Payroll Chart */}
                     <Grid item xs={12} md={5}>
-                        {!stats ? (
+                        {loading ? (
                            <Skeleton variant="rectangular" height={340} sx={{ borderRadius: 3 }} />
                         ) : (
                             <PayrollChart data={stats?.payroll || { totalNetPay: 0, totalDeductions: 0 }} />

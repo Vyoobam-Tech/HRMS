@@ -39,6 +39,7 @@ const EachEmployeeTimeTracker = () => {
         {headerName: "Break", field: "breakminutes"},
         {headerName: "Lunch", field: "lunchminutes"},
         {headerName: "Logout", field: "logout"},
+        {headerName: "OT", field: "overtime"},
         {headerName: "Total Hours", field: "totalhours"},
          {
     headerName: "Permission",

@@ -20,11 +20,15 @@ export const Attendance = sequelize.define(
             allowNull: true
         },
         breakminutes: {
-            type: DataTypes.STRING,
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 0
         },
         lunchminutes: {
-            type: DataTypes.STRING,
-        },
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 0
+            },
         logout: {
             type: DataTypes.TIME,
         },
@@ -34,6 +38,14 @@ export const Attendance = sequelize.define(
             defaultValue: 0
         },
         totalhours: {
+            type: DataTypes.STRING,
+        },
+        overtimeminutes: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 0,
+        },
+        overtime: {
             type: DataTypes.STRING,
         },
         status: {

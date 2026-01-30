@@ -48,6 +48,8 @@ const AllEmployeeTimeTraker = () => {
                     logout: selectedRow.logout,
                     totalminutes: selectedRow.totalminutes,
                     totalhours: selectedRow.totalhours,
+                    overtimeminutes: selectedRow.overtimeminutes,
+                    overtime: selectedRow.overtime,
                     status: selectedRow.status,
                 },
                 })
@@ -92,6 +94,7 @@ const AllEmployeeTimeTraker = () => {
         {headerName: "Lunch", field: "lunchminutes"},
         {headerName: "Logout", field: "logout"},
         {headerName: "Total Hours", field: "totalhours"},
+        {headerName: "OT", field: "overtime"},
         {headerName: "Status", field: "status", maxWidth: 150, 
             cellStyle: (params) => {
                 if(params.value === "Present"){

@@ -28,11 +28,6 @@ import { limiter } from "./middleware/limiter.js"; // Import rate limiter
 dotenv.config();
 const app = express();
 
-setupSecurity(app); // Apply security middleware
-app.use(limiter); // Apply rate limiting
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
     origin: [process.env.FRONTEND_URL],
@@ -40,6 +35,13 @@ app.use(
     credentials: true,
   })
 );
+
+setupSecurity(app); // Apply security middleware
+// app.use(limiter); // Apply rate limiting
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 
 app.use(cookieParser());
 app.use(morgan("dev")); // Use morgan for logging

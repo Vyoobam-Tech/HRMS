@@ -10,7 +10,7 @@ export const fetchDashboardStats = createAsyncThunk(
             API.get(`/api/activities/by-user/${empid}`),
             API.get("/api/activities/all"),
             API.get("/api/employees/all"),
-            API.get("/api/payroll/stats"), // New Payroll Stats
+            // API.get("/api/payroll/stats"), // New Payroll Stats
         ]);
 
         return {
@@ -18,7 +18,7 @@ export const fetchDashboardStats = createAsyncThunk(
             myactivity: myact.data.data.length,
             allactivitities: allact.data.data.length,
             employees: emp.data.data.length,
-            payroll: pay.data.data // { totalNetPay, totalEarnings, totalDeductions ... }
+            // payroll: pay.data.data // { totalNetPay, totalEarnings, totalDeductions ... }
         };
         } catch (err) {
         return rejectWithValue(err.response?.data || "Failed to fetch stats");
@@ -55,40 +55,41 @@ export const fetchBirthdayEmployees = createAsyncThunk(
     }
 );
 
+
 const dashboardSlice = createSlice({
     name: "dashboard",
     initialState: {
-        stats: null,            
+        stats: null,
+        status: "idle",            
         birthdays: [],         
-        loading: false,
         error: null,
     },
     reducers: {},
     extraReducers: (builder) => {
         builder
         .addCase(fetchDashboardStats.pending, (state) => {
-            state.loading = true;
+            state.status = "loading";
             state.error = null;
         })
         .addCase(fetchDashboardStats.fulfilled, (state, action) => {
-            state.loading = false;
+            state.status = "success";
             state.stats = action.payload;
         })
         .addCase(fetchDashboardStats.rejected, (state, action) => {
-            state.loading = false;
+            state.status = "failed";
             state.error = action.payload;
         })
 
         .addCase(fetchBirthdayEmployees.pending, (state) => {
-            state.loading = true;
+            state.status = "loading";
             state.error = null;
         })
         .addCase(fetchBirthdayEmployees.fulfilled, (state, action) => {
-            state.loading = false;
+            state.status = "success";
             state.birthdays = action.payload;
         })
         .addCase(fetchBirthdayEmployees.rejected, (state, action) => {
-            state.loading = false;
+            state.status = "failed";
             state.error = action.payload;
         });
     },
